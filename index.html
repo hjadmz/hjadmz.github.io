@@ -1,3 +1,4 @@
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,7 @@
     <title>hjadmz - Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Fallback for browsers that don't support CSS variables */
-        body {
-            background: #f0f0f0;
-            color: #333333;
-        }
+        body { background: #f0f0f0; color: #333333; }
 
         :root {
             --bg-color: #f0f0f0;
@@ -25,10 +22,7 @@
         }
 
         @media (prefers-color-scheme: dark) {
-            body {
-                background: #1a1a1a;
-                color: #ffffff;
-            }
+            body { background: #1a1a1a; color: #ffffff; }
             :root {
                 --bg-color: #1a1a1a;
                 --card-bg: #2d2d2d;
@@ -42,13 +36,7 @@
         }
 
         @media (forced-colors: active) {
-            .profile-card {
-                border: 1px solid currentColor;
-            }
-            .social-link {
-                border: 1px solid currentColor;
-            }
-            .contact-button {
+            .profile-card, .social-link, .contact-button {
                 border: 1px solid currentColor;
             }
         }
@@ -146,7 +134,6 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.2s ease, background-color 0.3s ease;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .social-link i {
@@ -181,7 +168,6 @@
             transition: all 0.3s ease;
             margin: 0 auto;
             width: fit-content;
-            -webkit-tap-highlight-color: transparent;
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4),
@@ -212,6 +198,10 @@
 
             .contact-button:hover::before {
                 opacity: 1;
+            }
+
+            .contact-button:hover .envelope-icon::before {
+                transform: rotateX(180deg);
             }
 
             .contact-button:active {
@@ -317,6 +307,7 @@
         }
     </style>
 </head>
+<body>
     <div class="card-container">
         <div class="profile-card">
             <div class="profile-image-container">
@@ -406,10 +397,6 @@
                 targetY = 0;
                 startAnimation();
             }
-
-            image.removeEventListener('mouseenter', handleMouseEnter);
-            image.removeEventListener('mouseleave', handleMouseLeave);
-            document.removeEventListener('mousemove', handleMouseMove);
 
             image.addEventListener('mouseenter', handleMouseEnter);
             image.addEventListener('mouseleave', handleMouseLeave);
