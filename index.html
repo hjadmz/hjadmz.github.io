@@ -1,11 +1,18 @@
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#f0f0f0" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
     <title>hjadmz - Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Fallback for browsers that don't support CSS variables */
+        body {
+            background: #f0f0f0;
+            color: #333333;
+        }
+
         :root {
             --bg-color: #f0f0f0;
             --card-bg: #ffffff;
@@ -18,6 +25,10 @@
         }
 
         @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a1a1a;
+                color: #ffffff;
+            }
             :root {
                 --bg-color: #1a1a1a;
                 --card-bg: #2d2d2d;
@@ -30,10 +41,23 @@
             }
         }
 
+        @media (forced-colors: active) {
+            .profile-card {
+                border: 1px solid currentColor;
+            }
+            .social-link {
+                border: 1px solid currentColor;
+            }
+            .contact-button {
+                border: 1px solid currentColor;
+            }
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -44,8 +68,10 @@
             align-items: center;
             min-height: 100vh;
             background: var(--bg-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
             transition: background-color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .card-container {
@@ -63,6 +89,8 @@
             text-align: center;
             position: relative;
             transition: background-color 0.3s ease;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
         }
 
         .profile-image-container {
@@ -73,6 +101,8 @@
             transition: transform 0.2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
             will-change: transform;
             cursor: pointer;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
 
         .profile-image {
@@ -81,6 +111,8 @@
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 0 5px 15px var(--card-shadow);
+            -webkit-user-drag: none;
+            user-select: none;
         }
 
         .name {
@@ -114,6 +146,7 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.2s ease, background-color 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .social-link i {
@@ -121,16 +154,14 @@
             transition: color 0.2s ease;
         }
 
-        .social-link:hover {
-            transform: scale(1.1);
-        }
+        @media (hover: hover) {
+            .social-link:hover {
+                transform: scale(1.1);
+            }
 
-        .social-link.github:hover i {
-            color: var(--github-hover);
-        }
-
-        .social-link.figma:hover i {
-            color: #F24E1E;
+            .social-link.github:hover i {
+                color: var(--github-hover);
+            }
         }
 
         .contact-button {
@@ -138,60 +169,92 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            background: #007AFF;
+            background: linear-gradient(135deg, #1E90FF, #0080FF);
             color: white;
-            padding: 14px 28px;
-            border-radius: 12px;
+            padding: 16px 32px;
+            border-radius: 100px;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 700;
             font-size: 16px;
             border: none;
             cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            transition: all 0.3s ease;
             margin: 0 auto;
             width: fit-content;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4),
+                        0 0 20px rgba(30, 144, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
 
-        .contact-button:hover {
-            transform: scale(1.02);
-            background: #0066CC;
+        .contact-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        @media (hover: hover) {
+            .contact-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(30, 144, 255, 0.5),
+                            0 0 30px rgba(30, 144, 255, 0.3);
+                background: linear-gradient(135deg, #0080FF, #0066FF);
+            }
+
+            .contact-button:hover::before {
+                opacity: 1;
+            }
+
+            .contact-button:active {
+                transform: translateY(0px);
+                box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4),
+                            0 0 20px rgba(30, 144, 255, 0.2);
+            }
         }
 
         .envelope-icon {
             position: relative;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 24px;
+            height: 16px;
+            background: white;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
 
-        .envelope-closed,
-        .envelope-open {
+        .envelope-icon::after {
+            content: '';
             position: absolute;
-            color: white;
-            font-size: 18px;
-            transition: transform 0.1s ease, opacity 0.1s ease;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #C1C1C6;
+            clip-path: polygon(0 0, 50% 45%, 100% 0);
+            z-index: 1;
         }
 
-        .envelope-closed {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .envelope-open {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-
-        .contact-button:hover .envelope-closed {
-            opacity: 0;
-            transform: scale(1.05);
-        }
-
-        .contact-button:hover .envelope-open {
-            opacity: 1;
-            transform: scale(1);
+        .envelope-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #E8E8ED;
+            clip-path: polygon(0 0, 50% 45%, 100% 0);
+            transform-origin: top;
+            transition: transform 0.8s ease;
+            z-index: 2;
+            will-change: transform;
         }
 
         @media (max-width: 480px) {
@@ -217,34 +280,61 @@
             }
 
             .contact-button {
-                padding: 12px 24px;
+                padding: 14px 28px;
                 font-size: 14px;
             }
         }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            
+            .contact-button {
+                transition: none;
+                transform: none;
+            }
+            .contact-button:hover {
+                transform: none;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
     </style>
 </head>
-<body>
     <div class="card-container">
         <div class="profile-card">
             <div class="profile-image-container">
                 <img src="https://github.com/hjadmz.png" alt="hjadmz" class="profile-image" 
-                     onerror="this.src='https://github.com/identicons/hjadmz'">
+                     onerror="this.src='https://github.com/identicons/hjadmz'"
+                     loading="lazy"
+                     decoding="async">
             </div>
             <h1 class="name">hjadmz</h1>
             <p class="title">Developer & Designer</p>
             <div class="social-links">
-                <a href="https://github.com/hjadmz" class="social-link github" target="_blank" rel="noopener">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="https://www.figma.com/@hjadmz" class="social-link figma" target="_blank" rel="noopener">
-                    <i class="fab fa-figma"></i>
+                <a href="https://github.com/hjadmz" class="social-link github" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github" aria-hidden="true"></i>
+                    <span class="sr-only">GitHub Profile</span>
                 </a>
             </div>
             <a href="mailto:hjadmz@icloud.com" class="contact-button">
-                <div class="envelope-icon">
-                    <i class="fas fa-envelope envelope-closed"></i>
-                    <i class="fas fa-envelope-open envelope-open"></i>
-                </div>
+                <div class="envelope-icon" aria-hidden="true"></div>
                 Contact Me
             </a>
         </div>
@@ -262,15 +352,13 @@
             let targetY = 0;
             let animationFrameId = null;
 
-            function lerp(start, end, factor) {
-                return start + (end - start) * factor;
-            }
+            const lerp = (start, end, factor) => start + (end - start) * factor;
 
             function updatePosition() {
                 if (!isHovering && Math.abs(currentX) < 0.01 && Math.abs(currentY) < 0.01) {
                     currentX = 0;
                     currentY = 0;
-                    image.style.transform = 'translate(0, 0)';
+                    image.style.transform = 'translate3d(0, 0, 0)';
                     cancelAnimationFrame(animationFrameId);
                     animationFrameId = null;
                     return;
@@ -280,7 +368,7 @@
                 currentX = lerp(currentX, targetX, smoothFactor);
                 currentY = lerp(currentY, targetY, smoothFactor);
                 
-                image.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                image.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
                 animationFrameId = requestAnimationFrame(updatePosition);
             }
 
