@@ -1,400 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="dark light">
-    <meta name="theme-color" content="#f0f0f0" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
-    <title>hjadmz - Profile</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background: #f0f0f0; color: #333333; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="hjadmz's developer profile and projects">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>hjadmz - Profile</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
+  
+  <!-- Fallback font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <style>
+    /* System font stack for better performance */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+        Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    }
 
-        :root {
-            --bg-color: #f0f0f0;
-            --card-bg: #ffffff;
-            --text-primary: #333333;
-            --text-secondary: #666666;
-            --social-bg: #f5f5f5;
-            --social-icon: #808080;
-            --card-shadow: rgba(0, 0, 0, 0.1);
-            --github-hover: #333;
-        }
+    /* Reduce motion if user prefers it */
+    @media (prefers-reduced-motion: reduce) {
+      .pulse::after {
+        animation: none;
+      }
+      .project-card {
+        transition: none;
+      }
+    }
 
-        @media (prefers-color-scheme: dark) {
-            body { background: #1a1a1a; color: #ffffff; }
-            :root {
-                --bg-color: #1a1a1a;
-                --card-bg: #2d2d2d;
-                --text-primary: #ffffff;
-                --text-secondary: #cccccc;
-                --social-bg: #363636;
-                --social-icon: #a0a0a0;
-                --card-shadow: rgba(0, 0, 0, 0.3);
-                --github-hover: #ffffff;
-            }
-        }
+    /* High contrast mode support */
+    @media (forced-colors: active) {
+      .glass {
+        background: Canvas;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        border: 1px solid CanvasText;
+      }
+      .project-card {
+        border: 1px solid CanvasText;
+      }
+    }
 
-        @media (forced-colors: active) {
-            .profile-card, .social-link, .contact-button {
-                border: 1px solid currentColor;
-            }
-        }
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #0a0a0a;
+        color: #ffffff;
+      }
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+    .glass {
+      background: rgba(17, 25, 40, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.125);
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: var(--bg-color);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-            transition: background-color 0.3s ease;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+    .map-container {
+      position: relative;
+      height: 200px;
+      border-radius: 1rem;
+      overflow: hidden;
+      margin: 1.5rem 0;
+      contain: content;
+    }
 
-        .card-container {
-            width: 100%;
-            max-width: 400px;
-            margin: 20px;
-            padding: 0 20px;
-        }
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      border-radius: 1rem;
+      z-index: 1;
+    }
 
-        .profile-card {
-            background: var(--card-bg);
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px var(--card-shadow);
-            text-align: center;
-            position: relative;
-            transition: background-color 0.3s ease;
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-        }
+    .time-overlay {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      z-index: 2;
+      background: rgba(17, 25, 40, 0.9);
+      color: white;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
 
-        .profile-image-container {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 20px;
-            position: relative;
-            transition: transform 0.2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
-            will-change: transform;
-            cursor: pointer;
-            -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-        }
+    .location-overlay {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      z-index: 2;
+      background: rgba(17, 25, 40, 0.9);
+      color: white;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 5px 15px var(--card-shadow);
-            -webkit-user-drag: none;
-            user-select: none;
-        }
+    .pulse {
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      position: relative;
+    }
 
-        .name {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
+    .pulse::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: rgba(34, 197, 94, 0.4);
+      border-radius: 50%;
+      top: -5px;
+      left: -5px;
+      animation: pulse 2s infinite;
+    }
 
-        .title {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
 
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin: 30px 0;
-        }
+    .project-card {
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      position: relative;
+      contain: content;
+    }
 
-        .social-link {
-            text-decoration: none;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            border-radius: 50%;
-            background: var(--social-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s ease, background-color 0.3s ease;
-        }
+    .project-card:hover,
+    .project-card:focus {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
 
-        .social-link i {
-            color: var(--social-icon);
-            transition: color 0.2s ease;
-        }
+    .project-card:focus {
+      outline: 2px solid #4f46e5;
+      outline-offset: 2px;
+    }
 
-        @media (hover: hover) {
-            .social-link:hover {
-                transform: scale(1.1);
-            }
+    .language-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
 
-            .social-link.github:hover i {
-                color: var(--github-hover);
-            }
-        }
+    /* Touch device optimizations */
+    @media (hover: none) {
+      .project-card:hover {
+        transform: none;
+      }
+    }
 
-        .contact-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background: linear-gradient(135deg, #1E90FF, #0080FF);
-            color: white;
-            padding: 16px 32px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 0 auto;
-            width: fit-content;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
+    /* Improved accessibility focus styles */
+    :focus {
+      outline: 2px solid #4f46e5;
+      outline-offset: 2px;
+    }
 
-        .contact-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+    /* Safe area insets for modern iOS devices */
+    @supports (padding: max(0px)) {
+      body {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+        padding-top: max(1rem, env(safe-area-inset-top));
+      }
+    }
 
-        @media (hover: hover) {
-            .contact-button:hover {
-                transform: translateY(-2px);
-                background: linear-gradient(135deg, #0080FF, #0066FF);
-            }
-
-            .contact-button:hover::before {
-                opacity: 1;
-            }
-
-            .contact-button:hover .envelope-icon::before {
-                transform: rotateX(180deg);
-            }
-
-            .contact-button:active {
-                transform: translateY(0px);
-            }
-        }
-
-        .envelope-icon {
-            position: relative;
-            width: 24px;
-            height: 16px;
-            background: white;
-            border-radius: 2px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        }
-
-        .envelope-icon::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #C1C1C6;
-            clip-path: polygon(0 0, 50% 45%, 100% 0);
-            z-index: 1;
-        }
-
-        .envelope-icon::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #E8E8ED;
-            clip-path: polygon(0 0, 50% 45%, 100% 0);
-            transform-origin: top;
-            transition: transform 0.8s ease;
-            z-index: 2;
-            will-change: transform;
-        }
-
-        @media (max-width: 480px) {
-            .card-container {
-                padding: 0 15px;
-            }
-
-            .profile-card {
-                padding: 30px 20px;
-            }
-
-            .profile-image-container {
-                width: 120px;
-                height: 120px;
-            }
-
-            .name {
-                font-size: 20px;
-            }
-
-            .title {
-                font-size: 14px;
-            }
-
-            .contact-button {
-                padding: 14px 28px;
-                font-size: 14px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
-            
-            .contact-button {
-                transition: none;
-                transform: none;
-            }
-            .contact-button:hover {
-                transform: none;
-            }
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-    </style>
+    .leaflet-control-attribution {
+      display: none;
+    }
+  </style>
 </head>
-<body>
-    <div class="card-container">
-        <div class="profile-card">
-            <div class="profile-image-container">
-                <img src="https://github.com/hjadmz.png" alt="hjadmz" class="profile-image" 
-                     onerror="this.src='https://github.com/identicons/hjadmz'"
-                     loading="lazy"
-                     decoding="async">
+<body class="min-h-screen p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white">
+  <div class="w-full max-w-2xl mx-auto">
+    <main class="p-6 rounded-2xl glass mb-6">
+      <!-- Profile section -->
+      <div class="flex items-center gap-4 mb-6">
+        <img 
+          src="https://cdn.discordapp.com/avatars/1334945871791526020/2ef32b7faee9d6cb74e9c79fffcd5901.webp?size=1024" 
+          alt="Profile picture of hjadmz"
+          class="w-16 h-16 rounded-xl shadow-lg object-cover"
+          loading="lazy"
+          width="64"
+          height="64"
+        >
+        <div class="flex-1">
+          <div class="flex justify-between items-start">
+            <div>
+              <h1 class="text-xl font-bold">hjadmz</h1>
+              <p class="text-sm text-gray-400">Full Stack Developer</p>
             </div>
-            <h1 class="name">hjadmz</h1>
-            <p class="title">Developer & Designer</p>
-            <div class="social-links">
-                <a href="https://github.com/hjadmz" class="social-link github" target="_blank" rel="noopener noreferrer">
-                    <i class="fab fa-github" aria-hidden="true"></i>
-                    <span class="sr-only">GitHub Profile</span>
-                </a>
-            </div>
-            <a href="mailto:hjadmz@icloud.com" class="contact-button">
-                <div class="envelope-icon" aria-hidden="true"></div>
-                Contact Me
+            <a href="mailto:hjadmz@icloud.com"
+              class="px-4 py-2 rounded-xl flex items-center gap-2 text-sm bg-white/5 hover:bg-white/10 transition-all"
+              aria-label="Send email to hjadmz">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <span>Email</span>
             </a>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <script>
-        const hasPointer = window.matchMedia('(pointer: fine)').matches;
+      <!-- Map section -->
+      <div class="map-container" role="region" aria-label="Location map showing Greater St. Louis Area">
+        <div id="map"></div>
+        <div class="time-overlay" id="time-display" aria-live="polite"></div>
+        <div class="location-overlay">
+          <div class="pulse" aria-hidden="true"></div>
+          <span>Greater St. Louis Area</span>
+        </div>
+      </div>
 
-        if (hasPointer) {
-            const image = document.querySelector('.profile-image-container');
-            let isHovering = false;
-            let currentX = 0;
-            let currentY = 0;
-            let targetX = 0;
-            let targetY = 0;
-            let animationFrameId = null;
+      <!-- Projects section -->
+      <div class="space-y-3" id="repos-container" role="list">
+        <div class="project-card p-4 rounded-xl" 
+             onclick="window.open('https://hjadmz.github.io', '_blank')"
+             onkeypress="(event.key === 'Enter' || event.key === ' ') && window.open('https://hjadmz.github.io', '_blank')"
+             role="listitem"
+             tabindex="0"
+             aria-label="Project: hjadmz.github.io">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <h3 class="font-medium mb-1">hjadmz.github.io</h3>
+              <p class="text-sm text-gray-400 line-clamp-1">Personal Website</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs text-gray-400">
+            <div class="flex items-center">
+              <span class="language-dot" style="background-color: #e34c26" aria-hidden="true"></span>
+              HTML
+            </div>
+            <span>1 week ago</span>
+          </div>
+        </div>
 
-            const lerp = (start, end, factor) => start + (end - start) * factor;
+        <div class="project-card p-4 rounded-xl" 
+             onclick="window.open('https://github.com/hjadmz/macimizer', '_blank')"
+             onkeypress="(event.key === 'Enter' || event.key === ' ') && window.open('https://github.com/hjadmz/macimizer', '_blank')"
+             role="listitem"
+             tabindex="0"
+             aria-label="Project: macimizer">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <h3 class="font-medium mb-1">macimizer</h3>
+              <p class="text-sm text-gray-400 line-clamp-1">Mac Optimization Tool</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs text-gray-400">
+            <div class="flex items-center">
+              <span class="language-dot" style="background-color: #89e051" aria-hidden="true"></span>
+              Shell
+            </div>
+            <span>2 weeks ago</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 
-            function updatePosition() {
-                if (!isHovering && Math.abs(currentX) < 0.01 && Math.abs(currentY) < 0.01) {
-                    currentX = 0;
-                    currentY = 0;
-                    image.style.transform = 'translate3d(0, 0, 0)';
-                    cancelAnimationFrame(animationFrameId);
-                    animationFrameId = null;
-                    return;
-                }
+  <script>
+    // Feature detection and progressive enhancement
+    const supportsBackdropFilter = CSS.supports('backdrop-filter', 'blur(16px)');
+    if (!supportsBackdropFilter) {
+      document.querySelectorAll('.glass').forEach(el => {
+        el.style.background = 'rgba(17, 25, 40, 0.95)';
+      });
+    }
 
-                const smoothFactor = 0.08;
-                currentX = lerp(currentX, targetX, smoothFactor);
-                currentY = lerp(currentY, targetY, smoothFactor);
-                
-                image.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-                animationFrameId = requestAnimationFrame(updatePosition);
-            }
+    // Detect low-end devices
+    const isLowEnd = () => {
+      return (
+        !window.matchMedia('(min-resolution: 2dppx)').matches &&
+        navigator.hardwareConcurrency <= 4 &&
+        !supportsBackdropFilter
+      );
+    };
 
-            function startAnimation() {
-                if (!animationFrameId) {
-                    animationFrameId = requestAnimationFrame(updatePosition);
-                }
-            }
+    // Initialize map with performance considerations
+    let map;
+    try {
+      map = L.map('map', {
+        center: [38.6270, -90.1994], // St. Louis coordinates
+        zoom: 9, // Zoomed out to show more of the metro area
+        zoomControl: false,
+        attributionControl: false,
+        dragging: !isLowEnd(),
+        scrollWheelZoom: false,
+        fadeAnimation: !isLowEnd(),
+        zoomAnimation: !isLowEnd()
+      });
 
-            function handleMouseMove(e) {
-                if (!isHovering) return;
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+      }).addTo(map);
 
-                const rect = image.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                
-                const mouseX = e.clientX - centerX;
-                const mouseY = e.clientY - centerY;
-                
-                const maxMove = 8;
-                targetX = (mouseX / rect.width) * maxMove * 2;
-                targetY = (mouseY / rect.height) * maxMove * 2;
+      // Create a larger circle to indicate the general area
+      const areaCircle = L.circle([38.6270, -90.1994], {
+        color: '#22c55e',
+        fillColor: '#22c55e',
+        fillOpacity: 0.1,
+        radius: 40000, // 40km radius to show metro area
+        weight: 1
+      }).addTo(map);
 
-                startAnimation();
-            }
+      // Smaller marker in the center
+      const marker = L.circleMarker([38.6270, -90.1994], {
+        color: '#22c55e',
+        fillColor: '#22c55e',
+        fillOpacity: 0.5,
+        radius: 6
+      }).addTo(map);
+    } catch (e) {
+      console.error('Map initialization failed:', e);
+      document.querySelector('.map-container').style.display = 'none';
+    }
 
-            function handleMouseEnter() {
-                isHovering = true;
-                startAnimation();
-            }
+    // Time display with error handling and accessibility
+    function updateTime() {
+      try {
+        const options = {
+          timeZone: 'America/Chicago',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true
+        };
+        const time = new Date().toLocaleString('en-US', options);
+        const timeDisplay = document.getElementById('time-display');
+        timeDisplay.textContent = `${time} (CDT)`;
+        timeDisplay.setAttribute('aria-label', `Current time: ${time} Central Daylight Time`);
+      } catch (e) {
+        console.error('Time update failed:', e);
+      }
+    }
 
-            function handleMouseLeave() {
-                isHovering = false;
-                targetX = 0;
-                targetY = 0;
-                startAnimation();
-            }
+    // Debounced time update for performance
+    let timeoutId;
+    function debouncedTimeUpdate() {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateTime, 1000);
+    }
 
-            image.addEventListener('mouseenter', handleMouseEnter);
-            image.addEventListener('mouseleave', handleMouseLeave);
-            document.addEventListener('mousemove', handleMouseMove);
-        }
-    </script>
+    // Initialize time display
+    updateTime();
+    setInterval(debouncedTimeUpdate, 1000);
+
+    // Handle offline state
+    window.addEventListener('offline', () => {
+      document.body.classList.add('offline');
+      // Disable interactive features
+      if (map) map.dragging.disable();
+    });
+
+    window.addEventListener('online', () => {
+      document.body.classList.remove('offline');
+      // Re-enable features
+      if (map && !isLowEnd()) map.dragging.enable();
+    });
+
+    // Clean up on page hide/unload
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearInterval(timeoutId);
+        if (map) map.remove();
+      }
+    });
+  </script>
 </body>
 </html>
