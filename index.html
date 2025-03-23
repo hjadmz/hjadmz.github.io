@@ -1,211 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <meta name="description" content="hjadmz's developer profile and projects">
-  <meta name="theme-color" content="#111827">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>hjadmz - Profile</title>
-  
-  <!-- Preload critical resources -->
-  <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
-  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
-  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
-  
-  <!-- Fallback font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
-  <style>
-    /* System font stack for better performance */
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
-        Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-    }
-
-    /* Reduce motion if user prefers it */
-    @media (prefers-reduced-motion: reduce) {
-      .pulse::after {
-        animation: none;
-      }
-      .project-card {
-        transition: none;
-      }
-    }
-
-    /* High contrast mode support */
-    @media (forced-colors: active) {
-      .glass {
-        background: Canvas;
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-        border: 1px solid CanvasText;
-      }
-      .project-card {
-        border: 1px solid CanvasText;
-      }
-    }
-
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #0a0a0a;
-        color: #ffffff;
-      }
-    }
-
-    .glass {
-      background: rgba(17, 25, 40, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.125);
-    }
-
-    .map-container {
-      position: relative;
-      height: 200px;
-      border-radius: 1rem;
-      overflow: hidden;
-      margin: 1.5rem 0;
-      contain: content;
-    }
-
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-      border-radius: 1rem;
-      z-index: 1;
-    }
-
-    .time-overlay {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.75rem;
-      z-index: 2;
-      background: rgba(17, 25, 40, 0.9);
-      color: white;
-      font-weight: 500;
-      backdrop-filter: blur(10px);
-    }
-
-    .location-overlay {
-      position: absolute;
-      bottom: 1rem;
-      left: 1rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.75rem;
-      z-index: 2;
-      background: rgba(17, 25, 40, 0.9);
-      color: white;
-      font-weight: 500;
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .pulse {
-      width: 10px;
-      height: 10px;
-      background: #22c55e;
-      border-radius: 50%;
-      position: relative;
-    }
-
-    .pulse::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: rgba(34, 197, 94, 0.4);
-      border-radius: 50%;
-      top: -5px;
-      left: -5px;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(2);
-        opacity: 0;
-      }
-    }
-
-    .project-card {
-      transition: transform 0.2s ease, background-color 0.2s ease;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      cursor: pointer;
-      position: relative;
-      contain: content;
-    }
-
-    .project-card:hover,
-    .project-card:focus {
-      transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .project-card:focus {
-      outline: 2px solid #4f46e5;
-      outline-offset: 2px;
-    }
-
-    .language-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 6px;
-    }
-
-    /* Touch device optimizations */
-    @media (hover: none) {
-      .project-card:hover {
-        transform: none;
-      }
-    }
-
-    /* Improved accessibility focus styles */
-    :focus {
-      outline: 2px solid #4f46e5;
-      outline-offset: 2px;
-    }
-
-    /* Safe area insets for modern iOS devices */
-    @supports (padding: max(0px)) {
-      body {
-        padding-left: max(1rem, env(safe-area-inset-left));
-        padding-right: max(1rem, env(safe-area-inset-right));
-        padding-bottom: max(1rem, env(safe-area-inset-bottom));
-        padding-top: max(1rem, env(safe-area-inset-top));
-      }
-    }
-
-    .leaflet-control-attribution {
-      display: none;
-    }
-  </style>
-</head>
-<body class="min-h-screen p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white">
+<body class="min-h-screen p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
   <div class="w-full max-w-2xl mx-auto">
-    <main class="p-6 rounded-2xl glass mb-6">
+    <main class="p-6 rounded-2xl glass bg-gray-900/75 dark:bg-gray-900/95 border-gray-200 dark:border-gray-600 mb-6">
       <!-- Profile section -->
       <div class="flex items-center gap-4 mb-6">
         <img 
@@ -220,10 +15,10 @@
           <div class="flex justify-between items-start">
             <div>
               <h1 class="text-xl font-bold">hjadmz</h1>
-              <p class="text-sm text-gray-400">Full Stack Developer</p>
+              <p class="text-sm text-gray-400 dark:text-gray-300">Full Stack Developer</p>
             </div>
             <a href="mailto:hjadmz@icloud.com"
-              class="px-4 py-2 rounded-xl flex items-center gap-2 text-sm bg-white/5 hover:bg-white/10 transition-all"
+              class="px-4 py-2 rounded-xl flex items-center gap-2 text-sm bg-white/5 dark:bg-gray-700/50 hover:bg-white/10 dark:hover:bg-gray-700/60 transition-all"
               aria-label="Send email to hjadmz">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -238,8 +33,8 @@
       <!-- Map section -->
       <div class="map-container" role="region" aria-label="Location map showing Greater St. Louis Area">
         <div id="map"></div>
-        <div class="time-overlay" id="time-display" aria-live="polite"></div>
-        <div class="location-overlay">
+        <div class="time-overlay bg-gray-900/90 dark:bg-gray-800/90 text-white" id="time-display" aria-live="polite"></div>
+        <div class="location-overlay bg-gray-900/90 dark:bg-gray-800/90 text-white">
           <div class="pulse" aria-hidden="true"></div>
           <span>Greater St. Louis Area</span>
         </div>
@@ -247,7 +42,7 @@
 
       <!-- Projects section -->
       <div class="space-y-3" id="repos-container" role="list">
-        <div class="project-card p-4 rounded-xl" 
+        <div class="project-card p-4 rounded-xl bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
              onclick="window.open('https://hjadmz.github.io', '_blank')"
              onkeypress="(event.key === 'Enter' || event.key === ' ') && window.open('https://hjadmz.github.io', '_blank')"
              role="listitem"
@@ -256,10 +51,10 @@
           <div class="flex justify-between items-start mb-2">
             <div>
               <h3 class="font-medium mb-1">hjadmz.github.io</h3>
-              <p class="text-sm text-gray-400 line-clamp-1">Personal Website</p>
+              <p class="text-sm text-gray-400 dark:text-gray-300 line-clamp-1">Personal Website</p>
             </div>
           </div>
-          <div class="flex items-center justify-between text-xs text-gray-400">
+          <div class="flex items-center justify-between text-xs text-gray-400 dark:text-gray-300">
             <div class="flex items-center">
               <span class="language-dot" style="background-color: #e34c26" aria-hidden="true"></span>
               HTML
@@ -268,7 +63,7 @@
           </div>
         </div>
 
-        <div class="project-card p-4 rounded-xl" 
+        <div class="project-card p-4 rounded-xl bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
              onclick="window.open('https://github.com/hjadmz/macimizer', '_blank')"
              onkeypress="(event.key === 'Enter' || event.key === ' ') && window.open('https://github.com/hjadmz/macimizer', '_blank')"
              role="listitem"
@@ -277,10 +72,10 @@
           <div class="flex justify-between items-start mb-2">
             <div>
               <h3 class="font-medium mb-1">macimizer</h3>
-              <p class="text-sm text-gray-400 line-clamp-1">Mac Optimization Tool</p>
+              <p class="text-sm text-gray-400 dark:text-gray-300 line-clamp-1">Mac Optimization Tool</p>
             </div>
           </div>
-          <div class="flex items-center justify-between text-xs text-gray-400">
+          <div class="flex items-center justify-between text-xs text-gray-400 dark:text-gray-300">
             <div class="flex items-center">
               <span class="language-dot" style="background-color: #89e051" aria-hidden="true"></span>
               Shell
@@ -291,113 +86,4 @@
       </div>
     </main>
   </div>
-
-  <script>
-    // Feature detection and progressive enhancement
-    const supportsBackdropFilter = CSS.supports('backdrop-filter', 'blur(16px)');
-    if (!supportsBackdropFilter) {
-      document.querySelectorAll('.glass').forEach(el => {
-        el.style.background = 'rgba(17, 25, 40, 0.95)';
-      });
-    }
-
-    // Detect low-end devices
-    const isLowEnd = () => {
-      return (
-        !window.matchMedia('(min-resolution: 2dppx)').matches &&
-        navigator.hardwareConcurrency <= 4 &&
-        !supportsBackdropFilter
-      );
-    };
-
-    // Initialize map with performance considerations
-    let map;
-    try {
-      map = L.map('map', {
-        center: [38.6270, -90.1994], // St. Louis coordinates
-        zoom: 9, // Zoomed out to show more of the metro area
-        zoomControl: false,
-        attributionControl: false,
-        dragging: !isLowEnd(),
-        scrollWheelZoom: false,
-        fadeAnimation: !isLowEnd(),
-        zoomAnimation: !isLowEnd()
-      });
-
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
-      }).addTo(map);
-
-      // Create a larger circle to indicate the general area
-      const areaCircle = L.circle([38.6270, -90.1994], {
-        color: '#22c55e',
-        fillColor: '#22c55e',
-        fillOpacity: 0.1,
-        radius: 40000, // 40km radius to show metro area
-        weight: 1
-      }).addTo(map);
-
-      // Smaller marker in the center
-      const marker = L.circleMarker([38.6270, -90.1994], {
-        color: '#22c55e',
-        fillColor: '#22c55e',
-        fillOpacity: 0.5,
-        radius: 6
-      }).addTo(map);
-    } catch (e) {
-      console.error('Map initialization failed:', e);
-      document.querySelector('.map-container').style.display = 'none';
-    }
-
-    // Time display with error handling and accessibility
-    function updateTime() {
-      try {
-        const options = {
-          timeZone: 'America/Chicago',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true
-        };
-        const time = new Date().toLocaleString('en-US', options);
-        const timeDisplay = document.getElementById('time-display');
-        timeDisplay.textContent = `${time} (CDT)`;
-        timeDisplay.setAttribute('aria-label', `Current time: ${time} Central Daylight Time`);
-      } catch (e) {
-        console.error('Time update failed:', e);
-      }
-    }
-
-    // Debounced time update for performance
-    let timeoutId;
-    function debouncedTimeUpdate() {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(updateTime, 1000);
-    }
-
-    // Initialize time display
-    updateTime();
-    setInterval(debouncedTimeUpdate, 1000);
-
-    // Handle offline state
-    window.addEventListener('offline', () => {
-      document.body.classList.add('offline');
-      // Disable interactive features
-      if (map) map.dragging.disable();
-    });
-
-    window.addEventListener('online', () => {
-      document.body.classList.remove('offline');
-      // Re-enable features
-      if (map && !isLowEnd()) map.dragging.enable();
-    });
-
-    // Clean up on page hide/unload
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        clearInterval(timeoutId);
-        if (map) map.remove();
-      }
-    });
-  </script>
 </body>
-</html>
