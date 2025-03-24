@@ -8,21 +8,21 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>hjadmz - Profile</title>
-
+  
   <!-- Preload critical resources -->
   <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
-
+  
   <!-- Fallback font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+  
   <style>
     /* System font stack for better performance */
     body {
@@ -53,35 +53,14 @@
       }
     }
 
-    /* Default light mode */
-    body {
-      background-color: #ffffff;
-      color: #000000;
-    }
-
     /* Dark mode support */
     @media (prefers-color-scheme: dark) {
       body {
-        background-color: #0a0a0a;
+        background: #0a0a0a;
         color: #ffffff;
-      }
-
-      main {
-        background-color: #0a0a0a; /* Ensure main content area also changes */
-      }
-
-      .glass {
-        background: rgba(17, 25, 40, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .project-card {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
       }
     }
 
-    /* Other styles */
     .glass {
       background: rgba(17, 25, 40, 0.75);
       backdrop-filter: blur(16px);
@@ -224,7 +203,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen p-4">
+<body class="min-h-screen p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white">
   <div class="w-full max-w-2xl mx-auto">
     <main class="p-6 rounded-2xl glass mb-6">
       <!-- Profile section -->
@@ -419,13 +398,6 @@
         if (map) map.remove();
       }
     });
-
-    // Listen for changes in system color scheme preference
-    const prefersDarkColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    prefersDarkColorScheme.addEventListener('change', (e) => {
-      if (e.matches) {
-        console.log('System prefers dark mode');
-      } else {
-        console.log('System prefers light mode');
-      }
-    });
+  </script>
+</body>
+</html>
