@@ -61,13 +61,21 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .container {
       width: 100%;
-      max-width: 768px;
+      max-width: 550px;
       margin: 0 auto;
       padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .card {
@@ -259,6 +267,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      width: 100%;
     }
 
     /* Loading state */
