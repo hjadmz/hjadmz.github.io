@@ -31,14 +31,12 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <style>
-    /* CSS Reset and Base Styles */
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    /* System font stack with fallbacks */
     :root {
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
         Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
@@ -53,7 +51,6 @@
       text-rendering: optimizeLegibility;
     }
 
-    /* Accessibility: Skip to main content */
     .skip-link {
       position: absolute;
       top: -40px;
@@ -69,7 +66,6 @@
       top: 0;
     }
 
-    /* Reduced motion preferences */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -87,7 +83,6 @@
       }
     }
 
-    /* High contrast mode support */
     @media (forced-colors: active) {
       .glass {
         background: Canvas;
@@ -109,7 +104,6 @@
       }
     }
 
-    /* Light mode styles */
     @media (prefers-color-scheme: light) {
       body {
         background: #f8fafc;
@@ -135,13 +129,8 @@
         background: rgba(255, 255, 255, 0.9);
         color: #1e293b;
       }
-      
-      .text-gray-400 {
-        color: #64748b;
-      }
     }
 
-    /* Dark mode styles */
     @media (prefers-color-scheme: dark) {
       body {
         background: #0a0a0a;
@@ -174,7 +163,6 @@
       -webkit-backdrop-filter: blur(16px);
     }
 
-    /* Map styles with accessibility considerations */
     .map-container {
       position: relative;
       height: calc(200px + var(--safe-bottom));
@@ -218,7 +206,6 @@
       gap: 0.5rem;
     }
 
-    /* Pulse animation with reduced motion consideration */
     .pulse {
       width: 10px;
       height: 10px;
@@ -252,7 +239,6 @@
       }
     }
 
-    /* Project card styles with accessibility improvements */
     .project-card {
       transition: transform 0.2s ease, background-color 0.2s ease;
       cursor: pointer;
@@ -260,7 +246,6 @@
       contain: content;
     }
 
-    /* Touch device optimizations */
     @media (hover: hover) and (pointer: fine) {
       .project-card:hover,
       .project-card:focus {
@@ -268,7 +253,6 @@
       }
     }
 
-    /* Focus styles */
     .project-card:focus-visible {
       outline: 3px solid #4f46e5;
       outline-offset: 2px;
@@ -282,7 +266,6 @@
       margin-right: 6px;
     }
 
-    /* Screen reader only text */
     .sr-only {
       position: absolute;
       width: 1px;
@@ -295,7 +278,6 @@
       border: 0;
     }
 
-    /* Safe area insets for modern iOS devices */
     @supports (padding: max(0px)) {
       body {
         padding-left: max(1rem, env(safe-area-inset-left));
@@ -311,15 +293,11 @@
   </style>
 </head>
 <body class="min-h-screen p-4">
-  <!-- Skip to main content link -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
-
-  <!-- Announcement for screen readers -->
   <div role="status" aria-live="polite" class="sr-only" id="announcer"></div>
 
   <div class="w-full max-w-2xl mx-auto">
     <main id="main-content" class="p-6 rounded-2xl glass mb-6" tabindex="-1">
-      <!-- Profile section -->
       <div class="flex items-center gap-4 mb-6">
         <img 
           src="https://cdn.discordapp.com/avatars/1334945871791526020/2ef32b7faee9d6cb74e9c79fffcd5901.webp?size=1024" 
@@ -348,7 +326,6 @@
         </div>
       </div>
 
-      <!-- Map section -->
       <div class="map-container" role="region" aria-label="Location map showing Greater St. Louis Area">
         <div id="map"></div>
         <div class="time-overlay" id="time-display" aria-live="polite"></div>
@@ -358,7 +335,6 @@
         </div>
       </div>
 
-      <!-- Projects section -->
       <div class="space-y-3" id="repos-container" role="list" aria-label="Project list">
         <div class="project-card p-4 rounded-xl" 
              onclick="window.open('https://hjadmz.github.io', '_blank')"
@@ -406,7 +382,6 @@
   </div>
 
   <script>
-    // Feature detection and progressive enhancement
     const deviceSupport = {
       touch: 'ontouchstart' in window,
       pointer: window.matchMedia('(pointer: fine)').matches,
@@ -428,7 +403,6 @@
       });
     }
 
-    // Detect low-end devices
     const isLowEnd = () => {
       return (
         !window.matchMedia('(min-resolution: 2dppx)').matches &&
@@ -437,7 +411,6 @@
       );
     };
 
-    // Initialize map with performance considerations
     let map;
     try {
       const centerLat = 38.7000;
@@ -445,14 +418,14 @@
 
       map = L.map('map', {
         center: [centerLat, centerLng],
-        zoom: 9.5,
+        zoom: 8.5,
         zoomControl: false,
         attributionControl: false,
         dragging: !isLowEnd(),
         scrollWheelZoom: false,
         fadeAnimation: !isLowEnd(),
         zoomAnimation: !isLowEnd(),
-        keyboard: true, // Enable keyboard navigation
+        keyboard: true,
         inertia: !deviceSupport.reducedMotion
       });
 
@@ -466,24 +439,21 @@
         detectRetina: !isLowEnd()
       }).addTo(map);
 
-      // Create a larger circle to indicate the general area
       const areaCircle = L.circle([centerLat, centerLng], {
         color: '#22c55e',
         fillColor: '#22c55e',
-        fillOpacity: 0.1,
-        radius: 50000,
-        weight: 1
+        fillOpacity: 0.15,
+        radius: 75000,
+        weight: 2
       }).addTo(map);
 
-      // Smaller marker in the center
       const marker = L.circleMarker([centerLat, centerLng], {
         color: '#22c55e',
         fillColor: '#22c55e',
-        fillOpacity: 0.5,
-        radius: 6
+        fillOpacity: 0.7,
+        radius: 8
       }).addTo(map);
 
-      // Enhanced color scheme handling
       const colorSchemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
       const handleColorSchemeChange = (e) => {
         const newTileLayer = e.matches
@@ -511,7 +481,6 @@
       document.getElementById('announcer').textContent = 'Map loading failed. Location information is still available in text format.';
     }
 
-    // Enhanced time display with error handling and accessibility
     function updateTime() {
       try {
         const options = {
@@ -530,18 +499,15 @@
       }
     }
 
-    // Performance optimized time update
     let timeoutId;
     function debouncedTimeUpdate() {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(updateTime, 1000);
     }
 
-    // Initialize time display
     updateTime();
     const timeUpdateInterval = setInterval(debouncedTimeUpdate, 1000);
 
-    // Enhanced focus management
     function manageFocus() {
       const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
       const focusable = document.querySelectorAll(focusableElements);
@@ -554,23 +520,19 @@
       });
     }
 
-    // Viewport height fix for mobile browsers
     function setVhProperty() {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     }
 
-    // Initialize enhancements
     document.addEventListener('DOMContentLoaded', () => {
       manageFocus();
       setVhProperty();
       
-      // Handle orientation changes
       window.addEventListener('orientationchange', () => {
         setTimeout(setVhProperty, 100);
       });
       
-      // Handle resize events (debounced)
       let resizeTimer;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
@@ -581,13 +543,11 @@
       });
     });
 
-    // Error boundary
     window.addEventListener('error', (event) => {
       console.error('Application error:', event.error);
       document.getElementById('announcer').textContent = 'An error occurred. Please try refreshing the page.';
     });
 
-    // Clean up on page hide/unload
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         clearInterval(timeUpdateInterval);
@@ -595,7 +555,6 @@
       }
     });
 
-    // Service Worker Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(error => {
