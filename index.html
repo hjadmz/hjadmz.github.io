@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="hjadmz - Full Stack Developer Portfolio">
+  <meta name="description" content="hjadmz - Developer Portfolio">
   <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -341,6 +341,7 @@
           class="profile-image loading"
           loading="eager"
           decoding="async"
+          id="profile-avatar"
         >
         <div class="profile-info">
           <div class="profile-header">
@@ -351,7 +352,7 @@
               </svg>
             </a>
           </div>
-          <p id="profile-title">Loading...</p>
+          <p id="profile-title"></p>
         </div>
       </div>
     </div>
@@ -497,31 +498,29 @@
       try {
         const username = 'hjadmz';
         const profileData = await fetchGitHubProfile(username);
+        
         if (profileData) {
-          // Update profile image
-          const profileImage = document.querySelector('.profile-image');
+          console.log("GitHub profile data:", profileData); // Debug log
+          
+          // Update profile image - using id selector to ensure we get the right element
+          const profileImage = document.getElementById('profile-avatar');
           if (profileImage && profileData.avatar_url) {
             profileImage.src = profileData.avatar_url;
             profileImage.classList.remove('loading');
+            console.log("Updated profile image with:", profileData.avatar_url); // Debug log
           }
 
           // Update name if available
           const nameElement = document.getElementById('profile-name');
           if (nameElement) {
-            nameElement.textContent = profileData.name || 'hjadmz';
+            nameElement.textContent = profileData.name || username;
           }
           
-          // Update title with bio from GitHub
+          // Update title with bio from GitHub - exactly as it is, or empty if not available
           const titleElement = document.getElementById('profile-title');
           if (titleElement) {
-            // Use bio if available, otherwise use a default value or the company info
-            if (profileData.bio) {
-              titleElement.textContent = profileData.bio;
-            } else if (profileData.company) {
-              titleElement.textContent = profileData.company;
-            } else {
-              titleElement.textContent = 'Software Developer';
-            }
+            titleElement.textContent = profileData.bio || '';
+            console.log("Updated bio with:", profileData.bio || '(empty)'); // Debug log
           }
           
           // Fetch and update repositories
@@ -530,11 +529,6 @@
         }
       } catch (error) {
         console.error('Error updating profile data:', error);
-        // Set a fallback value if there's an error
-        const titleElement = document.getElementById('profile-title');
-        if (titleElement) {
-          titleElement.textContent = 'Software Developer';
-        }
         updateProjectsContainer([]);
       }
     }
