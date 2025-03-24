@@ -53,11 +53,27 @@
       }
     }
 
+    /* Default light mode */
+    body {
+      background-color: #ffffff;
+      color: #000000;
+    }
+
     /* Dark mode support */
     @media (prefers-color-scheme: dark) {
       body {
-        background: #0a0a0a;
+        background-color: #0a0a0a;
         color: #ffffff;
+      }
+
+      .glass {
+        background: rgba(17, 25, 40, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .project-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
     }
 
@@ -203,7 +219,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white">
+<body class="min-h-screen p-4">
   <div class="w-full max-w-2xl mx-auto">
     <main class="p-6 rounded-2xl glass mb-6">
       <!-- Profile section -->
@@ -396,6 +412,16 @@
       if (document.hidden) {
         clearInterval(timeoutId);
         if (map) map.remove();
+      }
+    });
+
+    // Listen for changes in system color scheme preference
+    const prefersDarkColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    prefersDarkColorScheme.addEventListener('change', (e) => {
+      if (e.matches) {
+        console.log('System prefers dark mode');
+      } else {
+        console.log('System prefers light mode');
       }
     });
   </script>
