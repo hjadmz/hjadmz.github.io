@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="antialiased">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <meta name="description" content="hjadmz's developer profile and projects">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="description" content="hjadmz's developer profile and projects - Accessible and responsive portfolio">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <!-- PWA support -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
   <title>hjadmz - Profile</title>
   
   <!-- Preload critical resources -->
@@ -15,7 +21,7 @@
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
   
-  <!-- Fallback font -->
+  <!-- Preconnect to external domains -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -25,19 +31,59 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <style>
-    /* System font stack for better performance */
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
-        Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    /* CSS Reset and Base Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    /* Reduce motion if user prefers it */
+    /* System font stack with fallbacks */
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+        Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Accessibility: Skip to main content */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #4f46e5;
+      color: white;
+      padding: 8px;
+      z-index: 100;
+      transition: top 0.2s;
+    }
+
+    .skip-link:focus {
+      top: 0;
+    }
+
+    /* Reduced motion preferences */
     @media (prefers-reduced-motion: reduce) {
-      .pulse::after {
-        animation: none;
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
       }
+      
+      .pulse::after {
+        animation: none !important;
+      }
+      
       .project-card {
-        transition: none;
+        transition: none !important;
       }
     }
 
@@ -49,7 +95,16 @@
         backdrop-filter: none;
         border: 1px solid CanvasText;
       }
+      
       .project-card {
+        border: 1px solid CanvasText;
+      }
+      
+      .pulse {
+        background: CanvasText;
+      }
+      
+      .language-dot {
         border: 1px solid CanvasText;
       }
     }
@@ -119,9 +174,10 @@
       -webkit-backdrop-filter: blur(16px);
     }
 
+    /* Map styles with accessibility considerations */
     .map-container {
       position: relative;
-      height: 200px;
+      height: calc(200px + var(--safe-bottom));
       border-radius: 1rem;
       overflow: hidden;
       margin: 1.5rem 0;
@@ -139,7 +195,7 @@
 
     .time-overlay {
       position: absolute;
-      top: 1rem;
+      top: max(1rem, var(--safe-top));
       right: 1rem;
       padding: 0.75rem 1.5rem;
       border-radius: 0.75rem;
@@ -150,7 +206,7 @@
 
     .location-overlay {
       position: absolute;
-      bottom: 1rem;
+      bottom: max(1rem, var(--safe-bottom));
       left: 1rem;
       padding: 0.75rem 1.5rem;
       border-radius: 0.75rem;
@@ -162,6 +218,7 @@
       gap: 0.5rem;
     }
 
+    /* Pulse animation with reduced motion consideration */
     .pulse {
       width: 10px;
       height: 10px;
@@ -170,29 +227,32 @@
       position: relative;
     }
 
-    .pulse::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: rgba(34, 197, 94, 0.4);
-      border-radius: 50%;
-      top: -5px;
-      left: -5px;
-      animation: pulse 2s infinite;
+    @media (prefers-reduced-motion: no-preference) {
+      .pulse::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: rgba(34, 197, 94, 0.4);
+        border-radius: 50%;
+        top: -5px;
+        left: -5px;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(2);
+          opacity: 0;
+        }
+      }
     }
 
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(2);
-        opacity: 0;
-      }
-    }
-
+    /* Project card styles with accessibility improvements */
     .project-card {
       transition: transform 0.2s ease, background-color 0.2s ease;
       cursor: pointer;
@@ -200,13 +260,17 @@
       contain: content;
     }
 
-    .project-card:hover,
-    .project-card:focus {
-      transform: translateY(-2px);
+    /* Touch device optimizations */
+    @media (hover: hover) and (pointer: fine) {
+      .project-card:hover,
+      .project-card:focus {
+        transform: translateY(-2px);
+      }
     }
 
-    .project-card:focus {
-      outline: 2px solid #4f46e5;
+    /* Focus styles */
+    .project-card:focus-visible {
+      outline: 3px solid #4f46e5;
       outline-offset: 2px;
     }
 
@@ -218,17 +282,17 @@
       margin-right: 6px;
     }
 
-    /* Touch device optimizations */
-    @media (hover: none) {
-      .project-card:hover {
-        transform: none;
-      }
-    }
-
-    /* Improved accessibility focus styles */
-    :focus {
-      outline: 2px solid #4f46e5;
-      outline-offset: 2px;
+    /* Screen reader only text */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     /* Safe area insets for modern iOS devices */
@@ -247,9 +311,14 @@
   </style>
 </head>
 <body class="min-h-screen p-4">
-  <!-- Rest of the body content remains exactly the same -->
+  <!-- Skip to main content link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Announcement for screen readers -->
+  <div role="status" aria-live="polite" class="sr-only" id="announcer"></div>
+
   <div class="w-full max-w-2xl mx-auto">
-    <main class="p-6 rounded-2xl glass mb-6">
+    <main id="main-content" class="p-6 rounded-2xl glass mb-6" tabindex="-1">
       <!-- Profile section -->
       <div class="flex items-center gap-4 mb-6">
         <img 
@@ -290,13 +359,13 @@
       </div>
 
       <!-- Projects section -->
-      <div class="space-y-3" id="repos-container" role="list">
+      <div class="space-y-3" id="repos-container" role="list" aria-label="Project list">
         <div class="project-card p-4 rounded-xl" 
              onclick="window.open('https://hjadmz.github.io', '_blank')"
              onkeypress="(event.key === 'Enter' || event.key === ' ') && window.open('https://hjadmz.github.io', '_blank')"
              role="listitem"
              tabindex="0"
-             aria-label="Project: hjadmz.github.io">
+             aria-label="Project: hjadmz.github.io - Personal Website">
           <div class="flex justify-between items-start mb-2">
             <div>
               <h3 class="font-medium mb-1">hjadmz.github.io</h3>
@@ -306,7 +375,7 @@
           <div class="flex items-center justify-between text-xs text-gray-400">
             <div class="flex items-center">
               <span class="language-dot" style="background-color: #e34c26" aria-hidden="true"></span>
-              HTML
+              <span>HTML</span>
             </div>
             <span>1 week ago</span>
           </div>
@@ -317,7 +386,7 @@
              onkeypress="(event.key === 'Enter' || event.key === ' ') && window.open('https://github.com/hjadmz/macimizer', '_blank')"
              role="listitem"
              tabindex="0"
-             aria-label="Project: macimizer">
+             aria-label="Project: macimizer - Mac Optimization Tool">
           <div class="flex justify-between items-start mb-2">
             <div>
               <h3 class="font-medium mb-1">macimizer</h3>
@@ -327,7 +396,7 @@
           <div class="flex items-center justify-between text-xs text-gray-400">
             <div class="flex items-center">
               <span class="language-dot" style="background-color: #89e051" aria-hidden="true"></span>
-              Shell
+              <span>Shell</span>
             </div>
             <span>2 weeks ago</span>
           </div>
@@ -338,10 +407,22 @@
 
   <script>
     // Feature detection and progressive enhancement
+    const deviceSupport = {
+      touch: 'ontouchstart' in window,
+      pointer: window.matchMedia('(pointer: fine)').matches,
+      reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      highContrast: window.matchMedia('(forced-colors: active)').matches,
+      darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
+      safariMobile: /iPhone|iPod|iPad/.test(navigator.platform),
+      standalone: window.navigator.standalone,
+      screenReader: window.matchMedia('(forced-colors: active)').matches || 
+                   document.querySelector('[role="alert"]') !== null
+    };
+
     const supportsBackdropFilter = CSS.supports('backdrop-filter', 'blur(16px)');
     if (!supportsBackdropFilter) {
       document.querySelectorAll('.glass').forEach(el => {
-        el.style.background = window.matchMedia('(prefers-color-scheme: dark)').matches
+        el.style.background = deviceSupport.darkMode
           ? 'rgba(17, 25, 40, 0.95)'
           : 'rgba(255, 255, 255, 0.95)';
       });
@@ -359,29 +440,30 @@
     // Initialize map with performance considerations
     let map;
     try {
-      // Center coordinates adjusted to include St. Charles
-      const centerLat = 38.7084;  // Adjusted latitude
-      const centerLng = -90.4504; // Adjusted longitude
+      const centerLat = 38.7000;
+      const centerLng = -90.3500;
 
       map = L.map('map', {
         center: [centerLat, centerLng],
-        zoom: 10, // Adjusted zoom level to show both St. Louis and St. Charles
+        zoom: 9.5,
         zoomControl: false,
         attributionControl: false,
         dragging: !isLowEnd(),
         scrollWheelZoom: false,
         fadeAnimation: !isLowEnd(),
-        zoomAnimation: !isLowEnd()
+        zoomAnimation: !isLowEnd(),
+        keyboard: true, // Enable keyboard navigation
+        inertia: !deviceSupport.reducedMotion
       });
 
-      // Use conditional tile layer based on color scheme
       const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const tileLayer = isDarkMode
         ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
         : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
       L.tileLayer(tileLayer, {
-        maxZoom: 19
+        maxZoom: 19,
+        detectRetina: !isLowEnd()
       }).addTo(map);
 
       // Create a larger circle to indicate the general area
@@ -389,7 +471,7 @@
         color: '#22c55e',
         fillColor: '#22c55e',
         fillOpacity: 0.1,
-        radius: 45000, // Increased radius to cover both St. Louis and St. Charles
+        radius: 50000,
         weight: 1
       }).addTo(map);
 
@@ -401,8 +483,9 @@
         radius: 6
       }).addTo(map);
 
-      // Listen for color scheme changes
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      // Enhanced color scheme handling
+      const colorSchemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleColorSchemeChange = (e) => {
         const newTileLayer = e.matches
           ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
           : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
@@ -414,16 +497,21 @@
         });
         
         L.tileLayer(newTileLayer, {
-          maxZoom: 19
+          maxZoom: 19,
+          detectRetina: !isLowEnd()
         }).addTo(map);
-      });
+      };
+
+      colorSchemeMedia.addEventListener('change', handleColorSchemeChange);
 
     } catch (e) {
       console.error('Map initialization failed:', e);
-      document.querySelector('.map-container').style.display = 'none';
+      const mapContainer = document.querySelector('.map-container');
+      mapContainer.style.display = 'none';
+      document.getElementById('announcer').textContent = 'Map loading failed. Location information is still available in text format.';
     }
 
-    // Time display with error handling and accessibility
+    // Enhanced time display with error handling and accessibility
     function updateTime() {
       try {
         const options = {
@@ -438,10 +526,11 @@
         timeDisplay.setAttribute('aria-label', `Current time: ${time} Central Daylight Time`);
       } catch (e) {
         console.error('Time update failed:', e);
+        document.getElementById('announcer').textContent = 'Time display currently unavailable.';
       }
     }
 
-    // Debounced time update for performance
+    // Performance optimized time update
     let timeoutId;
     function debouncedTimeUpdate() {
       clearTimeout(timeoutId);
@@ -450,28 +539,70 @@
 
     // Initialize time display
     updateTime();
-    setInterval(debouncedTimeUpdate, 1000);
+    const timeUpdateInterval = setInterval(debouncedTimeUpdate, 1000);
 
-    // Handle offline state
-    window.addEventListener('offline', () => {
-      document.body.classList.add('offline');
-      // Disable interactive features
-      if (map) map.dragging.disable();
+    // Enhanced focus management
+    function manageFocus() {
+      const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      const focusable = document.querySelectorAll(focusableElements);
+      
+      focusable.forEach(el => {
+        el.addEventListener('focus', () => {
+          const label = el.getAttribute('aria-label') || el.textContent;
+          document.getElementById('announcer').textContent = `${label} focused`;
+        });
+      });
+    }
+
+    // Viewport height fix for mobile browsers
+    function setVhProperty() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+
+    // Initialize enhancements
+    document.addEventListener('DOMContentLoaded', () => {
+      manageFocus();
+      setVhProperty();
+      
+      // Handle orientation changes
+      window.addEventListener('orientationchange', () => {
+        setTimeout(setVhProperty, 100);
+      });
+      
+      // Handle resize events (debounced)
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          setVhProperty();
+          if (map) map.invalidateSize();
+        }, 250);
+      });
     });
 
-    window.addEventListener('online', () => {
-      document.body.classList.remove('offline');
-      // Re-enable features
-      if (map && !isLowEnd()) map.dragging.enable();
+    // Error boundary
+    window.addEventListener('error', (event) => {
+      console.error('Application error:', event.error);
+      document.getElementById('announcer').textContent = 'An error occurred. Please try refreshing the page.';
     });
 
     // Clean up on page hide/unload
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        clearInterval(timeoutId);
+        clearInterval(timeUpdateInterval);
         if (map) map.remove();
       }
     });
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(error => {
+          console.error('Service worker registration failed:', error);
+        });
+      });
+    }
   </script>
 </body>
 </html>
