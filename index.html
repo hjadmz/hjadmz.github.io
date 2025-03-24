@@ -138,12 +138,6 @@
       font-size: 14px;
     }
 
-    .profile-bio {
-      margin-top: 8px;
-      font-size: 14px;
-      color: var(--text-secondary-light);
-    }
-
     /* Location Section */
     .location-title {
       font-size: 18px;
@@ -303,7 +297,6 @@
       }
 
       .profile-info p,
-      .profile-bio,
       .project-description,
       .update-time,
       .no-projects {
@@ -358,8 +351,7 @@
               </svg>
             </a>
           </div>
-          <p id="profile-title">Full Stack Developer</p>
-          <p id="profile-bio" class="profile-bio"></p>
+          <p id="profile-title">Loading...</p>
         </div>
       </div>
     </div>
@@ -513,16 +505,23 @@
             profileImage.classList.remove('loading');
           }
 
-          // Update bio if available
-          const bioElement = document.getElementById('profile-bio');
-          if (bioElement && profileData.bio) {
-            bioElement.textContent = profileData.bio;
-          }
-
           // Update name if available
           const nameElement = document.getElementById('profile-name');
-          if (nameElement && profileData.name) {
+          if (nameElement) {
             nameElement.textContent = profileData.name || 'hjadmz';
+          }
+          
+          // Update title with bio from GitHub
+          const titleElement = document.getElementById('profile-title');
+          if (titleElement) {
+            // Use bio if available, otherwise use a default value or the company info
+            if (profileData.bio) {
+              titleElement.textContent = profileData.bio;
+            } else if (profileData.company) {
+              titleElement.textContent = profileData.company;
+            } else {
+              titleElement.textContent = 'Software Developer';
+            }
           }
           
           // Fetch and update repositories
@@ -531,6 +530,11 @@
         }
       } catch (error) {
         console.error('Error updating profile data:', error);
+        // Set a fallback value if there's an error
+        const titleElement = document.getElementById('profile-title');
+        if (titleElement) {
+          titleElement.textContent = 'Software Developer';
+        }
         updateProjectsContainer([]);
       }
     }
