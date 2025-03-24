@@ -8,21 +8,21 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>hjadmz - Profile</title>
-  
+
   <!-- Preload critical resources -->
   <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
-  
+
   <!-- Fallback font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
+
   <style>
     /* System font stack for better performance */
     body {
@@ -66,6 +66,10 @@
         color: #ffffff;
       }
 
+      main {
+        background-color: #0a0a0a; /* Ensure main content area also changes */
+      }
+
       .glass {
         background: rgba(17, 25, 40, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.05);
@@ -77,6 +81,7 @@
       }
     }
 
+    /* Other styles */
     .glass {
       background: rgba(17, 25, 40, 0.75);
       backdrop-filter: blur(16px);
@@ -424,6 +429,3 @@
         console.log('System prefers light mode');
       }
     });
-  </script>
-</body>
-</html>
