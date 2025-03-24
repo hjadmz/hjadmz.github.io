@@ -1,396 +1,376 @@
-<!DOCTYPE html>
-<html lang="en" class="antialiased">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-  <meta name="description" content="hjadmz's developer profile and projects - Accessible and responsive portfolio">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  
-  <!-- PWA support -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <title>hjadmz - Profile</title>
-  
-  <!-- Preload critical resources -->
-  <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
-  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
-  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
-  
-  <!-- Preconnect to external domains -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
-  <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
-        Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --safe-top: env(safe-area-inset-top, 0px);
-    }
-
-    body {
-      font-family: var(--font-sans);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-    }
-
-    .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: #4f46e5;
-      color: white;
-      padding: 8px;
-      z-index: 100;
-      transition: top 0.2s;
-    }
-
-    .skip-link:focus {
-      top: 0;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
+  <!DOCTYPE html>
+  <html lang="en" class="antialiased">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="description" content="hjadmz's developer profile and projects">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827">
+    <meta name="color-scheme" content="light dark">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <title>hjadmz - Profile</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+      :root {
+        color-scheme: light dark;
+        --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        --background-light: #f5f5f5;
+        --background-dark: #0a0a0a;
+        --card-background-light: rgba(255, 255, 255, 0.9);
+        --card-background-dark: rgba(17, 25, 40, 0.75);
       }
       
-      .pulse::after {
-        animation: none !important;
-      }
-      
-      .project-card {
-        transition: none !important;
-      }
-    }
-
-    @media (forced-colors: active) {
-      .glass {
-        background: Canvas;
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-        border: 1px solid CanvasText;
-      }
-      
-      .project-card {
-        border: 1px solid CanvasText;
-      }
-      
-      .pulse {
-        background: CanvasText;
-      }
-      
-      .language-dot {
-        border: 1px solid CanvasText;
-      }
-    }
-
-    @media (prefers-color-scheme: light) {
       body {
-        background: #f8fafc;
-        color: #1e293b;
+        font-family: var(--font-family);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        background-color: var(--background-light);
       }
-      
-      .glass {
-        background: rgba(255, 255, 255, 0.8);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-      }
-      
-      .project-card {
-        background: rgba(0, 0, 0, 0.02);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-      }
-      
-      .project-card:hover {
-        background: rgba(0, 0, 0, 0.04);
-      }
-      
-      .time-overlay,
-      .location-overlay {
-        background: rgba(255, 255, 255, 0.9);
-        color: #1e293b;
-      }
-    }
 
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #0a0a0a;
-        color: #ffffff;
+      .card {
+        background: var(--card-background-light);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        width: fit-content;
+        min-width: 200px;
       }
-      
-      .glass {
-        background: rgba(17, 25, 40, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.125);
+
+      .card-container {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        max-width: 2xl;
+        margin: 0 auto;
       }
-      
-      .project-card {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+
+      .profile-card {
+        grid-column: 1 / -1;
       }
-      
-      .project-card:hover {
-        background: rgba(255, 255, 255, 0.05);
+
+      .map-card {
+        grid-column: 1 / -1;
       }
-      
-      .time-overlay,
-      .location-overlay {
-        background: rgba(17, 25, 40, 0.9);
-        color: white;
+
+      .map-container {
+        position: relative;
+        height: 250px;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        margin: 0.5rem 0;
       }
-    }
 
-    .glass {
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
+      #map {
+        height: 100%;
+        width: 100%;
+        border-radius: 0.75rem;
+        z-index: 1;
+      }
 
-    .map-container {
-      position: relative;
-      height: calc(200px + var(--safe-bottom));
-      border-radius: 1rem;
-      overflow: hidden;
-      margin: 1.5rem 0;
-      contain: content;
-    }
-
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-      border-radius: 1rem;
-      z-index: 1;
-    }
-
-    .time-overlay {
-      position: absolute;
-      top: max(1rem, var(--safe-top));
-      right: 1rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.75rem;
-      z-index: 2;
-      backdrop-filter: blur(10px);
-      font-weight: 500;
-    }
-
-    .location-overlay {
-      position: absolute;
-      bottom: max(1rem, var(--safe-bottom));
-      left: 1rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.75rem;
-      z-index: 2;
-      backdrop-filter: blur(10px);
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .pulse {
-      width: 10px;
-      height: 10px;
-      background: #22c55e;
-      border-radius: 50%;
-      position: relative;
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-      .pulse::after {
-        content: '';
+      .location-container {
         position: absolute;
-        width: 20px;
-        height: 20px;
-        background: rgba(34, 197, 94, 0.4);
+        bottom: max(0.75rem, env(safe-area-inset-bottom));
+        left: 0.75rem;
+        right: 0.75rem;
+        display: flex;
+        flex-direction: row;
+        gap: 0.75rem;
+        z-index: 2;
+        width: fit-content;
+      }
+
+      .location-overlay, .time-display {
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        background: var(--card-background-light);
+        font-weight: 500;
+        font-size: 0.875rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        white-space: nowrap;
+        width: auto;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .location-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .pulse {
+        width: 8px;
+        height: 8px;
+        background: #22c55e;
         border-radius: 50%;
-        top: -5px;
-        left: -5px;
-        animation: pulse 2s infinite;
+        position: relative;
+        flex-shrink: 0;
       }
 
-      @keyframes pulse {
-        0% {
-          transform: scale(1);
-          opacity: 1;
+      .card-header {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+      }
+
+      .project-card {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        margin: 0.5rem 0;
+        transition: transform 0.2s ease;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .pulse::after {
+          content: '';
+          position: absolute;
+          width: 16px;
+          height: 16px;
+          background: rgba(34, 197, 94, 0.4);
+          border-radius: 50%;
+          top: -4px;
+          left: -4px;
+          animation: pulse 2s infinite;
         }
-        100% {
-          transform: scale(2);
-          opacity: 0;
+
+        .project-card:hover {
+          transform: translateY(-2px);
         }
-      }
-    }
 
-    .project-card {
-      transition: transform 0.2s ease, background-color 0.2s ease;
-      cursor: pointer;
-      position: relative;
-      contain: content;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .project-card:hover,
-      .project-card:focus {
-        transform: translateY(-2px);
-      }
-    }
-
-    .project-card:focus-visible {
-      outline: 3px solid #4f46e5;
-      outline-offset: 2px;
-    }
-
-    .language-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 6px;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    @supports (padding: max(0px)) {
-      body {
-        padding-left: max(1rem, env(safe-area-inset-left));
-        padding-right: max(1rem, env(safe-area-inset-right));
-        padding-bottom: max(1rem, env(safe-area-inset-bottom));
-        padding-top: max(1rem, env(safe-area-inset-top));
-      }
-    }
-
-    .leaflet-control-attribution {
-      display: none;
-    }
-  </style>
-</head>
-<body class="min-h-screen p-4">
-  <!-- Rest of the HTML remains the same until the script section -->
-
-  <script>
-    const deviceSupport = {
-      touch: 'ontouchstart' in window,
-      pointer: window.matchMedia('(pointer: fine)').matches,
-      reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-      highContrast: window.matchMedia('(forced-colors: active)').matches,
-      darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
-      safariMobile: /iPhone|iPod|iPad/.test(navigator.platform),
-      standalone: window.navigator.standalone,
-      screenReader: window.matchMedia('(forced-colors: active)').matches || 
-                   document.querySelector('[role="alert"]') !== null
-    };
-
-    const supportsBackdropFilter = CSS.supports('backdrop-filter', 'blur(16px)');
-    if (!supportsBackdropFilter) {
-      document.querySelectorAll('.glass').forEach(el => {
-        el.style.background = deviceSupport.darkMode
-          ? 'rgba(17, 25, 40, 0.95)'
-          : 'rgba(255, 255, 255, 0.95)';
-      });
-    }
-
-    const isLowEnd = () => {
-      return (
-        !window.matchMedia('(min-resolution: 2dppx)').matches &&
-        navigator.hardwareConcurrency <= 4 &&
-        !supportsBackdropFilter
-      );
-    };
-
-    let map;
-    try {
-      // Updated coordinates and settings for Greater St. Louis Area
-      const centerLat = 38.6400;
-      const centerLng = -90.2400;
-
-      map = L.map('map', {
-        center: [centerLat, centerLng],
-        zoom: 9.5, // Zoomed out to show more context
-        zoomControl: false,
-        attributionControl: false,
-        dragging: !isLowEnd(),
-        scrollWheelZoom: false,
-        fadeAnimation: !isLowEnd(),
-        zoomAnimation: !isLowEnd(),
-        keyboard: true,
-        inertia: !deviceSupport.reducedMotion
-      });
-
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const tileLayer = isDarkMode
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-
-      L.tileLayer(tileLayer, {
-        maxZoom: 19,
-        detectRetina: !isLowEnd()
-      }).addTo(map);
-
-      // Updated circle radius to better represent Greater St. Louis Area
-      const areaCircle = L.circle([centerLat, centerLng], {
-        color: '#22c55e',
-        fillColor: '#22c55e',
-        fillOpacity: 0.15,
-        radius: 32000, // 32km radius to include St. Charles
-        weight: 2
-      }).addTo(map);
-
-      const colorSchemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleColorSchemeChange = (e) => {
-        const newTileLayer = e.matches
-          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-          : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-        
-        map.eachLayer((layer) => {
-          if (layer instanceof L.TileLayer) {
-            map.removeLayer(layer);
+        @keyframes pulse {
+          0% {
+            transform: scale(1);
+            opacity: 1;
           }
-        });
+          100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+      }
+
+      .language-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: var(--background-dark);
+          color: #ffffff;
+        }
         
-        L.tileLayer(newTileLayer, {
-          maxZoom: 19,
-          detectRetina: !isLowEnd()
-        }).addTo(map);
-      };
+        .card {
+          background: var(--card-background-dark);
+          border: 1px solid rgba(255, 255, 255, 0.125);
+        }
+        
+        .card-header {
+          color: #e5e7eb;
+        }
 
-      colorSchemeMedia.addEventListener('change', handleColorSchemeChange);
+        .location-overlay, .time-display {
+          background: rgba(17, 25, 40, 0.9);
+          color: white;
+        }
+        
+        .project-card {
+          background: rgba(255, 255, 255, 0.03);
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+      }
 
-    } catch (e) {
-      console.error('Map initialization failed:', e);
-      const mapContainer = document.querySelector('.map-container');
-      mapContainer.style.display = 'none';
-      document.getElementById('announcer').textContent = 'Map loading failed. Location information is still available in text format.';
-    }
+      @media (max-width: 400px) {
+        .location-container {
+          flex-direction: column;
+        }
+      }
 
-    // Rest of the JavaScript remains the same
-  </script>
-</body>
-</html>
+      @media (forced-colors: active) {
+        .pulse {
+          border: 2px solid CanvasText;
+        }
+        .card {
+          border: 1px solid CanvasText;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
+    <div class="card-container max-w-4xl mx-auto">
+      <!-- Profile Card -->
+      <div class="card profile-card p-4">
+        <div class="flex items-center gap-3">
+          <img 
+            src="https://github.com/hjadmz.png" 
+            alt="Profile picture"
+            class="w-16 h-16 rounded-lg shadow object-cover"
+            width="64"
+            height="64"
+          >
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <h1 class="text-xl font-bold">hjadmz</h1>
+              <a href="mailto:hjadmz@icloud.com" 
+                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                 aria-label="Send email to hjadmz@icloud.com">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     class="w-5 h-5 text-gray-500" 
+                     fill="none" 
+                     viewBox="0 0 24 24" 
+                     stroke="currentColor">
+                  <path stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </a>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Full Stack Developer</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Card -->
+      <div class="card map-card p-4">
+        <h2 class="card-header">Location</h2>
+        <div class="map-container">
+          <div id="map"></div>
+          <div class="location-container">
+            <div class="location-overlay">
+              <div class="location-indicator">
+                <div class="pulse" role="presentation"></div>
+                <span>Greater St. Louis Area</span>
+              </div>
+            </div>
+            <div class="time-display" id="timeDisplay" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projects Card -->
+      <div class="card p-4">
+        <h2 class="card-header">Recent Project</h2>
+        <div class="project-card">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-medium text-sm mb-1">
+                <a href="https://hjadmz.github.io" class="hover:underline">
+                  hjadmz.github.io
+                </a>
+              </h3>
+              <p class="text-xs text-gray-400">Personal Website</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs text-gray-400 mt-2">
+            <div class="flex items-center">
+              <span class="language-dot" style="background-color: #e34c26"></span>
+              <span>HTML</span>
+            </div>
+            <span>Last updated: Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        try {
+          const map = L.map('map', {
+            center: [38.7200, -90.4000],
+            zoom: 9.2,
+            zoomControl: false,
+            attributionControl: false,
+            keyboard: true
+          });
+
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const tileLayer = isDarkMode
+            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+            : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+          L.tileLayer(tileLayer, {
+            maxZoom: 19
+          }).addTo(map);
+
+          L.circle([38.7200, -90.4000], {
+            color: '#22c55e',
+            fillColor: '#22c55e',
+            fillOpacity: 0.15,
+            radius: 48000,
+            weight: 2
+          }).addTo(map);
+
+          function updateTime() {
+            const options = {
+              timeZone: 'America/Chicago',
+              hour: 'numeric',
+              minute: 'numeric',
+              hour12: true
+            };
+            const time = new Date().toLocaleString('en-US', options);
+            document.getElementById('timeDisplay').textContent = `${time} (CDT)`;
+          }
+
+          updateTime();
+          setInterval(updateTime, 1000);
+
+          const colorSchemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+          colorSchemeMedia.addEventListener('change', (e) => {
+            const newTileLayer = e.matches
+              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+              : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+            
+            map.eachLayer((layer) => {
+              if (layer instanceof L.TileLayer) {
+                map.removeLayer(layer);
+              }
+            });
+            
+            L.tileLayer(newTileLayer, {
+              maxZoom: 19
+            }).addTo(map);
+          });
+
+        } catch (error) {
+          console.error('Map initialization failed:', error);
+          const mapContainer = document.querySelector('.map-container');
+          if (mapContainer) {
+            mapContainer.innerHTML = `
+              <div class="flex items-center justify-center h-full bg-gray-100 dark:bg-gray-800">
+                <p class="text-gray-500 dark:text-gray-400">Map unavailable</p>
+              </div>
+            `;
+          }
+        }
+      });
+    </script>
+  </body>
+  </html>
