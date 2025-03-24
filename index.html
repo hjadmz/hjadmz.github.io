@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="description" content="hjadmz's developer profile and projects">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>hjadmz - Profile</title>
   
   <!-- Preload critical resources -->
@@ -53,19 +54,69 @@
       }
     }
 
-    /* Dark mode support */
+    /* Light mode styles */
+    @media (prefers-color-scheme: light) {
+      body {
+        background: #f8fafc;
+        color: #1e293b;
+      }
+      
+      .glass {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      
+      .project-card {
+        background: rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      
+      .project-card:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      
+      .time-overlay,
+      .location-overlay {
+        background: rgba(255, 255, 255, 0.9);
+        color: #1e293b;
+      }
+      
+      .text-gray-400 {
+        color: #64748b;
+      }
+    }
+
+    /* Dark mode styles */
     @media (prefers-color-scheme: dark) {
       body {
         background: #0a0a0a;
         color: #ffffff;
       }
+      
+      .glass {
+        background: rgba(17, 25, 40, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.125);
+      }
+      
+      .project-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      
+      .project-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      
+      .time-overlay,
+      .location-overlay {
+        background: rgba(17, 25, 40, 0.9);
+        color: white;
+      }
     }
 
     .glass {
-      background: rgba(17, 25, 40, 0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.125);
     }
 
     .map-container {
@@ -93,10 +144,8 @@
       padding: 0.75rem 1.5rem;
       border-radius: 0.75rem;
       z-index: 2;
-      background: rgba(17, 25, 40, 0.9);
-      color: white;
-      font-weight: 500;
       backdrop-filter: blur(10px);
+      font-weight: 500;
     }
 
     .location-overlay {
@@ -106,10 +155,8 @@
       padding: 0.75rem 1.5rem;
       border-radius: 0.75rem;
       z-index: 2;
-      background: rgba(17, 25, 40, 0.9);
-      color: white;
-      font-weight: 500;
       backdrop-filter: blur(10px);
+      font-weight: 500;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -148,8 +195,6 @@
 
     .project-card {
       transition: transform 0.2s ease, background-color 0.2s ease;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
       cursor: pointer;
       position: relative;
       contain: content;
@@ -158,8 +203,6 @@
     .project-card:hover,
     .project-card:focus {
       transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.1);
     }
 
     .project-card:focus {
@@ -203,7 +246,8 @@
     }
   </style>
 </head>
-<body class="min-h-screen p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white">
+<body class="min-h-screen p-4">
+  <!-- Rest of the body content remains exactly the same -->
   <div class="w-full max-w-2xl mx-auto">
     <main class="p-6 rounded-2xl glass mb-6">
       <!-- Profile section -->
@@ -297,7 +341,9 @@
     const supportsBackdropFilter = CSS.supports('backdrop-filter', 'blur(16px)');
     if (!supportsBackdropFilter) {
       document.querySelectorAll('.glass').forEach(el => {
-        el.style.background = 'rgba(17, 25, 40, 0.95)';
+        el.style.background = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'rgba(17, 25, 40, 0.95)'
+          : 'rgba(255, 255, 255, 0.95)';
       });
     }
 
@@ -313,9 +359,13 @@
     // Initialize map with performance considerations
     let map;
     try {
+      // Center coordinates adjusted to include St. Charles
+      const centerLat = 38.7084;  // Adjusted latitude
+      const centerLng = -90.4504; // Adjusted longitude
+
       map = L.map('map', {
-        center: [38.6270, -90.1994], // St. Louis coordinates
-        zoom: 9, // Zoomed out to show more of the metro area
+        center: [centerLat, centerLng],
+        zoom: 10, // Adjusted zoom level to show both St. Louis and St. Charles
         zoomControl: false,
         attributionControl: false,
         dragging: !isLowEnd(),
@@ -324,26 +374,50 @@
         zoomAnimation: !isLowEnd()
       });
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      // Use conditional tile layer based on color scheme
+      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const tileLayer = isDarkMode
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+      L.tileLayer(tileLayer, {
         maxZoom: 19
       }).addTo(map);
 
       // Create a larger circle to indicate the general area
-      const areaCircle = L.circle([38.6270, -90.1994], {
+      const areaCircle = L.circle([centerLat, centerLng], {
         color: '#22c55e',
         fillColor: '#22c55e',
         fillOpacity: 0.1,
-        radius: 40000, // 40km radius to show metro area
+        radius: 45000, // Increased radius to cover both St. Louis and St. Charles
         weight: 1
       }).addTo(map);
 
       // Smaller marker in the center
-      const marker = L.circleMarker([38.6270, -90.1994], {
+      const marker = L.circleMarker([centerLat, centerLng], {
         color: '#22c55e',
         fillColor: '#22c55e',
         fillOpacity: 0.5,
         radius: 6
       }).addTo(map);
+
+      // Listen for color scheme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        const newTileLayer = e.matches
+          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+          : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+        
+        map.eachLayer((layer) => {
+          if (layer instanceof L.TileLayer) {
+            map.removeLayer(layer);
+          }
+        });
+        
+        L.tileLayer(newTileLayer, {
+          maxZoom: 19
+        }).addTo(map);
+      });
+
     } catch (e) {
       console.error('Map initialization failed:', e);
       document.querySelector('.map-container').style.display = 'none';
