@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="hjadmz - Developer Portfolio">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>hjadmz - Profile</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" crossorigin="">
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script" crossorigin="">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  
+  <style>
+    /* CSS Reset and Base Styles */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --background-light: #f5f5f7;
+      --background-dark: #000;
+      --card-light: #fff;
+      --card-dark: #1c1c1e;
+      --text-primary-light: #1d1d1f;
+      --text-primary-dark: #fff;
+      --text-secondary-light: #6e6e73;
+      --text-secondary-dark: #98989d;
+      --accent-color: #22c55e;
+      --project-bg-light: #f5f5f7;
+      --project-bg-dark: #2c2c2e;
+      --html-tag-color: #ff3b30;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--background-light);
+      color: var(--text-primary-light);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 550px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card {
+      background: var(--card-light);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px var(--shadow-color);
+      width: 100%;
+    }
+
+    /* Profile Section */
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .profile-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      background-color: var(--project-bg-light);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mail-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--text-secondary-light);
+      text-decoration: none;
+      padding: 4px;
+      border-radius: 6px;
+      transition: background-color 0.2s ease;
+    }
+
+    .mail-link:hover {
+      background-color: var(--project-bg-light);
+    }
+
+    .mail-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .profile-info h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .profile-info p {
+      color: var(--text-secondary-light);
+      font-size: 14px;
+    }
+
+    /* Location Section */
+    .location-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .map-container {
+      width: 100%;
+      height: 180px;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      z-index: 1;
+    }
+
+    .location-badges {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 8px;
+      z-index: 400;
+    }
+
+    .location-badge {
+      background: var(--card-light);
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px var(--shadow-color);
+      font-size: 13px;
+    }
+
+    .location-pin {
+      width: 12px;
+      height: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .location-pin svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .time-badge {
+      background: var(--card-light);
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 6px var(--shadow-color);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    /* Project Section */
+    .project-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .project-card {
+      background: var(--project-bg-light);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .project-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .project-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .project-description {
+      color: var(--text-secondary-light);
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .project-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .project-language {
+      color: var(--html-tag-color);
+    }
+
+    .update-time {
+      color: var(--text-secondary-light);
+    }
+
+    .no-projects {
+      font-size: 14px;
+      color: var(--text-secondary-light);
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .projects-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    /* Loading state */
+    .loading {
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Hide leaflet attribution */
+    .leaflet-control-attribution {
+      display: none;
+    }
+
+    /* Dark mode styles */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: var(--background-dark);
+        color: var(--text-primary-dark);
+      }
+
+      .card {
+        background: var(--card-dark);
+      }
+
+      .project-card {
+        background: var(--project-bg-dark);
+      }
+
+      .location-badge,
+      .time-badge {
+        background: var(--card-dark);
+        color: var(--text-primary-dark);
+      }
+
+      .profile-info p,
+      .project-description,
+      .update-time,
+      .no-projects {
+        color: var(--text-secondary-dark);
+      }
+
+      .mail-link {
+        color: var(--text-secondary-dark);
+      }
+      
+      .mail-link:hover {
+        background-color: var(--project-bg-dark);
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+      }
+
+      .card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #eee;
+      }
+
+      .map-container {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Profile Card -->
+    <div class="card" role="region" aria-label="Profile Information">
+      <div class="profile">
+        <img 
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23808080'/%3E%3Ccircle cx='50' cy='40' r='20' fill='%23404040'/%3E%3Ccircle cx='40' cy='35' r='5' fill='black'/%3E%3Ccircle cx='60' cy='35' r='5' fill='black'/%3E%3Cpath d='M35 50 Q50 60 65 50' stroke='black' fill='none' stroke-width='2'/%3E%3C/svg%3E"
+          alt="hjadmz's GitHub Profile Picture"
+          class="profile-image loading"
+          loading="eager"
+          decoding="async"
+          id="profile-avatar"
+        >
+        <div class="profile-info">
+          <div class="profile-header">
+            <h1 id="profile-name">hjadmz</h1>
+            <a href="mailto:hjadmz@icloud.com" class="mail-link" aria-label="Send email to hjadmz">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/>
+              </svg>
+            </a>
+          </div>
+          <p id="profile-title"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Location Card -->
+    <div class="card" role="region" aria-label="Location Information">
+      <h2 class="location-title">Location</h2>
+      <div class="map-container">
+        <div id="map" role="application" aria-label="Interactive map of Greater St. Louis Area"></div>
+        <div class="location-badges">
+          <div class="location-badge" role="status">
+            <span class="location-pin" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" aria-hidden="true" focusable="false">
+                <path fill="#22c55e" d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
+              </svg>
+            </span>
+            <span>Greater St. Louis Area</span>
+          </div>
+          <div class="time-badge" id="time-display" role="status" aria-live="polite">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Projects Card -->
+    <div class="card" role="region" aria-label="Recent Projects Information">
+      <h2 class="project-title">Recent Projects</h2>
+      <div id="projects-container" class="projects-container">
+        <div class="no-projects">Loading projects...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // GitHub API Integration
+    async function fetchGitHubProfile(username) {
+      try {
+        const response = await fetch(`https://api.github.com/users/${username}`);
+        if (!response.ok) throw new Error('Failed to fetch GitHub profile');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching GitHub profile:', error);
+        return null;
+      }
+    }
+
+    // Fetch GitHub Repositories
+    async function fetchGitHubRepos(username) {
+      try {
+        const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=10`);
+        if (!response.ok) throw new Error('Failed to fetch GitHub repositories');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching GitHub repositories:', error);
+        return [];
+      }
+    }
+
+    // Format date relative to now
+    function formatRelativeTime(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) {
+        return 'Today';
+      } else if (diffDays === 1) {
+        return 'Yesterday';
+      } else if (diffDays < 7) {
+        return `${diffDays} days ago`;
+      } else if (diffDays < 30) {
+        const weeks = Math.floor(diffDays / 7);
+        return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+      } else if (diffDays < 365) {
+        const months = Math.floor(diffDays / 30);
+        return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+      } else {
+        const years = Math.floor(diffDays / 365);
+        return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+      }
+    }
+
+    // Update projects container with recent repositories
+    function updateProjectsContainer(repos) {
+      const projectsContainer = document.getElementById('projects-container');
+      if (!projectsContainer) return;
+      
+      // Clear existing content
+      projectsContainer.innerHTML = '';
+      
+      // If no repositories, display message
+      if (!repos || repos.length === 0) {
+        const noProjectsElement = document.createElement('div');
+        noProjectsElement.className = 'no-projects';
+        noProjectsElement.textContent = 'No recent projects';
+        projectsContainer.appendChild(noProjectsElement);
+        return;
+      }
+      
+      // Take up to 3 most recent repositories
+      const recentRepos = repos.slice(0, 3);
+      
+      // Create project cards for each repository
+      recentRepos.forEach(repo => {
+        const projectCard = document.createElement('div');
+        projectCard.className = 'project-card';
+        
+        const projectName = document.createElement('h3');
+        projectName.className = 'project-name';
+        projectName.textContent = repo.name;
+        
+        const projectDescription = document.createElement('p');
+        projectDescription.className = 'project-description';
+        projectDescription.textContent = repo.description || 'No description available';
+        
+        const projectMeta = document.createElement('div');
+        projectMeta.className = 'project-meta';
+        
+        if (repo.language) {
+          const languageSpan = document.createElement('span');
+          languageSpan.className = 'project-language';
+          languageSpan.textContent = repo.language;
+          projectMeta.appendChild(languageSpan);
+        }
+        
+        const updateTime = document.createElement('span');
+        updateTime.className = 'update-time';
+        updateTime.textContent = `Last updated: ${formatRelativeTime(repo.updated_at)}`;
+        projectMeta.appendChild(updateTime);
+        
+        projectCard.appendChild(projectName);
+        projectCard.appendChild(projectDescription);
+        projectCard.appendChild(projectMeta);
+        
+        projectsContainer.appendChild(projectCard);
+      });
+    }
+
+    // Update profile data
+    async function updateProfileData() {
+      try {
+        const username = 'hjadmz';
+        const profileData = await fetchGitHubProfile(username);
+        
+        if (profileData) {
+          console.log("GitHub profile data:", profileData); // Debug log
+          
+          // Update profile image - using id selector to ensure we get the right element
+          const profileImage = document.getElementById('profile-avatar');
+          if (profileImage && profileData.avatar_url) {
+            profileImage.src = profileData.avatar_url;
+            profileImage.classList.remove('loading');
+            console.log("Updated profile image with:", profileData.avatar_url); // Debug log
+          }
+
+          // Update name if available
+          const nameElement = document.getElementById('profile-name');
+          if (nameElement) {
+            nameElement.textContent = profileData.name || username;
+          }
+          
+          // Update title with bio from GitHub - exactly as it is, or empty if not available
+          const titleElement = document.getElementById('profile-title');
+          if (titleElement) {
+            titleElement.textContent = profileData.bio || '';
+            console.log("Updated bio with:", profileData.bio || '(empty)'); // Debug log
+          }
+          
+          // Fetch and update repositories
+          const repos = await fetchGitHubRepos(username);
+          updateProjectsContainer(repos);
+        }
+      } catch (error) {
+        console.error('Error updating profile data:', error);
+        updateProjectsContainer([]);
+      }
+    }
+
+    // Feature detection
+    const supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Initialize map
+    const map = L.map('map', {
+      center: [38.7500, -90.4800],
+      zoom: 9.2,
+      zoomControl: false,
+      attributionControl: false,
+      keyboard: true,
+      tap: supportsTouch,
+      bounceAtZoomLimits: false,
+      maxBoundsViscosity: 1.0
+    });
+
+    // Set up tile layer
+    function setTileLayer() {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const tileUrl = isDark
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+      
+      map.eachLayer((layer) => {
+        map.removeLayer(layer);
+      });
+
+      try {
+        L.tileLayer(tileUrl, {
+          maxZoom: 19,
+          minZoom: 8,
+          errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+        }).addTo(map);
+
+        L.circle([38.7500, -90.4800], {
+          color: '#22c55e',
+          fillColor: '#22c55e',
+          fillOpacity: 0.15,
+          radius: 48000,
+          weight: 2
+        }).addTo(map);
+      } catch (error) {
+        console.error('Error loading map:', error);
+      }
+    }
+
+    // Update time
+    function updateTime() {
+      try {
+        const timeDisplay = document.getElementById('time-display');
+        if (!timeDisplay) return;
+
+        const now = new Date();
+        const options = {
+          timeZone: 'America/Chicago',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        };
+        
+        const time = now.toLocaleString('en-US', options);
+        timeDisplay.textContent = `${time} CDT`;
+      } catch (error) {
+        console.error('Error updating time:', error);
+      }
+    }
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      updateProfileData();
+      setTileLayer();
+      updateTime();
+    });
+
+    // Set up intervals and event listeners
+    const timeInterval = setInterval(updateTime, 60000);
+
+    // Handle dark mode changes
+    let darkModeTimeout;
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      clearTimeout(darkModeTimeout);
+      darkModeTimeout = setTimeout(setTileLayer, 100);
+    });
+
+    // Handle visibility and focus
+    let visibilityTimeout;
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        clearTimeout(visibilityTimeout);
+        visibilityTimeout = setTimeout(updateTime, 100);
+      }
+    });
+
+    let focusTimeout;
+    window.addEventListener('focus', () => {
+      clearTimeout(focusTimeout);
+      focusTimeout = setTimeout(updateTime, 100);
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('unload', () => {
+      clearInterval(timeInterval);
+    });
+  </script>
+</body>
+</html>
