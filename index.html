@@ -537,17 +537,17 @@
     const supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Initialize map
-const map = L.map('map', {
-  center: [38.7500, -90.4800],
-  zoom: 7.8,  // Decreased zoom level to fit the entire circle
-  zoomControl: false,
-  attributionControl: false,
-  keyboard: true,
-  tap: supportsTouch,
-  bounceAtZoomLimits: false,
-  maxBoundsViscosity: 1.0
-});
+    // Initialize map
+    const map = L.map('map', {
+      center: [38.7500, -90.4800],
+      zoom: 7,
+      zoomControl: false,
+      attributionControl: false,
+      keyboard: true,
+      tap: supportsTouch,
+      bounceAtZoomLimits: false,
+      maxBoundsViscosity: 1.0
+    });
 
     // Set up tile layer
     function setTileLayer() {
@@ -571,7 +571,7 @@ const map = L.map('map', {
           color: '#22c55e',
           fillColor: '#22c55e',
           fillOpacity: 0.15,
-          radius: 48000,
+          radius: 42000,
           weight: 2
         }).addTo(map);
       } catch (error) {
