@@ -1,6 +1,6 @@
 import { Project } from '../types';
 
-const CACHE_KEY = 'hjadmz_repos_v23'; 
+const CACHE_KEY = 'hjadmz_repos_v26'; 
 const CACHE_DURATION = 1000 * 60 * 10; 
 
 const cleanText = (text: string): string => {

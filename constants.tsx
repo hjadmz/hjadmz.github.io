@@ -14,7 +14,6 @@ export const LOCATION_COORDINATES = {
 };
 
 // EMPTY FALLBACK - This triggers the "UPLINK_FAILURE" UI in App.tsx if API fails.
-// We do not want to show fake projects.
 export const PROJECTS: Project[] = [];
 
 export const BOOT_SEQUENCE: (BootLine & { heavy?: boolean })[] = [
@@ -70,7 +69,7 @@ PHILOSOPHY:
 > LINKEDIN: linkedin.com/in/hjadmz
 > STATUS: OPEN_TO_CONNECT`,
 
-  // PURE INFORMATION - No fake names
+  // GENERIC STATUS REPORT - Truthful
   PROJECTS: `SOURCE CONTROL STATUS:
 > REPO_UPLINK: github.com/hjadmz
 > ACCESS: PUBLIC
