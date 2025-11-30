@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import BootSequence from './components/BootSequence';
 import Navbar from './components/Navbar';
@@ -9,7 +8,7 @@ import LocationRadar from './components/LocationRadar';
 import InteractiveHighlight from './components/InteractiveHighlight';
 import { AppState, Project } from './types';
 import { SKILLS, GITHUB_USERNAME, CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL } from './constants';
-import { Terminal, ArrowDown, ExternalLink } from 'lucide-react';
+import { Terminal, ArrowDown, ExternalLink, ChevronDown, AlertTriangle } from 'lucide-react';
 import { soundManager } from './services/soundService';
 import { fetchGithubRepos } from './services/githubService';
 
@@ -18,6 +17,7 @@ const App: React.FC = () => {
   const [showContent, setShowContent] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const [visibleProjectCount, setVisibleProjectCount] = useState(4);
 
   const handleBootComplete = () => {
     setAppState(AppState.RUNNING);
@@ -46,6 +46,11 @@ const App: React.FC = () => {
     }
   };
 
+  const handleLoadMore = () => {
+      soundManager.playClick();
+      setVisibleProjectCount(prev => prev + 4);
+  };
+
   if (appState === AppState.BOOTING) {
     return <BootSequence onComplete={handleBootComplete} />;
   }
@@ -61,12 +66,10 @@ const App: React.FC = () => {
         
         <Navbar />
 
-        {/* CRT TURN ON ANIMATION WRAPPER */}
         <main className={`relative z-10 animate-turn-on transition-opacity duration-1000 ease-in-out ${showContent ? 'opacity-100' : 'opacity-0'}`}>
             
             {/* HERO SECTION */}
             <section className="min-h-screen flex flex-col justify-center items-start px-6 md:px-24 pt-32 pb-16 border-b border-white/5 relative overflow-hidden">
-                 {/* Decorative Glow */}
                  <div className="absolute right-[-10%] top-[20%] w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-term-green/5 rounded-full blur-[120px] pointer-events-none animate-pulse-slow"></div>
 
                  <div className="space-y-4 mb-10 animate-fade-in" style={{ animationDelay: '200ms' }}>
@@ -119,7 +122,7 @@ const App: React.FC = () => {
                  </button>
             </section>
 
-            {/* CAPABILITIES (Clean Grid) */}
+            {/* CAPABILITIES */}
             <section className="py-24 border-b border-white/5 bg-[#080808]/50 backdrop-blur-sm">
                  <div className="px-6 md:px-24 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-4">
                      <h2 className="text-4xl md:text-5xl font-header font-bold text-white tracking-wide">
@@ -137,9 +140,7 @@ const App: React.FC = () => {
                                 className="group bg-[#0a0a0a] border border-white/5 p-8 hover:border-term-green/40 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,0,0,0.5)] flex flex-col gap-4 relative overflow-hidden cursor-crosshair"
                                 onMouseEnter={() => soundManager.playHover()}
                             >
-                                {/* Hover Gradient */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-term-green/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-
                                 <div className="flex justify-between items-start relative z-10">
                                     <div className="p-3 bg-white/5 rounded-sm text-gray-400 group-hover:text-term-green group-hover:bg-term-green/10 transition-colors duration-300">
                                         {skill.icon}
@@ -165,21 +166,52 @@ const App: React.FC = () => {
                      </h2>
                      <div className="flex items-center gap-3 text-term-green font-mono text-xs tracking-widest bg-term-green/5 inline-flex px-4 py-2 rounded-full border border-term-green/10">
                         <span className={`w-1.5 h-1.5 bg-term-green rounded-full ${isLoadingProjects ? 'animate-ping' : ''}`}></span>
-                        <span>{isLoadingProjects ? 'FETCHING GITHUB DATA...' : `LINKED: @${GITHUB_USERNAME}`}</span>
+                        <span>{isLoadingProjects ? 'SYNCING GITHUB...' : `CONNECTED: @${GITHUB_USERNAME}`}</span>
                      </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
                     {isLoadingProjects ? (
                         [1,2,3,4].map(i => (
                             <div key={i} className="h-80 border border-white/5 bg-[#0a0a0a] animate-pulse rounded-sm"></div>
                         ))
-                    ) : (
-                        projects.map((project) => (
+                    ) : projects.length > 0 ? (
+                        projects.slice(0, visibleProjectCount).map((project) => (
                             <ProjectCard key={project.id} project={project} />
                         ))
+                    ) : (
+                        /* HONEST ERROR STATE - NO FAKE PROJECTS */
+                        <div className="col-span-1 lg:col-span-2 border border-red-500/30 bg-red-500/5 p-12 rounded-sm flex flex-col items-center justify-center text-center gap-4 animate-fade-in">
+                            <AlertTriangle className="text-red-500 mb-2" size={40} />
+                            <h3 className="text-red-500 font-header text-2xl tracking-widest">UPLINK_FAILURE</h3>
+                            <p className="text-gray-500 font-mono text-xs tracking-wider max-w-md leading-relaxed">
+                                UNABLE TO RETRIEVE REPOSITORY DATA FROM GITHUB API.<br/>
+                                CONNECTION REFUSED OR RATE LIMITED.
+                            </p>
+                            <a 
+                                href={GITHUB_URL} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                className="mt-4 px-6 py-3 border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-black font-mono text-xs tracking-widest transition-all uppercase"
+                            >
+                                MANUAL_OVERRIDE_ACCESS
+                            </a>
+                        </div>
                     )}
                 </div>
+
+                {/* LOAD MORE BUTTON */}
+                {!isLoadingProjects && projects.length > 0 && visibleProjectCount < projects.length && (
+                    <div className="flex justify-center">
+                        <button 
+                            onClick={handleLoadMore}
+                            className="group flex items-center gap-2 px-6 py-3 border border-white/10 hover:border-term-green text-gray-400 hover:text-white font-mono text-xs tracking-widest transition-all hover:bg-term-green/5"
+                        >
+                            <span>LOAD_ADDITIONAL_MODULES</span>
+                            <ChevronDown size={14} className="group-hover:translate-y-1 transition-transform" />
+                        </button>
+                    </div>
+                )}
             </section>
 
             {/* MISSION CONTROL */}
@@ -190,38 +222,37 @@ const App: React.FC = () => {
                         MISSION CONTROL
                     </h2>
                     <p className="text-lg text-gray-400 font-light max-w-lg leading-relaxed">
-                        Access the system interface or monitor regional parameters.
+                        Access system interface or monitor regional parameters.
                     </p>
                 </div>
 
                 <div className="grid lg:grid-cols-12 gap-6 h-auto">
-                    {/* LEFT: TERMINAL (7 cols) */}
+                    {/* LEFT: TERMINAL */}
                     <div className="lg:col-span-7 h-[450px] md:h-[600px] lg:h-[650px]">
                         <TerminalChat />
                     </div>
 
-                    {/* RIGHT: MAP & UPLINK (5 cols) */}
+                    {/* RIGHT: MAP & UPLINK */}
                     <div className="lg:col-span-5 flex flex-col h-[450px] md:h-[600px] lg:h-[650px] gap-6">
-                         {/* Radar - Fills remaining space */}
                          <div className="flex-1 w-full border border-term-border rounded-sm overflow-hidden relative">
                             <LocationRadar />
                          </div>
                          
-                         {/* Transmission Uplink */}
+                         {/* Distinct "Tactical Key" Button Style */}
                          <a 
                             href={`mailto:${CONTACT_EMAIL}`} 
-                            className="h-[80px] border border-white/10 bg-term-green/5 hover:bg-term-green hover:text-black rounded-sm flex flex-col justify-center items-center gap-2 group transition-all duration-300 text-center relative overflow-hidden shrink-0 cursor-pointer"
+                            className="h-[80px] bg-[#111] border-l-4 border-l-term-green hover:bg-[#1a1a1a] flex flex-col justify-center items-center gap-1 group transition-all duration-200 relative overflow-hidden shrink-0 cursor-pointer shadow-lg active:scale-[0.98]"
                             onMouseEnter={() => soundManager.playHover()}
                             onClick={() => soundManager.playClick()}
                          >
-                             {/* Scanline for button */}
-                             <div className="absolute inset-0 bg-scan-line opacity-10 pointer-events-none"></div>
+                             {/* Striped Background Pattern */}
+                             <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 10px, #222 10px, #222 20px)' }}></div>
                              
                              <div className="flex items-center gap-3 relative z-10">
-                                 <ExternalLink size={20} className="text-term-green group-hover:text-black transition-colors" />
-                                 <span className="text-sm text-white font-bold tracking-[0.2em] group-hover:text-black transition-colors">SEND_EMAIL</span>
+                                 <ExternalLink size={18} className="text-gray-400 group-hover:text-white transition-colors" />
+                                 <span className="text-sm text-gray-200 font-bold tracking-[0.25em] group-hover:text-white transition-colors">SEND_EMAIL</span>
                              </div>
-                             <span className="text-[9px] text-gray-500 font-mono group-hover:text-black/60 transition-colors relative z-10">ESTABLISH_DIRECT_COMMS</span>
+                             <span className="text-[9px] text-gray-600 font-mono tracking-widest group-hover:text-term-green transition-colors relative z-10">INITIATE_UPLINK_PROTOCOL</span>
                          </a>
                     </div>
                 </div>
@@ -231,82 +262,32 @@ const App: React.FC = () => {
             <footer className="py-20 border-t border-white/10 bg-black relative z-10 font-mono">
                 <div className="max-w-7xl mx-auto px-6 md:px-24">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 mb-16">
-                        {/* Column 1: About */}
                         <div className="space-y-4">
                              <h4 className="text-white text-sm font-bold uppercase tracking-widest mb-4">About</h4>
                              <p className="text-xs text-gray-500 leading-relaxed max-w-xs">
-                                 Creative Technologist and Student based in the Midwest.
-                                 Specializing in system optimization, web architecture, and high-performance interfaces.
+                                 Creative Technologist & Student based in the Midwest.
+                                 Building optimized digital systems.
                              </p>
                         </div>
-                        
-                        {/* Column 2: Explore */}
                         <div className="space-y-4">
                             <h4 className="text-white text-sm font-bold uppercase tracking-widest mb-4">Explore</h4>
                             <ul className="space-y-2 text-xs text-gray-500">
-                                <li>
-                                    <button 
-                                        onClick={() => scrollToSection('work')} 
-                                        className="hover:text-term-green transition-colors"
-                                        onMouseEnter={() => soundManager.playHover()}
-                                    >Repositories</button>
-                                </li>
-                                <li>
-                                    <button 
-                                        onClick={() => scrollToSection('mission-control')} 
-                                        className="hover:text-term-green transition-colors"
-                                        onMouseEnter={() => soundManager.playHover()}
-                                    >Mission Control</button>
-                                </li>
-                                <li>
-                                    <a 
-                                        href={`mailto:${CONTACT_EMAIL}`} 
-                                        className="hover:text-term-green transition-colors"
-                                        onMouseEnter={() => soundManager.playHover()}
-                                    >Transmission</a>
-                                </li>
+                                <li><button onClick={() => scrollToSection('work')} className="hover:text-term-green transition-colors">Repositories</button></li>
+                                <li><button onClick={() => scrollToSection('mission-control')} className="hover:text-term-green transition-colors">Mission Control</button></li>
                             </ul>
                         </div>
-
-                        {/* Column 3: Connect */}
                         <div className="space-y-4">
                              <h4 className="text-white text-sm font-bold uppercase tracking-widest mb-4">Connect</h4>
                              <ul className="space-y-2 text-xs text-gray-500">
-                                 <li>
-                                     <a 
-                                        href={GITHUB_URL} 
-                                        target="_blank" 
-                                        rel="noreferrer" 
-                                        className="hover:text-term-green transition-colors"
-                                        onMouseEnter={() => soundManager.playHover()}
-                                        onClick={() => soundManager.playClick()}
-                                    >GitHub</a>
-                                 </li>
-                                 <li>
-                                     <a 
-                                        href={LINKEDIN_URL} 
-                                        target="_blank" 
-                                        rel="noreferrer" 
-                                        className="hover:text-term-green transition-colors"
-                                        onMouseEnter={() => soundManager.playHover()}
-                                        onClick={() => soundManager.playClick()}
-                                    >LinkedIn</a>
-                                 </li>
-                                 <li>
-                                     <a 
-                                        href={`mailto:${CONTACT_EMAIL}`} 
-                                        className="hover:text-term-green transition-colors"
-                                        onMouseEnter={() => soundManager.playHover()}
-                                        onClick={() => soundManager.playClick()}
-                                    >Email</a>
-                                 </li>
+                                 <li><a href={GITHUB_URL} target="_blank" rel="noreferrer" className="hover:text-term-green transition-colors">GitHub</a></li>
+                                 <li><a href={LINKEDIN_URL} target="_blank" rel="noreferrer" className="hover:text-term-green transition-colors">LinkedIn</a></li>
+                                 <li><a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-term-green transition-colors">Email</a></li>
                              </ul>
                         </div>
                     </div>
-
                     <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-[10px] text-gray-600 uppercase tracking-widest">
-                        <p>© 2025 HENRY. ALL SYSTEMS NOMINAL.</p>
-                        <p className="mt-2 md:mt-0 font-mono opacity-50">BUILD_VER: {Math.random().toString(36).substring(2, 9).toUpperCase()}</p>
+                        <p>© 2025 HENRY. SYSTEM ONLINE.</p>
+                        <p className="mt-2 md:mt-0 font-mono opacity-50">V3.1-STABLE</p>
                     </div>
                 </div>
             </footer>

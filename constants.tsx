@@ -1,33 +1,22 @@
-
 import { Project, BootLine } from './types';
-import { Globe, Terminal, Code, Settings } from 'lucide-react';
+import { GraduationCap, Terminal, Code, Settings } from 'lucide-react';
 
 export const GITHUB_USERNAME = 'hjadmz';
 export const GITHUB_URL = `https://github.com/${GITHUB_USERNAME}`;
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/hjadmz';
 export const CONTACT_EMAIL = 'hjadmz@icloud.com';
 
-// Privacy Update: Calculated midpoint for St. Charles <-> St. Louis coverage
+// Exact midpoint for perfect map framing of St. Charles & St. Louis
 export const LOCATION_COORDINATES = {
-  lat: 38.7400, 
-  lng: -90.3800,
+  lat: 38.7200, 
+  lng: -90.3300,
   label: 'SECTOR: GREATER ST. LOUIS'
 };
 
-// Fallback data: Honest profile link if GitHub fails.
-export const PROJECTS: Project[] = [
-  {
-    id: 'LINK',
-    title: 'GITHUB_PROFILE',
-    description: 'Direct uplink to user repositories. Access full project history and source code.',
-    tech: ['SOURCE', 'GIT', 'VERSION_CONTROL'],
-    link: GITHUB_URL,
-    featured: true,
-    stars: 0
-  }
-];
+// EMPTY FALLBACK - This triggers the "UPLINK_FAILURE" UI in App.tsx if API fails.
+// We do not want to show fake projects.
+export const PROJECTS: Project[] = [];
 
-// Heavy flag indicates a "processing hang" for realism
 export const BOOT_SEQUENCE: (BootLine & { heavy?: boolean })[] = [
   { id: 1, text: "HJADMZ BOOTLOADER v3.1 initialized", delay: 10, sound: 'type' },
   { id: 2, text: "ACPI: Core revision 6.3", delay: 10, sound: 'type' },
@@ -52,11 +41,10 @@ export const BOOT_SEQUENCE: (BootLine & { heavy?: boolean })[] = [
 export const SKILLS = [
   { name: 'PYTHON', icon: <Code size={20} />, desc: "Scripting, Automation, Data Handling" },
   { name: 'OPTIMIZATION', icon: <Settings size={20} />, desc: "System Tuning, Workflow Efficiency" },
-  { name: 'STUDENT', icon: <Globe size={20} />, desc: "React, TypeScript, Modern UI/UX" },
+  { name: 'STUDENT', icon: <GraduationCap size={20} />, desc: "React, TypeScript, Modern UI/UX" },
   { name: 'STACK', icon: <Terminal size={20} />, desc: "VS Code, Warp, Cursor, Anti-Gravity" },
 ];
 
-// High-Fidelity CLI Data - 100% Accurate to Persona
 export const TERMINAL_DATA = {
   BIO: `IDENTITY: Henry Joseph Adams (hjadmz)
 ROLE: Student / Creative Technologist / Optimizer
@@ -82,21 +70,25 @@ PHILOSOPHY:
 > LINKEDIN: linkedin.com/in/hjadmz
 > STATUS: OPEN_TO_CONNECT`,
 
-  // Accurate project list for the terminal response
-  PROJECTS: `ACTIVE REPOSITORIES:
-> PYTHON_SYS_OPT: System cleanup & logic scripts
-> WEB_ARCH_CORE: React/TypeScript portfolio structure
-> SWIFT_HAPTICS: iOS interface experiments
-> DOTFILES_ZSH: Optimized environment config`,
+  // Informational status report.
+  PROJECTS: `SOURCE CONTROL STATUS:
+> REPO_UPLINK: github.com/hjadmz
+> ACCESS: PUBLIC
+> ACTIVE DOMAINS: 
+  - Python Automation & Scripting
+  - Web Architecture (React/TS)
+  - iOS/Swift Experiments
+  - System Optimization (Dotfiles)
+
+* Execute "contact" to establish communication channel.`,
   
-  HELP: `AVAILABLE COMMANDS:
-  help      : Show this menu
-  about     : User identity & bio
-  stack     : Tech stack & tools
-  projects  : List active repos
-  contact   : Communication channels
-  clear     : Clear terminal
-  date      : Show local system time
-  
-  * Execute keywords like "tech", "whoami", or "email"`
+  HELP: `COMMAND LIST:
+
+> help      : Display this menu
+> about     : User identity & bio
+> stack     : Tech stack & tools
+> projects  : Source code status
+> contact   : Communication channels
+> clear     : Clear terminal output
+> date      : Local system time`
 };

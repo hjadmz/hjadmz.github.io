@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Shield, MapPin, Wifi, Clock } from 'lucide-react';
 import { soundManager } from '../services/soundService';
@@ -80,10 +79,10 @@ const LocationRadar: React.FC = () => {
     window.L.circle([lat, lng], {
         color: '#00ff41',
         fillColor: '#00ff41',
-        fillOpacity: 0.15, // Increased from 0.08 for better visibility
+        fillOpacity: 0.2, // Increased for visibility
         radius: 35000,     
         weight: 3,         // Thicker line
-        opacity: 0.6,
+        opacity: 0.8,
         dashArray: '20, 10' // Tactical dash pattern
     }).addTo(map);
 

@@ -1,9 +1,9 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal as TerminalIcon, Send } from 'lucide-react';
 import { ChatMessage } from '../types';
 import { soundManager } from '../services/soundService';
-import { TERMINAL_DATA } from '../constants';
+import { TERMINAL_DATA, GITHUB_USERNAME } from '../constants';
+import { fetchGithubRepos } from '../services/githubService';
 
 const TerminalChat: React.FC = () => {
   const [input, setInput] = useState('');
@@ -11,13 +11,12 @@ const TerminalChat: React.FC = () => {
     {
       id: 'init',
       role: 'system',
-      text: '> Enter "help" to list active protocols.'
+      text: '> READY. Type "help" to view command list.'
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll logic using scrollTop to prevent page jumping
   useEffect(() => {
     if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
@@ -31,14 +30,13 @@ const TerminalChat: React.FC = () => {
 
   const typeWriterEffect = async (text: string, msgId: string) => {
     let currentText = '';
-    const typeSpeed = 10; 
+    const typeSpeed = 8; 
 
     for (let i = 0; i < text.length; i++) {
         currentText += text[i];
         setMessages(prev => prev.map(msg => 
             msg.id === msgId ? { ...msg, text: currentText } : msg
         ));
-        // Only play sound every 4 characters to avoid audio fatigue
         if (i % 4 === 0) soundManager.playType();
         await new Promise(resolve => setTimeout(resolve, typeSpeed));
     }
@@ -48,10 +46,9 @@ const TerminalChat: React.FC = () => {
     ));
   };
 
-  const processCommand = (cmd: string): { text: string, delay: number, action?: string } => {
+  const processCommand = async (cmd: string): Promise<{ text: string, delay: number, action?: string }> => {
       const lower = cmd.toLowerCase().trim();
 
-      // Command Parsing Logic
       if (lower === 'help' || lower === 'commands' || lower === '?') 
         return { text: TERMINAL_DATA.HELP, delay: 200 };
       
@@ -64,22 +61,39 @@ const TerminalChat: React.FC = () => {
       if (lower.includes('contact') || lower.includes('email') || lower.includes('link')) 
         return { text: TERMINAL_DATA.CONTACT, delay: 300 };
       
-      if (lower.includes('project') || lower.includes('repo') || lower.includes('work')) 
-        return { text: TERMINAL_DATA.PROJECTS, delay: 600 };
+      // LIVE GITHUB FETCH
+      if (lower.includes('project') || lower.includes('repo') || lower.includes('work')) {
+          const repos = await fetchGithubRepos(GITHUB_USERNAME);
+          
+          if (!repos || repos.length === 0) {
+              return { text: 'ERR: NO PUBLIC REPOSITORIES FOUND ON UPLINK.', delay: 400 };
+          }
+
+          const topRepos = repos.slice(0, 5);
+          let output = `FETCHING LIVE REPOSITORIES...\n\n`;
+          
+          topRepos.forEach(repo => {
+              output += `> ${repo.title} [★ ${repo.stars || 0}]\n  ${repo.description.substring(0, 60)}${repo.description.length > 60 ? '...' : ''}\n\n`;
+          });
+
+          if (repos.length > 5) {
+              output += `...and ${repos.length - 5} more available on GitHub.`;
+          }
+          
+          return { text: output.trim(), delay: 800 };
+      }
       
       if (lower === 'clear' || lower === 'cls') 
         return { text: '', delay: 0, action: 'CLEAR' };
 
-      // Easter Eggs
       if (lower === 'date' || lower === 'time')
         return { text: `SYSTEM_TIME: ${new Date().toLocaleString()}`, delay: 100 };
 
       if (lower.startsWith('sudo'))
         return { text: `PERMISSION DENIED: User 'hjadmz' is not in the sudoers file. This incident will be reported.`, delay: 400 };
 
-      // Default Error
       return { 
-        text: `ERR: UNKNOWN_PROTOCOL "${cmd}"\n> Command not recognized in user space.\n> Type "help" for a list of valid executables.`, 
+        text: `ERR: UNKNOWN_PROTOCOL "${cmd}"\n> Type "help" for valid commands.`, 
         delay: 200 
       };
   };
@@ -91,34 +105,17 @@ const TerminalChat: React.FC = () => {
     soundManager.playClick();
     const cmd = input.trim();
     
-    // Add User Message
     const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', text: cmd };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
 
-    const result = processCommand(cmd);
-
-    // Handle Actions (like Clear)
-    if (result.action === 'CLEAR') {
-        setTimeout(() => {
-            setMessages([]);
-            setIsLoading(false);
-            soundManager.playSuccess();
-        }, 200);
-        return;
-    }
-
-    // Create placeholder for System Response
+    // Initial loading message
     const modelMsgId = (Date.now() + 1).toString();
-    
-    // 1. Simulate "Processing" state with randomized technical jargon
     const loadingPhrases = [
-        '> ANALYZING KERNEL MEMORY...',
-        '> PARSING INPUT STREAM...',
-        '> DECRYPTING SECURE SECTOR...',
-        '> EXECUTING SHELL SCRIPT...',
-        '> QUERYING LOCAL DATABASE...'
+        '> PROCESSING...',
+        '> EXECUTING...',
+        '> QUERYING SYSTEM...',
     ];
     const loadingText = loadingPhrases[Math.floor(Math.random() * loadingPhrases.length)];
 
@@ -129,15 +126,25 @@ const TerminalChat: React.FC = () => {
         isTyping: true
     }]);
 
-    // 2. Wait for simulated delay (latency)
+    // Process command (async)
+    const result = await processCommand(cmd);
+
+    if (result.action === 'CLEAR') {
+        setTimeout(() => {
+            setMessages([]);
+            setIsLoading(false);
+            soundManager.playSuccess();
+        }, 200);
+        return;
+    }
+
     await new Promise(r => setTimeout(r, result.delay));
     
-    // 3. Clear processing text
+    // Clear loading text before typing result
     setMessages(prev => prev.map(msg => 
         msg.id === modelMsgId ? { ...msg, text: '' } : msg
     ));
 
-    // 4. Type out the actual response
     if (cmd.toLowerCase().startsWith('sudo')) soundManager.playAlert();
     else soundManager.playSuccess();
     
@@ -151,8 +158,6 @@ const TerminalChat: React.FC = () => {
         className="relative w-full h-full border border-term-border bg-[#050505]/95 rounded-sm flex flex-col overflow-hidden shadow-2xl shadow-black backdrop-blur-md group hover:border-term-green/30 transition-colors duration-500"
         onMouseEnter={() => soundManager.playHover()}
     >
-      
-      {/* HEADER */}
       <div className="bg-[#080808] border-b border-white/5 p-3 flex items-center justify-between select-none z-30 h-12 shrink-0">
         <div className="flex items-center gap-4">
             <div className="flex gap-1.5 opacity-30">
@@ -167,7 +172,6 @@ const TerminalChat: React.FC = () => {
         </div>
       </div>
 
-      {/* MESSAGES */}
       <div 
           ref={scrollContainerRef}
           className="flex-1 overflow-y-auto p-6 space-y-6 font-mono text-sm scrollbar-thin scrollbar-track-black scrollbar-thumb-term-border z-10 relative"
@@ -198,7 +202,6 @@ const TerminalChat: React.FC = () => {
         ))}
       </div>
 
-      {/* INPUT */}
       <form onSubmit={handleSubmit} className="p-0 bg-[#080808] border-t border-white/10 z-30 relative shrink-0">
         <div className="flex items-center gap-3 bg-black/50 p-3 focus-within:bg-black transition-colors focus-within:shadow-[0_0_20px_rgba(0,0,0,0.8)]">
             <div className="flex items-center gap-2 text-xs font-mono">
