@@ -18,7 +18,7 @@
     
     <title>HJADMZ // TERMINAL</title>
     
-    <!-- Favicon -->
+    <!-- Favicon (Dynamic SVG) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>_</text></svg>">
 
     <!-- Fonts -->
@@ -29,7 +29,7 @@
     <!-- Leaflet Map CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     
-    <!-- Tailwind (Build process will handle css, but keeping script for dev safety if postcss config missing) -->
+    <!-- Tailwind Script (For Dev - Vite will bundle css in prod) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -48,32 +48,25 @@
             },
             animation: {
               'cursor-blink': 'blink 1s step-end infinite',
-              'scanline': 'scanline 8s linear infinite',
-              'glitch': 'glitch 1s linear infinite',
-              'fade-in': 'fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'spin-slow': 'spin 3s linear infinite',
               'pan-grid': 'panGrid 60s linear infinite',
               'turn-on': 'turnOn 0.5s ease-out forwards',
+              'glitch': 'glitch 1s linear infinite',
             },
             keyframes: {
               blink: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0' } },
-              scanline: { '0%': { transform: 'translateY(-100%)' }, '100%': { transform: 'translateY(100%)' } },
+              panGrid: { '0%': { backgroundPosition: '0 0' }, '100%': { backgroundPosition: '40px 40px' } },
+              turnOn: {
+                '0%': { transform: 'scale(1, 0.01)', opacity: '0', filter: 'brightness(3)' },
+                '60%': { transform: 'scale(1, 1)', opacity: '1', filter: 'brightness(1.5)' },
+                '100%': { transform: 'scale(1, 1)', opacity: '1', filter: 'brightness(1)' },
+              },
               glitch: {
                 '2%, 64%': { transform: 'translate(2px,0) skew(0deg)' },
                 '4%, 60%': { transform: 'translate(-2px,0) skew(0deg)' },
                 '62%': { transform: 'translate(0,0) skew(5deg)' },
-              },
-              fadeIn: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-              panGrid: { '0%': { backgroundPosition: '0 0' }, '100%': { backgroundPosition: '40px 40px' } },
-              turnOn: {
-                '0%': { transform: 'scale(1, 0.01) skew(50deg)', opacity: '0', filter: 'brightness(3)' },
-                '30%': { transform: 'scale(1, 0.8) skew(0deg)', opacity: '1', filter: 'brightness(2)' },
-                '60%': { transform: 'scale(1, 1)', opacity: '1', filter: 'brightness(1.5)' },
-                '100%': { transform: 'scale(1, 1)', opacity: '1', filter: 'brightness(1)' },
               }
-            },
-            cursor: { none: 'none' }
+            }
           }
         }
       }
@@ -99,7 +92,6 @@
         background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
         background-size: 100% 2px, 3px 100%;
         pointer-events: none;
-        opacity: 0.8;
       }
       .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(0.9) contrast(95%); }
       .leaflet-container { background: #050505 !important; font-family: 'JetBrains Mono', monospace !important; }
@@ -115,9 +107,9 @@
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "vite": "https://aistudiocdn.com/vite@^7.2.4",
     "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1"
   }
@@ -127,7 +119,11 @@
 </head>
   <body>
     <div id="root"></div>
+    
+    <!-- CRITICAL: THIS LOADS YOUR REACT APP -->
     <script type="module" src="/index.tsx"></script>
+    
+    <!-- Leaflet Script -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
   </body>
 </html>

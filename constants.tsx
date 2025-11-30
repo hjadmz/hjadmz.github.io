@@ -70,7 +70,7 @@ PHILOSOPHY:
 > LINKEDIN: linkedin.com/in/hjadmz
 > STATUS: OPEN_TO_CONNECT`,
 
-  // Informational status report.
+  // PURE INFORMATION - No fake names
   PROJECTS: `SOURCE CONTROL STATUS:
 > REPO_UPLINK: github.com/hjadmz
 > ACCESS: PUBLIC
