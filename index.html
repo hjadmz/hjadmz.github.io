@@ -9,16 +9,9 @@
     <meta name="keywords" content="hjadmz, Henry Adams, Developer, Portfolio, Terminal, React, Python, Swift, St. Louis" />
     <meta name="author" content="Henry Adams" />
     
-    <!-- Open Graph / Social -->
-    <meta property="og:title" content="HJADMZ // TERMINAL" />
-    <meta property="og:description" content="Simulated high-fidelity CLI environment. Accessing /home/hjadmz..." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://hjadmz.github.io/" />
-    <meta property="og:image" content="https://github.com/hjadmz.png" />
-    
     <title>HJADMZ // TERMINAL</title>
     
-    <!-- Favicon (Dynamic SVG) -->
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>_</text></svg>">
 
     <!-- Fonts -->
@@ -29,7 +22,7 @@
     <!-- Leaflet Map CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (CDN for quick dev, but build process handles imports) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -103,20 +96,7 @@
       }
       @keyframes radar-scan { 0% { background-position: 0 -20px; } 100% { background-position: 0 100%; } }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
-    "vite": "https://aistudiocdn.com/vite@^7.2.4"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
-</head>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
