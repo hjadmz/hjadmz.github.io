@@ -1,0 +1,93 @@
+import { Project, BootLine } from './types';
+import { GraduationCap, Terminal, Code, Settings } from 'lucide-react';
+
+export const GITHUB_USERNAME = 'hjadmz';
+export const GITHUB_URL = `https://github.com/${GITHUB_USERNAME}`;
+export const LINKEDIN_URL = 'https://www.linkedin.com/in/hjadmz';
+export const CONTACT_EMAIL = 'hjadmz@icloud.com';
+
+// Exact midpoint for perfect map framing of St. Charles & St. Louis
+export const LOCATION_COORDINATES = {
+  lat: 38.7200, 
+  lng: -90.3300,
+  label: 'SECTOR: GREATER ST. LOUIS'
+};
+
+// EMPTY FALLBACK - This triggers the "UPLINK_FAILURE" UI in App.tsx if API fails.
+export const PROJECTS: Project[] = [];
+
+export const BOOT_SEQUENCE: (BootLine & { heavy?: boolean })[] = [
+  { id: 1, text: "HJADMZ BOOTLOADER v3.1 initialized", delay: 10, sound: 'type' },
+  { id: 2, text: "ACPI: Core revision 6.3", delay: 10, sound: 'type' },
+  { id: 3, text: "CPU: CLOCK_SYNC ... STABLE [4.2GHz]", delay: 20, sound: 'type' },
+  { id: 4, text: "MEM: INTEGRITY_CHECK ... PASSED (64GB)", delay: 30, sound: 'type' },
+  { id: 5, text: "INIT: DISPLAY_CONTROLLER_DAEMON", delay: 10 },
+  { id: 6, text: "  > LOADING DRIVER: NVIDIA_G0", delay: 10 },
+  { id: 7, text: "  > RES: 3840x2160 @ 120Hz", delay: 10 },
+  { id: 8, text: "LOADING HJADMZ KERNEL IMAGE .........", delay: 600, heavy: true }, 
+  { id: 9, text: "[OK] KERNEL_LOAD_COMPLETE", delay: 20, color: "text-term-green", sound: 'success' },
+  { id: 10, text: "MOUNTING /home/hjadmz ...", delay: 400, heavy: true },
+  { id: 11, text: "USER_AUTH: UID_1001 (HENRY)", delay: 100, color: "text-blue-400", sound: 'type' },
+  { id: 12, text: "> LOADING PROFILE CONFIG ........... DONE", delay: 100, sound: 'type' },
+  { id: 13, text: "PRIVILEGE_ESCALATION: SUDO GRANTED", delay: 100, color: "text-red-500", sound: 'alert' },
+  { id: 14, text: "NETWORK: RESOLVING HOSTS .........", delay: 1200, heavy: true }, 
+  { id: 15, text: "UPSTREAM: CONNECTED [1Gbps]", delay: 50, color: "text-term-green", sound: 'success' },
+  { id: 16, text: "STARTING INTERACTIVE SHELL ...", delay: 400, sound: 'type' },
+  { id: 17, text: "ENV_VARS: LOADED", delay: 200 },
+  { id: 18, text: "SYSTEM READY.", delay: 800, color: "text-white font-bold", sound: 'success' },
+];
+
+export const SKILLS = [
+  { name: 'PYTHON', icon: <Code size={20} />, desc: "Scripting, Automation, Data Handling" },
+  { name: 'OPTIMIZATION', icon: <Settings size={20} />, desc: "System Tuning, Workflow Efficiency" },
+  { name: 'STUDENT', icon: <GraduationCap size={20} />, desc: "React, TypeScript, Modern UI/UX" },
+  { name: 'STACK', icon: <Terminal size={20} />, desc: "VS Code, Warp, Cursor, Anti-Gravity" },
+];
+
+export const TERMINAL_DATA = {
+  BIO: `IDENTITY: Henry Joseph Adams (hjadmz)
+ROLE: Student / Creative Technologist / Optimizer
+LOC: Greater St. Louis Area (Midwest Sector)
+AGE: 20
+
+PROFILE:
+An introspective developer obsessed with system optimization and "vibe coding."
+Specializing in cleaning up digital noise, automating workflows, and building high-performance
+interfaces. Currently studying at St. Charles Community College.`,
+
+  STACK: `CORE STACK:
+> LANGUAGES: Python (Primary), TypeScript (Web), Swift (Basic)
+> ENVIRONMENT: VS Code, Warp Terminal, Cursor IDE, Anti-Gravity
+> FOCUS: Automation, System Configuration, React, UI/UX
+
+PHILOSOPHY:
+"Optimization is not just about speed; it's about flow."`,
+
+  CONTACT: `TRANSMISSION CHANNELS:
+> EMAIL: hjadmz@icloud.com
+> GITHUB: github.com/hjadmz
+> LINKEDIN: linkedin.com/in/hjadmz
+> STATUS: OPEN_TO_CONNECT`,
+
+  // GENERIC STATUS REPORT - Truthful
+  PROJECTS: `SOURCE CONTROL STATUS:
+> REPO_UPLINK: github.com/hjadmz
+> ACCESS: PUBLIC
+> ACTIVE DOMAINS: 
+  - Python Automation & Scripting
+  - Web Architecture (React/TS)
+  - iOS/Swift Experiments
+  - System Optimization (Dotfiles)
+
+* Execute "contact" to establish communication channel.`,
+  
+  HELP: `COMMAND LIST:
+
+> help      : Display this menu
+> about     : User identity & bio
+> stack     : Tech stack & tools
+> projects  : Source code status
+> contact   : Communication channels
+> clear     : Clear terminal output
+> date      : Local system time`
+};
