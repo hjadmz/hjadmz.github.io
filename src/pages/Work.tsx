@@ -12,7 +12,7 @@ export default function Work() {
       </div>
 
       {/* 
-        AI TEMPLATE FOR FUTURE POPULATION
+        TEMPLATE FOR FUTURE POPULATION
         Uncomment and duplicate the <article> block below when adding new work.
       <div className="grid-32 mt-16 hidden">
         <article className="group cursor-pointer">
