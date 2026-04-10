@@ -23,7 +23,7 @@ const related = posts
   .slice(0, 2)
   .map(({ candidate }) => candidate);
 ---
-<BaseLayout title={`${post.title} · hjadmz`}>
+<BaseLayout title={`${post.title} · hjadmz`} description={post.summary}>
   <article class="prose">
     <header class="mb-8">
       <time class="text-xs font-mono text-[var(--fg-muted)]">{post.date}</time>
