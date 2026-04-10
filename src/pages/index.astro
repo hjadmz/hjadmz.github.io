@@ -1,8 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FcaCallout from '../components/FcaCallout.astro';
-import { posts } from '../data/posts';
-const recent = posts.slice(0, 2);
+import { getCollection } from 'astro:content';
+
+const entrySlug = (id: string) => id.replace(/\.mdx?$/, '');
+const recent = (await getCollection('log'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 2);
 ---
 <BaseLayout
   title="hjadmz"
@@ -31,14 +35,18 @@ const recent = posts.slice(0, 2);
 
   <section class="mt-12 grid gap-4">
     <h2>Recent log entries</h2>
-    <div class="grid gap-3 sm:grid-cols-2">
-      {recent.map((post) => (
-        <article class="card">
-          <h3><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h3>
-          <p>{post.summary}</p>
-        </article>
-      ))}
-    </div>
+    {recent.length > 0 ? (
+      <div class="grid gap-3 sm:grid-cols-2">
+        {recent.map((post) => (
+          <article class="card">
+            <h3><a href={`/log/${entrySlug(post.id)}`} class="link-subtle">{post.data.title}</a></h3>
+            <p>{post.data.summary || 'No summary yet.'}</p>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p class="text-[var(--fg-muted)]">No log entries yet. <a href="/log" class="link-subtle">Check back soon.</a></p>
+    )}
   </section>
 
   <section class="mt-12 grid gap-3" aria-labelledby="about-teaser">
