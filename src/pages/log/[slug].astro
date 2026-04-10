@@ -7,7 +7,15 @@ export function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const related = posts.filter((candidate) => candidate.slug !== post.slug).slice(0, 2);
+const related = posts
+  .filter((candidate) => candidate.slug !== post.slug)
+  .map((candidate) => ({
+    candidate,
+    score: candidate.tags.filter((tag) => post.tags.includes(tag)).length,
+  }))
+  .sort((a, b) => b.score - a.score || b.candidate.date.localeCompare(a.candidate.date))
+  .slice(0, 2)
+  .map(({ candidate }) => candidate);
 ---
 <BaseLayout title={`${post.title} · hjadmz`}>
   <article class="prose">

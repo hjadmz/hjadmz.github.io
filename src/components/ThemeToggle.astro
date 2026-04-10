@@ -12,7 +12,11 @@
   const button = document.getElementById('theme-toggle');
   const root = document.documentElement;
 
-  const currentTheme = () => root.dataset.theme === 'dark' ? 'dark' : 'light';
+  const currentTheme = (): 'light' | 'dark' => {
+    if (root.dataset.theme === 'dark') return 'dark';
+    if (root.dataset.theme === 'light') return 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
   const setTheme = (next: 'light' | 'dark') => {
     root.dataset.theme = next;
     localStorage.setItem('theme', next);
