@@ -6,7 +6,7 @@ export function FcaTooltip() {
 
   return (
     <span className="fca-wrap" onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
-      <span className="fca-chip">
+      <span className="fca-chip" aria-label="FCA: Function, Convenience, Aesthetics">
         FCA
         <Layers className="fca-chip-icon" aria-hidden="true" />
       </span>
