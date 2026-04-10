@@ -13,7 +13,7 @@ const related = posts
     candidate,
     score: candidate.tags.filter((tag) => post.tags.includes(tag)).length,
   }))
-  .sort((a, b) => b.score - a.score || b.candidate.date.localeCompare(a.candidate.date))
+  .sort((a, b) => b.score - a.score || new Date(b.candidate.date).getTime() - new Date(a.candidate.date).getTime())
   .slice(0, 2)
   .map(({ candidate }) => candidate);
 ---
