@@ -1,6 +1,6 @@
 import { useLocation, Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { Logo } from './Logo';
+import { Mark } from './Mark';
 
 export function Breadcrumbs({ className }: { className?: string }) {
   const location = useLocation();
@@ -8,8 +8,9 @@ export function Breadcrumbs({ className }: { className?: string }) {
 
   return (
     <nav className={cn("text-[var(--step--1)] text-[var(--fg-muted)] flex items-center gap-2 min-w-0", className)}>
-      <Link to="/" className="hover:text-[var(--fg)] transition-colors shrink-0">
-        hjadmz
+      <Link to="/" className="hover:text-[var(--fg)] transition-colors shrink-0 inline-flex items-center gap-2">
+        <Mark className="w-4 h-4 opacity-80" />
+        <span>hjadmz</span>
       </Link>
       {paths.length > 0 && <span className="shrink-0">/</span>}
       {paths.map((path, index) => {
