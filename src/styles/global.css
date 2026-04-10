@@ -283,7 +283,7 @@ a { color: var(--fg); text-underline-offset: 2px; }
 }
 
 .intro-fade {
-  opacity: 1;
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -313,4 +313,5 @@ a { color: var(--fg); text-underline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .page-enter { opacity: 1; animation: none !important; }
+  .intro-fade { opacity: 1; }
 }

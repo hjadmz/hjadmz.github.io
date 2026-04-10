@@ -59,7 +59,6 @@ const isPostPath = /^\/log\/[^/]+\/?$/.test(Astro.url.pathname);
 
         let lastScrollY = window.scrollY;
         let ticking = false;
-        let hasInitialScrollSample = false;
         const BOTTOM_THRESHOLD_PX = 50;
         const SCROLL_DOWN_START_PX = 100;
         const SCROLL_UP_THRESHOLD_PX = 10;
@@ -67,15 +66,8 @@ const isPostPath = /^\/log\/[^/]+\/?$/.test(Astro.url.pathname);
 
         const updateFocusMode = () => {
           const currentScrollY = window.scrollY;
-          if (!hasInitialScrollSample) {
-            hasInitialScrollSample = true;
-            lastScrollY = currentScrollY;
-            ticking = false;
-            return;
-          }
-
           const scrollDelta = currentScrollY - lastScrollY;
-          const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - BOTTOM_THRESHOLD_PX;
+          const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - BOTTOM_THRESHOLD_PX;
           const isScrollingUp = scrollDelta < 0 && Math.abs(scrollDelta) > SCROLL_UP_THRESHOLD_PX;
 
           if (isAtBottom) {
