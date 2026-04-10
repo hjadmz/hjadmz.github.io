@@ -108,32 +108,42 @@
 }
 
 .fca-chip {
-  display: inline-block;
-  padding: 0.05em 0.42em;
-  border-radius: 0.3em;
-  background-color: var(--fg);
-  color: var(--bg);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.1em 0.55em;
+  border-radius: 9999px;
+  background-color: transparent;
+  color: var(--fg);
+  border: 1px solid color-mix(in srgb, var(--fg) 28%, transparent);
   font-size: 0.8em;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   line-height: 1.6;
   cursor: default;
   transition:
-    background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fca-chip-icon {
+  width: 0.75em;
+  height: 0.75em;
+  opacity: 0.6;
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .fca-wrap:hover .fca-chip {
-  background-color: var(--fg);
-  color: var(--bg);
+  border-color: color-mix(in srgb, var(--fg) 65%, transparent);
+  background-color: color-mix(in srgb, var(--fg) 6%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg) 8%, transparent);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(2, 6, 23, 0.18);
 }
 
-.dark .fca-wrap:hover .fca-chip {
-  box-shadow: 0 4px 14px rgba(249, 250, 251, 0.12);
+.fca-wrap:hover .fca-chip-icon {
+  opacity: 1;
 }
 
 .fca-tooltip {
@@ -175,11 +185,12 @@
 }
 
 .footer-motto-script {
-  font-family: "Mrs Saint Delafield", cursive;
-  font-size: 1.9rem;
-  line-height: 1;
-  letter-spacing: 0.01em;
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
   font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.45;
 }
 
 .post-end-note {
