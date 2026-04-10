@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Spec · hjadmz"
+  description="Technical specification for hjadmz design tokens, typography, spacing system, and interaction timing."
+>
+  <h1>Technical Spec</h1>
+  <div class="grid gap-4 font-mono text-sm">
+    <div class="card">Color tokens: navy #020617, off-white #F9FAFB, white surfaces.</div>
+    <div class="card">Type: System sans for UI/prose, system monospace for technical accents.</div>
+    <div class="card">Spacing: 4/8 scale and fluid typography with clamp().</div>
+    <div class="card">Motion: 120ms hover, 200ms component transitions, ease-out cubic-bezier(0.16, 1, 0.3, 1).</div>
+  </div>
+</BaseLayout>

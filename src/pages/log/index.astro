@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { posts } from '../../data/posts';
+---
+<BaseLayout
+  title="Log · hjadmz"
+  description="Build journal, research notes, and architecture reflections from the hjadmz practice."
+>
+  <h1>Log</h1>
+  <p>Build journal, research notes, and architecture reflections.</p>
+  <div class="mt-8 grid gap-3">
+    {posts.map((post) => (
+      <article class="card">
+        <time class="text-xs font-mono text-[var(--fg-muted)]">{post.date}</time>
+        <h2><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h2>
+        <p>{post.summary}</p>
+        <ul class="flex flex-wrap gap-2 text-xs font-mono text-[var(--fg-muted)]">
+          {post.tags.map((tag) => <li class="rounded-full border px-2 py-0.5">{tag}</li>)}
+        </ul>
+      </article>
+    ))}
+  </div>
+</BaseLayout>

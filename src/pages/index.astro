@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FcaCallout from '../components/FcaCallout.astro';
+import { posts } from '../data/posts';
+const recent = posts.slice(0, 2);
+---
+<BaseLayout
+  title="hjadmz"
+  description="hjadmz builds static-first interfaces with strong architecture, accessibility, and design token discipline."
+>
+  <section class="grid gap-6">
+    <h1>Design Engineer &amp; Systems Architect</h1>
+    <p>
+      Bridging human-centered computing with rigorous systems architecture.
+      Built around <FcaCallout /> where function leads, convenience follows, and aesthetics reinforce clarity.
+    </p>
+    <div class="flex gap-3">
+      <a href="/log" class="card link-subtle">View log</a>
+      <a href="/work" class="card link-subtle">View work</a>
+    </div>
+  </section>
+
+  <section class="mt-12 grid gap-4">
+    <h2>What I’m working on</h2>
+    <ul class="grid gap-3">
+      <li class="card">Static-first architecture and accessibility systemization.</li>
+      <li class="card">Design token discipline across typography and spacing.</li>
+      <li class="card">Human-centered interfaces for cognitive clarity.</li>
+    </ul>
+  </section>
+
+  <section class="mt-12 grid gap-4">
+    <h2>Recent log entries</h2>
+    <div class="grid gap-3 sm:grid-cols-2">
+      {recent.map((post) => (
+        <article class="card">
+          <h3><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h3>
+          <p>{post.summary}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-12 grid gap-3" aria-labelledby="about-teaser">
+    <h2 id="about-teaser">About</h2>
+    <p>I design and build calm, static-first systems under the hjadmz brand.</p>
+    <p><a href="/about" class="link-subtle">Read full about</a></p>
+  </section>
+
+  <section class="mt-12 grid gap-3" aria-labelledby="contact-block">
+    <h2 id="contact-block">Contact</h2>
+    <p>Email: <a href="mailto:hjadmz@icloud.com" class="link-subtle">hjadmz@icloud.com</a></p>
+  </section>
+</BaseLayout>
