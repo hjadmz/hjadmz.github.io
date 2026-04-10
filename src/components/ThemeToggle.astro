@@ -1,0 +1,28 @@
+<button
+  id="theme-toggle"
+  class="rounded-md border border-[color:color-mix(in_srgb,var(--fg)_16%,transparent)] px-2 py-1 text-xs font-mono text-[var(--fg-muted)]"
+  type="button"
+  aria-label="Toggle theme"
+  aria-pressed="false"
+>
+  Theme
+</button>
+
+<script>
+  const button = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+
+  const currentTheme = () => root.dataset.theme === 'dark' ? 'dark' : 'light';
+  const setTheme = (next: 'light' | 'dark') => {
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
+    button?.setAttribute('aria-pressed', String(next === 'dark'));
+    button?.setAttribute('aria-label', `Theme: ${next}`);
+  };
+
+  setTheme(currentTheme());
+
+  button?.addEventListener('click', () => {
+    setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+  });
+</script>

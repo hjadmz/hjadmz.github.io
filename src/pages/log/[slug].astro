@@ -7,9 +7,10 @@ export function getStaticPaths() {
 }
 
 const { post } = Astro.props;
+const related = posts.filter((candidate) => candidate.slug !== post.slug).slice(0, 2);
 ---
 <BaseLayout title={`${post.title} · hjadmz`}>
-  <article>
+  <article class="prose">
     <header class="mb-8">
       <time class="text-xs font-mono text-[var(--fg-muted)]">{post.date}</time>
       <h1>{post.title}</h1>
@@ -28,5 +29,16 @@ const { post } = Astro.props;
         {section.body.map((paragraph) => <p>{paragraph}</p>)}
       </section>
     ))}
+
+    {related.length > 0 && (
+      <section class="mb-8" aria-label="Related posts">
+        <h2>Related posts</h2>
+        <ul>
+          {related.map((entry) => (
+            <li><a href={`/log/${entry.slug}`}>{entry.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
   </article>
 </BaseLayout>

@@ -1,5 +1,6 @@
 ---
 import Mark from './Mark.astro';
+import ThemeToggle from './ThemeToggle.astro';
 const path = Astro.url.pathname;
 const nav = [
   { href: '/log', label: '/log' },
@@ -16,7 +17,7 @@ const nav = [
       </span>
       <span class="text-[0.72rem] uppercase tracking-[0.18em] text-[var(--fg-muted)]">Soli Deo Gloria</span>
     </a>
-    <nav aria-label="Primary" class="flex items-center gap-4 text-sm">
+    <nav aria-label="Primary" class="flex flex-wrap items-center justify-end gap-3 text-sm">
       {nav.map((item) => {
         const linkClass = path === item.href
           ? 'link-subtle text-[var(--fg)]'
@@ -24,6 +25,7 @@ const nav = [
 
         return <a href={item.href} class={linkClass}>{item.label}</a>;
       })}
+      <ThemeToggle />
     </nav>
   </div>
 </header>

@@ -1,7 +1,6 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import CommandPalette from '../components/CommandPalette.astro';
 import '../styles/global.css';
 const { title = 'hjadmz' } = Astro.props;
 ---
@@ -10,6 +9,16 @@ const { title = 'hjadmz' } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem('theme');
+        if (stored === 'light' || stored === 'dark') {
+          document.documentElement.dataset.theme = stored;
+          return;
+        }
+        document.documentElement.dataset.theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      })();
+    </script>
     <title>{title}</title>
   </head>
   <body>
@@ -21,6 +30,5 @@ const { title = 'hjadmz' } = Astro.props;
       </main>
       <Footer />
     </div>
-    <CommandPalette />
   </body>
 </html>
