@@ -19,7 +19,8 @@ const nav = [
     </a>
     <nav aria-label="Primary" class="flex flex-wrap items-center justify-end gap-3 text-sm">
       {nav.map((item) => {
-        const isActive = path === item.href || path.startsWith(`${item.href}/`);
+        const pathAfterPrefix = path.slice(item.href.length);
+        const isActive = path === item.href || (path.startsWith(item.href) && pathAfterPrefix.startsWith('/'));
         const linkClass = isActive
           ? 'link-subtle text-[var(--fg)]'
           : 'link-subtle text-[var(--fg-muted)]';
