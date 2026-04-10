@@ -279,13 +279,23 @@ a { color: var(--fg); text-underline-offset: 2px; }
 }
 
 .page-enter {
-  animation: subtle-enter 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: none;
 }
 
 .intro-fade {
-  opacity: 0;
-  animation: subtle-enter 640ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: var(--enter-delay, 0ms);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .page-enter {
+    animation: subtle-enter 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .intro-fade {
+    opacity: 0;
+    animation: subtle-enter 640ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
 }
 
 .noise-overlay {
@@ -303,5 +313,4 @@ a { color: var(--fg); text-underline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .page-enter { opacity: 1; transform: none; }
-  .intro-fade { opacity: 1; }
 }
