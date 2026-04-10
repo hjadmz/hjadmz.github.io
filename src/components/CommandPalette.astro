@@ -1,6 +1,6 @@
 <div class="focus-element">
   <button id="cmdk-open" class="fixed bottom-4 right-4 z-40 rounded-md border border-[color:color-mix(in_srgb,var(--fg)_16%,transparent)] bg-[var(--bg)] px-3 py-2 text-xs font-mono text-[var(--fg-muted)]">
-    ⌘K
+    ⌘K / Alt+K
   </button>
   <div id="cmdk-overlay" class="hidden fixed inset-0 z-50 bg-[color:color-mix(in_srgb,var(--bg)_80%,transparent)] p-4 backdrop-blur-sm">
     <div id="cmdk-panel" class="mx-auto mt-[15vh] w-full max-w-xl rounded-lg border border-[color:color-mix(in_srgb,var(--fg)_16%,transparent)] bg-[var(--bg)] p-2 shadow-xl">
@@ -33,7 +33,8 @@
 
   openBtn?.addEventListener('click', open);
   window.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+    const key = e.key.toLowerCase();
+    if (((e.metaKey || e.ctrlKey) && key === 'k') || (e.altKey && key === 'k')) {
       e.preventDefault();
       overlay?.classList.contains('hidden') ? open() : close();
     }

@@ -12,7 +12,7 @@
   --step-2: clamp(1.56rem, 1.44rem + 0.6vw, 1.86rem);
 }
 
-* { box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
   background: var(--bg);
@@ -101,5 +101,5 @@ a { color: inherit; }
 .cmdk-link:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
