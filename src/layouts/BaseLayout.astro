@@ -58,8 +58,9 @@ const isPostPath = /^\/log\/[^/]+\/?$/.test(Astro.url.pathname);
         }
 
         let lastScrollY = window.scrollY;
+        let ticking = false;
 
-        const handleScroll = () => {
+        const updateFocusMode = () => {
           const currentScrollY = window.scrollY;
           const isAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 50;
 
@@ -72,9 +73,22 @@ const isPostPath = /^\/log\/[^/]+\/?$/.test(Astro.url.pathname);
           }
 
           lastScrollY = currentScrollY;
+          ticking = false;
+        };
+
+        const handleScroll = () => {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(updateFocusMode);
+        };
+
+        const cleanup = () => {
+          window.removeEventListener('scroll', handleScroll);
+          document.body.classList.remove('focus-mode');
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('pagehide', cleanup, { once: true });
       })();
     </script>
   </body>
