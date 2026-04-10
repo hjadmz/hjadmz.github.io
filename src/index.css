@@ -100,6 +100,80 @@
   }
 }
 
+/* ── FCA Accent Chip + Tooltip ─────────────────────────────────── */
+.fca-wrap {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+.fca-chip {
+  display: inline-block;
+  padding: 0.05em 0.42em;
+  border-radius: 0.3em;
+  background-color: var(--fg);
+  color: var(--bg);
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  cursor: default;
+  transition:
+    background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fca-wrap:hover .fca-chip {
+  background-color: var(--fg);
+  color: var(--bg);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(2, 6, 23, 0.18);
+}
+
+.dark .fca-wrap:hover .fca-chip {
+  box-shadow: 0 4px 14px rgba(249, 250, 251, 0.12);
+}
+
+.fca-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  white-space: nowrap;
+  background-color: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  padding: 0.35em 0.75em;
+  border-radius: 0.35em;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 50;
+}
+
+/* small arrow */
+.fca-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--fg);
+}
+
+.fca-tooltip--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 @layer utilities {
   .crisp-edges {
     shape-rendering: crispEdges;

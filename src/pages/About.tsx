@@ -14,10 +14,10 @@ export default function About() {
           I am a systems thinker, a pattern-seeker, and a Design Engineer bound for Human-Centered Computing at RIT. I study the intersection of psychology and architecture because I believe the tools we use should protect our minds, not exploit them.
         </p>
         <p>
-          This digital space is my rock. It operates under the Architecture of Silence. In a world optimized for noise and endless friction, true power is hidden inside quiet, intentional design. I treat technology as a sculptural object. I build environments where function always precedes convenience, and beauty is simply the natural byproduct of rigorous engineering.
+          This digital space is my rock. It operates under the Architecture of Silence. In a world optimized for noise and endless friction, true power is hidden inside quiet, intentional design. I treat technology as a sculptural object. I build environments where beauty is the natural byproduct of rigorous engineering.
         </p>
         <p>
-          Whether you are an employer reviewing my systems, a friend, or a stranger who found this space, you are looking at the same foundation. My faith, my covenant-loyalty to my people, and my substance-free lifestyle are not casual preferences. They are the load-bearing walls of my life and my work. They are constraints that narrow my focus and force me to build with integrity.
+          Whether you are an employer reviewing my systems, a friend, or a stranger who found this space, you are looking at the same foundation. My faith and my covenant-loyalty to my people are not casual preferences. They are the load-bearing walls of my life and my work. They are constraints that narrow my focus and force me to build with integrity.
         </p>
         <p>
           Everything here is governed by those constraints. Everything is intentional.
