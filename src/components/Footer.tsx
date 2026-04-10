@@ -30,7 +30,7 @@ export function Footer() {
           </a>
         </div>
         <div className="text-[var(--fg-muted)] text-xs font-mono flex flex-col md:flex-row items-center gap-2 md:gap-4">
-          <span className="footer-motto-script" aria-label="Soli Deo Gloria">Soli Deo Gloria</span>
+          <span className="footer-motto-script">Soli Deo Gloria</span>
           <span className="hidden md:inline opacity-30">|</span>
           <span className="opacity-60">{time}</span>
           <span className="hidden md:inline opacity-30">|</span>
