@@ -6,7 +6,6 @@
   --fg: #020617;
   --accent: #2563EB;
   --fg-muted: rgba(2, 6, 23, 0.6);
-  --fg-muted: color-mix(in srgb, #020617 60%, transparent);
   --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.85rem);
   --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
   --step-1: clamp(1.25rem, 1.18rem + 0.35vw, 1.43rem);
@@ -18,7 +17,11 @@
   --fg: #F9FAFB;
   --accent: #60A5FA;
   --fg-muted: rgba(249, 250, 251, 0.6);
-  --fg-muted: color-mix(in srgb, #F9FAFB 60%, transparent);
+}
+
+@supports (color: color-mix(in srgb, black, transparent)) {
+  :root { --fg-muted: color-mix(in srgb, #020617 60%, transparent); }
+  [data-theme="dark"] { --fg-muted: color-mix(in srgb, #F9FAFB 60%, transparent); }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
