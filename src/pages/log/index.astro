@@ -9,7 +9,7 @@ import { posts } from '../../data/posts';
   <h1>Log</h1>
   <p>Build journal, research notes, and architecture reflections.</p>
   <div class="mt-8 grid gap-3">
-    {posts.map((post) => (
+    {posts.length > 0 ? posts.map((post) => (
       <article class="card">
         <time class="text-xs font-mono text-[var(--fg-muted)]">{post.date}</time>
         <h2><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h2>
@@ -18,6 +18,8 @@ import { posts } from '../../data/posts';
           {post.tags.map((tag) => <li class="rounded-full border px-2 py-0.5">{tag}</li>)}
         </ul>
       </article>
-    ))}
+    )) : (
+      <p class="text-[var(--fg-muted)]">No log entries yet.</p>
+    )}
   </div>
 </BaseLayout>

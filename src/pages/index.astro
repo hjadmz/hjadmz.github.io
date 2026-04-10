@@ -31,14 +31,18 @@ const recent = posts.slice(0, 2);
 
   <section class="mt-12 grid gap-4">
     <h2>Recent log entries</h2>
-    <div class="grid gap-3 sm:grid-cols-2">
-      {recent.map((post) => (
-        <article class="card">
-          <h3><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h3>
-          <p>{post.summary}</p>
-        </article>
-      ))}
-    </div>
+    {recent.length > 0 ? (
+      <div class="grid gap-3 sm:grid-cols-2">
+        {recent.map((post) => (
+          <article class="card">
+            <h3><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h3>
+            <p>{post.summary}</p>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p class="text-[var(--fg-muted)]">No log entries yet. <a href="/log" class="link-subtle">Check back soon.</a></p>
+    )}
   </section>
 
   <section class="mt-12 grid gap-3" aria-labelledby="about-teaser">
