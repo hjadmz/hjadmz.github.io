@@ -35,13 +35,17 @@ export default function Post() {
         {post.content}
       </div>
 
-      <div className="mt-24 flex flex-row items-center justify-center gap-3 pb-8 text-[var(--fg-muted)] font-mono text-xs uppercase tracking-widest">
+      <div className="mt-24 flex justify-center pb-6">
+        <span className="post-end-note">END OF NOTE</span>
+      </div>
+
+      <div className="flex flex-row items-center justify-center gap-3 pb-8 text-[var(--fg-muted)] font-mono text-xs uppercase tracking-widest">
         <div className="text-[var(--fg)]">
           <Mark className="w-4 h-4 opacity-80" />
         </div>
         <span>hjadmz</span>
         <span className="opacity-30">/</span>
-        <span>{post.slug}</span>
+        <span>{post.title}</span>
       </div>
     </article>
     </>
