@@ -63,16 +63,20 @@ const isPostPath = /^\/log\/[^/]+\/?$/.test(Astro.url.pathname);
         const SCROLL_DOWN_START_PX = 100;
         const SCROLL_UP_THRESHOLD_PX = 10;
         const TOP_THRESHOLD_PX = 50;
+        let scrollHeight = document.documentElement.scrollHeight;
+        const refreshScrollHeight = () => {
+          scrollHeight = document.documentElement.scrollHeight;
+        };
 
         const updateFocusMode = () => {
           const currentScrollY = window.scrollY;
           const scrollDelta = currentScrollY - lastScrollY;
-          const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - BOTTOM_THRESHOLD_PX;
+          const isAtBottom = window.innerHeight + window.scrollY >= scrollHeight - BOTTOM_THRESHOLD_PX;
           const isScrollingUp = scrollDelta < 0 && Math.abs(scrollDelta) > SCROLL_UP_THRESHOLD_PX;
 
           if (isAtBottom) {
             document.body.classList.remove('focus-mode');
-          } else if (currentScrollY > lastScrollY && currentScrollY > SCROLL_DOWN_START_PX) {
+          } else if (scrollDelta > 0 && currentScrollY > SCROLL_DOWN_START_PX) {
             document.body.classList.add('focus-mode');
           } else if (isScrollingUp || currentScrollY < TOP_THRESHOLD_PX) {
             document.body.classList.remove('focus-mode');
@@ -90,9 +94,12 @@ const isPostPath = /^\/log\/[^/]+\/?$/.test(Astro.url.pathname);
 
         const cleanup = () => {
           window.removeEventListener('scroll', handleScroll);
+          window.removeEventListener('resize', refreshScrollHeight);
           document.body.classList.remove('focus-mode');
         };
 
+        refreshScrollHeight();
+        window.addEventListener('resize', refreshScrollHeight, { passive: true });
         window.addEventListener('scroll', handleScroll, { passive: true });
         window.addEventListener('pagehide', cleanup, { once: true });
       })();
