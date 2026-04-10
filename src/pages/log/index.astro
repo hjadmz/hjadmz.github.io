@@ -1,6 +1,11 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { posts } from '../../data/posts';
+import { getCollection } from 'astro:content';
+
+const entrySlug = (id: string) => id.replace(/\.mdx?$/, '');
+const posts = (await getCollection('log')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
 ---
 <BaseLayout
   title="Log · hjadmz"
@@ -11,11 +16,11 @@ import { posts } from '../../data/posts';
   <div class="mt-8 grid gap-3">
     {posts.length > 0 ? posts.map((post) => (
       <article class="card">
-        <time class="text-xs font-mono text-[var(--fg-muted)]">{post.date}</time>
-        <h2><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h2>
-        <p>{post.summary}</p>
+        <time class="text-xs font-mono text-[var(--fg-muted)]">{post.data.date.toISOString().slice(0, 10)}</time>
+        <h2><a href={`/log/${entrySlug(post.id)}`} class="link-subtle">{post.data.title}</a></h2>
+        <p>{post.data.summary || 'No summary yet.'}</p>
         <ul class="flex flex-wrap gap-2 text-xs font-mono text-[var(--fg-muted)]">
-          {post.tags.map((tag) => <li class="rounded-full border px-2 py-0.5">{tag}</li>)}
+          {post.data.tags.map((tag) => <li class="rounded-full border px-2 py-0.5">{tag}</li>)}
         </ul>
       </article>
     )) : (

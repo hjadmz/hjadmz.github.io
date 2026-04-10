@@ -1,8 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FcaCallout from '../components/FcaCallout.astro';
-import { posts } from '../data/posts';
-const recent = posts.slice(0, 2);
+import { getCollection } from 'astro:content';
+
+const entrySlug = (id: string) => id.replace(/\.mdx?$/, '');
+const recent = (await getCollection('log'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 2);
 ---
 <BaseLayout
   title="hjadmz"
@@ -35,8 +39,8 @@ const recent = posts.slice(0, 2);
       <div class="grid gap-3 sm:grid-cols-2">
         {recent.map((post) => (
           <article class="card">
-            <h3><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h3>
-            <p>{post.summary}</p>
+            <h3><a href={`/log/${entrySlug(post.id)}`} class="link-subtle">{post.data.title}</a></h3>
+            <p>{post.data.summary || 'No summary yet.'}</p>
           </article>
         ))}
       </div>

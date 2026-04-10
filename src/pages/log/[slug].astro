@@ -1,55 +1,57 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { posts } from '../../data/posts';
+import { getCollection, type CollectionEntry } from 'astro:content';
 
-export function getStaticPaths() {
-  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+export async function getStaticPaths() {
+  const posts = await getCollection('log');
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/\.mdx?$/, '') },
+    props: { post },
+  }));
 }
 
-const { post } = Astro.props;
+const { post } = Astro.props as { post: CollectionEntry<'log'> };
+const posts = await getCollection('log');
+const { Content } = await post.render();
+const entrySlug = (id: string) => id.replace(/\.mdx?$/, '');
+const currentTags = post.data.tags ?? [];
 const related = posts
-  .filter((candidate) => candidate.slug !== post.slug)
+  .filter((candidate) => candidate.id !== post.id)
   .map((candidate) => ({
     candidate,
-    score: candidate.tags.filter((tag) => post.tags.includes(tag)).length,
+    score: (candidate.data.tags ?? []).filter((tag) => currentTags.includes(tag)).length,
   }))
   .sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
-    const aDate = Date.parse(a.candidate.date);
-    const bDate = Date.parse(b.candidate.date);
-    if (!Number.isNaN(aDate) && !Number.isNaN(bDate)) return bDate - aDate;
-    return 0;
+    return b.candidate.data.date.getTime() - a.candidate.data.date.getTime();
   })
   .slice(0, 2)
   .map(({ candidate }) => candidate);
 ---
-<BaseLayout title={`${post.title} · hjadmz`} description={post.summary}>
+<BaseLayout title={`${post.data.title} · hjadmz`} description={post.data.summary}>
   <article class="prose">
     <header class="mb-8">
-      <time class="text-xs font-mono text-[var(--fg-muted)]">{post.date}</time>
-      <h1>{post.title}</h1>
+      <time class="text-xs font-mono text-[var(--fg-muted)]">{post.data.date.toISOString().slice(0, 10)}</time>
+      <h1>{post.data.title}</h1>
     </header>
 
-    <section class="card mb-8" aria-label="Key ideas">
-      <h2>Key ideas</h2>
-      <ul class="list-disc pl-5">
-        {post.keyIdeas.map((idea) => <li>{idea}</li>)}
-      </ul>
-    </section>
-
-    {post.sections.map((section) => (
-      <section class="mb-8">
-        <h2>{section.heading}</h2>
-        {section.body.map((paragraph) => <p>{paragraph}</p>)}
+    {post.data.keyIdeas.length > 0 && (
+      <section class="card mb-8" aria-label="TL;DR / Key ideas">
+        <h2>TL;DR / Key ideas</h2>
+        <ul class="list-disc pl-5">
+          {post.data.keyIdeas.map((idea) => <li>{idea}</li>)}
+        </ul>
       </section>
-    ))}
+    )}
+
+    <Content />
 
     {related.length > 0 && (
       <section class="mb-8" aria-label="Related posts">
         <h2>Related posts</h2>
         <ul>
           {related.map((entry) => (
-            <li><a href={`/log/${entry.slug}`}>{entry.title}</a></li>
+            <li><a href={`/log/${entrySlug(entry.id)}`}>{entry.data.title}</a></li>
           ))}
         </ul>
       </section>
