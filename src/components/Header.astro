@@ -1,0 +1,25 @@
+---
+import Mark from './Mark.astro';
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/log', label: '/log' },
+  { href: '/work', label: '/work' },
+  { href: '/about', label: '/about' },
+];
+---
+<header class="focus-element border-b border-[color:color-mix(in_srgb,var(--fg)_10%,transparent)] py-6">
+  <div class="mx-auto flex w-full max-w-[72rem] items-start justify-between gap-6 px-4 sm:px-6 lg:px-8">
+    <a href="/" class="logo-lockup inline-grid gap-1.5 no-underline">
+      <span class="inline-flex items-center gap-2 text-[0.9rem] font-semibold tracking-[0.11em]">
+        <Mark class="h-5 w-5" />
+        <span>HJADMZ</span>
+      </span>
+      <span class="text-[0.72rem] uppercase tracking-[0.18em] text-[var(--fg-muted)]">Soli Deo Gloria</span>
+    </a>
+    <nav aria-label="Primary" class="flex items-center gap-4 text-sm">
+      {nav.map((item) => (
+        <a href={item.href} class={`link-subtle ${path === item.href ? 'text-[var(--fg)]' : 'text-[var(--fg-muted)]'}`}>{item.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>

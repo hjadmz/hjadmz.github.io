@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FcaCallout from '../components/FcaCallout.astro';
+import { posts } from '../data/posts';
+const recent = posts.slice(0, 2);
+---
+<BaseLayout title="hjadmz">
+  <section class="grid gap-6">
+    <h1>Design Engineer &amp; Systems Architect</h1>
+    <p>
+      Bridging human-centered computing with rigorous systems architecture.
+      Built around <FcaCallout /> where function leads, convenience follows, and aesthetics reinforce clarity.
+    </p>
+    <div class="flex gap-3">
+      <a href="/log" class="card link-subtle">View log</a>
+      <a href="/work" class="card link-subtle">View work</a>
+    </div>
+  </section>
+
+  <section class="mt-12 grid gap-4">
+    <h2>What I’m working on</h2>
+    <ul class="grid gap-3">
+      <li class="card">Static-first architecture and accessibility systemization.</li>
+      <li class="card">Design token discipline across typography and spacing.</li>
+      <li class="card">Human-centered interfaces for cognitive clarity.</li>
+    </ul>
+  </section>
+
+  <section class="mt-12 grid gap-4">
+    <h2>Recent log entries</h2>
+    <div class="grid gap-3 sm:grid-cols-2">
+      {recent.map((post) => (
+        <article class="card">
+          <h3><a href={`/log/${post.slug}`} class="link-subtle">{post.title}</a></h3>
+          <p>{post.summary}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

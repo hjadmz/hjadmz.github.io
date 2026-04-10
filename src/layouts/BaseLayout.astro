@@ -1,0 +1,26 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CommandPalette from '../components/CommandPalette.astro';
+import '../styles/global.css';
+const { title = 'hjadmz' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <div class="min-h-screen grid grid-rows-[auto_1fr_auto]">
+      <Header />
+      <main id="main" class="mx-auto w-full max-w-[72rem] px-4 py-12 sm:px-6 lg:px-8">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+    <CommandPalette />
+  </body>
+</html>
