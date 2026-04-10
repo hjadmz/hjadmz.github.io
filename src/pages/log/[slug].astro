@@ -18,8 +18,6 @@ const related = posts
     const aDate = Date.parse(a.candidate.date);
     const bDate = Date.parse(b.candidate.date);
     if (!Number.isNaN(aDate) && !Number.isNaN(bDate)) return bDate - aDate;
-    if (a.candidate.date < b.candidate.date) return 1;
-    if (a.candidate.date > b.candidate.date) return -1;
     return 0;
   })
   .slice(0, 2)
