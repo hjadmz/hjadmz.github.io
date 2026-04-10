@@ -10,5 +10,20 @@
       <path d="M3 7h18M3 12h18M3 17h18"/>
     </svg>
   </button>
-  <span id="fca-tooltip" class="fca-tooltip" role="tooltip">Function &gt; Convenience &gt; Aesthetics</span>
+  <span id="fca-tooltip" class="fca-tooltip" role="tooltip" aria-hidden="true">Function &gt; Convenience &gt; Aesthetics</span>
 </span>
+
+<script>
+  document.querySelectorAll('.fca-wrap').forEach((wrap) => {
+    const tooltip = wrap.querySelector('.fca-tooltip');
+    if (!tooltip) return;
+
+    const show = () => tooltip.setAttribute('aria-hidden', 'false');
+    const hide = () => tooltip.setAttribute('aria-hidden', 'true');
+
+    wrap.addEventListener('mouseenter', show);
+    wrap.addEventListener('mouseleave', hide);
+    wrap.addEventListener('focusin', show);
+    wrap.addEventListener('focusout', hide);
+  });
+</script>
