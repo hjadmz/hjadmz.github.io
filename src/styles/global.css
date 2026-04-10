@@ -72,7 +72,7 @@ a { color: var(--accent); text-underline-offset: 2px; }
   border: 1px solid color-mix(in srgb, var(--fg) 28%, transparent);
   background: color-mix(in srgb, var(--surface) 90%, transparent);
   color: var(--fg);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.8em;
   letter-spacing: 0.06em;
   line-height: 1.5;
@@ -96,7 +96,7 @@ a { color: var(--accent); text-underline-offset: 2px; }
   border: 1px solid color-mix(in srgb, var(--fg) 20%, transparent);
   background: var(--surface);
   padding: 0.3rem 0.55rem;
-  font: 500 0.7rem/1.4 "JetBrains Mono", ui-monospace, monospace;
+  font: 500 0.7rem/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   opacity: 0;
   pointer-events: none;
 }
@@ -130,7 +130,7 @@ a { color: var(--accent); text-underline-offset: 2px; }
   border-radius: 0.35rem;
   background: color-mix(in srgb, var(--fg) 8%, transparent);
   padding: 0.1rem 0.35rem;
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.92em;
 }
 .prose pre {
