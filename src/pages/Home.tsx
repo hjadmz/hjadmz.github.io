@@ -8,7 +8,7 @@ export default function Home() {
         <h1 className="mb-8">Design Engineer &<br/>Systems Architect.</h1>
         <p className="text-[var(--step-0)] text-[var(--fg-muted)] max-w-[54ch] leading-relaxed">
           Bridging Human-Centered Computing with rigorous systems architecture. 
-          Operating under the Architecture of Silence protocol—where technology is sculptural, 
+          Operating under the architecture of my own FCA (Function > Convenience > Aesthetics) protocol—where technology is sculptural, 
           and power is hidden inside silence.
         </p>
         
