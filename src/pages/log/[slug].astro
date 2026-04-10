@@ -18,14 +18,14 @@ const { post } = Astro.props;
     <section class="card mb-8" aria-label="Key ideas">
       <h2>Key ideas</h2>
       <ul class="list-disc pl-5">
-        {post.keyIdeas.map((idea: string) => <li>{idea}</li>)}
+        {post.keyIdeas.map((idea) => <li>{idea}</li>)}
       </ul>
     </section>
 
-    {post.sections.map((section: { heading: string; body: string[] }) => (
+    {post.sections.map((section) => (
       <section class="mb-8">
         <h2>{section.heading}</h2>
-        {section.body.map((paragraph: string) => <p>{paragraph}</p>)}
+        {section.body.map((paragraph) => <p>{paragraph}</p>)}
       </section>
     ))}
   </article>

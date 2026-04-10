@@ -17,9 +17,13 @@ const nav = [
       <span class="text-[0.72rem] uppercase tracking-[0.18em] text-[var(--fg-muted)]">Soli Deo Gloria</span>
     </a>
     <nav aria-label="Primary" class="flex items-center gap-4 text-sm">
-      {nav.map((item) => (
-        <a href={item.href} class={`link-subtle ${path === item.href ? 'text-[var(--fg)]' : 'text-[var(--fg-muted)]'}`}>{item.label}</a>
-      ))}
+      {nav.map((item) => {
+        const linkClass = path === item.href
+          ? 'link-subtle text-[var(--fg)]'
+          : 'link-subtle text-[var(--fg-muted)]';
+
+        return <a href={item.href} class={linkClass}>{item.label}</a>;
+      })}
     </nav>
   </div>
 </header>
