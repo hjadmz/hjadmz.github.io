@@ -1,5 +1,41 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+
+function FCABadge() {
+  const [hovered, setHovered] = useState(false);
+  const prefersReduced = useReducedMotion();
+
+  return (
+    <span className="relative inline-block">
+      <span
+        className="fca-highlight"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        FCA
+      </span>
+      <AnimatePresence>
+        {hovered && (
+          <motion.span
+            initial={{ opacity: 0, y: prefersReduced ? 0 : 6, scale: prefersReduced ? 1 : 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: prefersReduced ? 0 : 6, scale: prefersReduced ? 1 : 0.95 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 px-3 py-1.5 bg-[var(--fg)] text-[var(--bg)] text-xs font-mono rounded-lg whitespace-nowrap pointer-events-none shadow-xl"
+            style={{ letterSpacing: '0.01em' }}
+          >
+            Function &gt; Convenience &gt; Aesthetics
+            <span
+              className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent"
+              style={{ borderTopColor: 'var(--fg)' }}
+            />
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </span>
+  );
+}
 
 export default function Home() {
   return (
@@ -7,8 +43,8 @@ export default function Home() {
       <div>
         <h1 className="mb-8">Design Engineer &<br/>Systems Architect</h1>
         <p className="text-[var(--step-0)] text-[var(--fg-muted)] max-w-[54ch] leading-relaxed">
-          Bridging Human-Centered Computing with rigorous systems architecture. 
-          Operating under the architecture of my own FCA (Function > Convenience > Aesthetics) protocol—where technology is sculptural, 
+          Bridging Human-Centered Computing with rigorous systems architecture.{' '}
+          Operating under the architecture of my own <FCABadge /> protocol—where technology is sculptural,
           and power is hidden inside silence.
         </p>
         

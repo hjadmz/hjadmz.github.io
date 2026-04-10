@@ -6,6 +6,7 @@
   --color-offwhite: #F9FAFB;
   --color-navy-muted: rgba(2, 6, 23, 0.6);
   --color-offwhite-muted: rgba(249, 250, 251, 0.6);
+  --color-accent: #0071E3;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
@@ -16,6 +17,7 @@
     --bg: var(--color-offwhite);
     --fg: var(--color-navy);
     --fg-muted: var(--color-navy-muted);
+    --accent: var(--color-accent);
     
     /* Major Third Type Scale (1.25) */
     --step--1: clamp(0.80rem, 0.78rem + 0.10vw, 0.85rem);
@@ -31,6 +33,7 @@
     --bg: var(--color-navy);
     --fg: var(--color-offwhite);
     --fg-muted: var(--color-offwhite-muted);
+    --accent: #3B9EFF;
   }
 
   body {
@@ -139,5 +142,34 @@
   .link-subtle:hover::after {
     transform: scaleX(1);
     transform-origin: bottom left;
+  }
+
+  /* FCA highlight */
+  .fca-highlight {
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: default;
+    position: relative;
+    display: inline-block;
+  }
+
+  .fca-highlight::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0.5;
+  }
+
+  .fca-highlight:hover::after {
+    transform: scaleX(1);
+    transform-origin: left center;
   }
 }

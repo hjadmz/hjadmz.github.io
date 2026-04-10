@@ -17,9 +17,6 @@ export default function About() {
           This digital space is my rock. It operates under the Architecture of Silence. In a world optimized for noise and endless friction, true power is hidden inside quiet, intentional design. I treat technology as a sculptural object. I build environments where function always precedes convenience, and beauty is simply the natural byproduct of rigorous engineering.
         </p>
         <p>
-          Whether you are an employer reviewing my systems, a friend, or a stranger who found this space, you are looking at the same foundation. My faith, my covenant-loyalty to my people, and my substance-free lifestyle are not casual preferences. They are the load-bearing walls of my life and my work. They are constraints that narrow my focus and force me to build with integrity.
-        </p>
-        <p>
           Everything here is governed by those constraints. Everything is intentional.
         </p>
         
