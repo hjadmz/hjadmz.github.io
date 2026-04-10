@@ -19,11 +19,12 @@ const nav = [
     </a>
     <nav aria-label="Primary" class="flex flex-wrap items-center justify-end gap-3 text-sm">
       {nav.map((item) => {
-        const linkClass = path === item.href
+        const isActive = path === item.href || path.startsWith(`${item.href}/`);
+        const linkClass = isActive
           ? 'link-subtle text-[var(--fg)]'
           : 'link-subtle text-[var(--fg-muted)]';
 
-        return <a href={item.href} class={linkClass}>{item.label}</a>;
+        return <a href={item.href} class={linkClass} aria-current={isActive ? 'page' : undefined}>{item.label}</a>;
       })}
       <ThemeToggle />
     </nav>

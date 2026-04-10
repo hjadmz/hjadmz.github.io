@@ -11,11 +11,6 @@
   const button = document.getElementById('theme-toggle');
   const root = document.documentElement;
 
-  const currentTheme = (): 'light' | 'dark' => {
-    if (root.dataset.theme === 'dark') return 'dark';
-    if (root.dataset.theme === 'light') return 'light';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  };
   const setTheme = (next: 'light' | 'dark') => {
     root.dataset.theme = next;
     localStorage.setItem('theme', next);
@@ -23,9 +18,14 @@
     button?.setAttribute('aria-label', `Theme: ${next}`);
   };
 
-  setTheme(currentTheme());
+  const currentTheme: 'light' | 'dark' = root.dataset.theme === 'dark'
+    ? 'dark'
+    : root.dataset.theme === 'light'
+      ? 'light'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  setTheme(currentTheme);
 
   button?.addEventListener('click', () => {
-    setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+    setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
   });
 </script>
