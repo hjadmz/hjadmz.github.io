@@ -8,23 +8,30 @@ const nav = [
   { href: '/about', label: '/about' },
 ];
 ---
-<header class="focus-element border-b border-[color:color-mix(in_srgb,var(--fg)_10%,transparent)] py-6">
-  <div class="mx-auto flex w-full max-w-[72rem] items-start justify-between gap-6 px-4 sm:px-6 lg:px-8">
-    <a href="/" class="logo-lockup inline-flex items-center gap-2 no-underline text-[0.9rem] font-semibold tracking-[0.11em]">
-      <Mark class="h-5 w-5" />
-      <span>hjadmz</span>
-    </a>
-    <nav aria-label="Primary" class="flex flex-wrap items-center justify-end gap-3 text-sm">
+<header class="focus-element h-32 flex items-center">
+  <div class="reading-column w-full flex items-center justify-between gap-8">
+    <div class="min-w-0 flex-1">
+      <a href="/" class="inline-flex items-center gap-2 no-underline text-[var(--step--1)] text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors">
+        <Mark class="w-4 h-4 opacity-80" />
+        <span>hjadmz</span>
+      </a>
+    </div>
+    <nav aria-label="Primary" class="flex items-center gap-5 text-[var(--step--1)] shrink-0">
       {nav.map((item) => {
         const pathSegments = path.split('/').filter(Boolean);
         const hrefSegments = item.href.split('/').filter(Boolean);
         const isActive = pathSegments.length >= hrefSegments.length
           && hrefSegments.every((segment, index) => pathSegments[index] === segment);
-        const linkClass = isActive
-          ? 'link-subtle text-[var(--fg)]'
-          : 'link-subtle text-[var(--fg-muted)]';
 
-        return <a href={item.href} class={linkClass} aria-current={isActive ? 'page' : undefined}>{item.label}</a>;
+        return (
+          <a
+            href={item.href}
+            class={`link-subtle pb-0.5 ${isActive ? 'text-[var(--fg)]' : 'text-[var(--fg-muted)]'}`}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        );
       })}
       <ThemeToggle />
     </nav>

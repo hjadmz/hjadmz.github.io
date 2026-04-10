@@ -1,62 +1,30 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FcaCallout from '../components/FcaCallout.astro';
-import { getCollection } from 'astro:content';
-
-const entrySlug = (id: string) => id.replace(/\.mdx?$/, '');
-const recent = (await getCollection('log'))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 2);
 ---
 <BaseLayout
   title="hjadmz"
   description="hjadmz builds static-first interfaces with strong architecture, accessibility, and design token discipline."
 >
-  <section class="grid gap-6">
-    <h1>Design Engineer &amp; Systems Architect</h1>
-    <p>
-      Bridging human-centered computing with rigorous systems architecture.
-      Built around <FcaCallout /> where function leads, convenience follows, and aesthetics reinforce clarity.
-    </p>
-    <div class="flex gap-3">
-      <a href="/log" class="card link-subtle">View log</a>
-      <a href="/work" class="card link-subtle">View work</a>
-    </div>
-  </section>
+  <h1 class="mb-8">Design Engineer &amp;<br/>Systems Architect</h1>
+  <p class="text-[var(--fg-muted)] max-w-[54ch] leading-relaxed mb-16">
+    Bridging human-centered computing with rigorous systems architecture.
+    Operating under the architecture of my own <FcaCallout /> protocol—where technology is sculptural,
+    and power is hidden inside silence.
+  </p>
 
-  <section class="mt-12 grid gap-4">
-    <h2>What I’m working on</h2>
-    <ul class="grid gap-3">
-      <li class="card">Static-first architecture and accessibility systemization.</li>
-      <li class="card">Design token discipline across typography and spacing.</li>
-      <li class="card">Human-centered interfaces for cognitive clarity.</li>
-    </ul>
-  </section>
-
-  <section class="mt-12 grid gap-4">
-    <h2>Recent log entries</h2>
-    {recent.length > 0 ? (
-      <div class="grid gap-3 sm:grid-cols-2">
-        {recent.map((post) => (
-          <article class="card">
-            <h3><a href={`/log/${entrySlug(post.id)}`} class="link-subtle">{post.data.title}</a></h3>
-            <p>{post.data.summary || 'No summary yet.'}</p>
-          </article>
-        ))}
-      </div>
-    ) : (
-      <p class="text-[var(--fg-muted)]">No log entries yet. <a href="/log" class="link-subtle">Check back soon.</a></p>
-    )}
-  </section>
-
-  <section class="mt-12 grid gap-3" aria-labelledby="about-teaser">
-    <h2 id="about-teaser">About</h2>
-    <p>I design and build calm, static-first systems under the hjadmz brand.</p>
-    <p><a href="/about" class="link-subtle">Read full about</a></p>
-  </section>
-
-  <section class="mt-12 grid gap-3" aria-labelledby="contact-block">
-    <h2 id="contact-block">Contact</h2>
-    <p>Email: <a href="mailto:hjadmz@icloud.com" class="link-subtle">hjadmz@icloud.com</a></p>
-  </section>
+  <div class="grid gap-4">
+    <a href="/log" class="group flex items-center gap-4 text-[var(--step-0)] text-[var(--fg)] no-underline w-fit">
+      <span class="w-8 h-[1px] bg-[color:var(--fg)] opacity-20 group-hover:opacity-100 group-hover:w-16 transition-all duration-500 ease-out inline-block"></span>
+      <span class="transition-transform duration-500 ease-out group-hover:translate-x-2">View log</span>
+    </a>
+    <a href="/work" class="group flex items-center gap-4 text-[var(--step-0)] text-[var(--fg)] no-underline w-fit">
+      <span class="w-8 h-[1px] bg-[color:var(--fg)] opacity-20 group-hover:opacity-100 group-hover:w-16 transition-all duration-500 ease-out inline-block"></span>
+      <span class="transition-transform duration-500 ease-out group-hover:translate-x-2">View work</span>
+    </a>
+    <a href="/about" class="group flex items-center gap-4 text-[var(--step-0)] text-[var(--fg)] no-underline w-fit">
+      <span class="w-8 h-[1px] bg-[color:var(--fg)] opacity-20 group-hover:opacity-100 group-hover:w-16 transition-all duration-500 ease-out inline-block"></span>
+      <span class="transition-transform duration-500 ease-out group-hover:translate-x-2">About me</span>
+    </a>
+  </div>
 </BaseLayout>
