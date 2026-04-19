@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <!--
+    Monolith mark — adaptive favicon.
+
+    Two defensive layers so light/dark switching is rock-solid across
+    the browser matrix that treats SVG favicons inconsistently:
+
+      1. Default `fill` on <path> uses brand ink (#020617). Any agent
+         that refuses to evaluate <style> (older Safari, niche crawlers,
+         RSS-reader previews) still renders a visible mark on any light
+         background.
+      2. Embedded stylesheet flips `fill` to brand paper (#F9FAFB) when
+         `prefers-color-scheme: dark`. This is the path Chrome, Firefox,
+         Edge, and modern Safari (17+) honor.
+
+    `color-scheme: light dark` on :root signals to the UA that the
+    document adapts to both, which is what Chromium uses to decide
+    whether to evaluate the dark-mode media block at all.
+
+    Colors are literal (#020617 / #F9FAFB) — favicons render outside
+    the document's CSS custom-property scope, so token references
+    would resolve to nothing.
+  -->
+  <style>
+    :root { color-scheme: light dark; }
+    path { fill: #020617; }
+    @media (prefers-color-scheme: dark) {
+      path { fill: #F9FAFB; }
+    }
+  </style>
+  <path d="M4 4h1v2H4V4zm7 0h1v2h-1V4zM8 4h1v4H8V4zm-1 4h2v1H7V8zm-2 2h1v1H5v-1zm5 0h1v1h-1v-1zm-4 1h4v1H6v-1z"/>
+</svg>
