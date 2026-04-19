@@ -55,6 +55,14 @@ pnpm preview
 
 Node 18.18+ required (enforced via `engines` in `package.json`).
 
+## Deploy (GitHub Pages)
+
+- Workflow: `.github/workflows/deploy.yml`
+- Trigger: push to `main` (or manual run)
+- Build output: `dist/`
+
+In repository settings, set **Pages → Source** to **GitHub Actions**.
+
 ## Project shape
 
 ```
