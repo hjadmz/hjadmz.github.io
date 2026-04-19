@@ -1,0 +1,40 @@
+---
+interface Props {
+  className?: string;
+}
+
+const { className } = Astro.props;
+---
+
+{/*
+  Full 16-unit viewBox with natural 4-unit padding on all sides.
+  The filled mass occupies y=4..12, x=4..12. That padding IS the
+  breathing room — it lets the face sit at ~50% of the container's
+  visual weight, which is what feels right next to the "hjadmz"
+  wordmark. An earlier revision cropped the viewBox tight (4 4 8 8)
+  to make the face fill the container; in practice that reads as an
+  oversized mark looming next to smaller text. The padded box is the
+  correct balance.
+
+  No shape-rendering="crispEdges". That hint forces nearest-neighbor
+  rendering, which looks good at integer zoom (1x, 2x, 3x) but breaks
+  at browser-zoom levels between those (110%, 125%, 150%) — the face
+  stays blocky while the surrounding text anti-aliases smoothly, so
+  the mark reads "puffy" next to crisp type. Letting the SVG
+  anti-alias keeps every zoom level consistent at the cost of a
+  subpixel softness at 100% that is effectively invisible on retina.
+*/}
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 16 16"
+  role="img"
+  aria-labelledby="mark-title mark-desc"
+  class={className}
+>
+  <title id="mark-title">hjadmz mark</title>
+  <desc id="mark-desc">16-pixel grid smiley face used as the hjadmz brand mark</desc>
+  <path
+    fill="currentColor"
+    d="M4 4h1v2H4V4zm7 0h1v2h-1V4zM8 4h1v4H8V4zm-1 4h2v1H7V8zm-2 2h1v1H5v-1zm5 0h1v1h-1v-1zm-4 1h4v1H6v-1z"
+  />
+</svg>

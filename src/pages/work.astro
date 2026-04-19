@@ -1,0 +1,195 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import MotionWrapper from "../components/MotionWrapper.astro";
+import Arrow from "../components/Arrow.astro";
+
+/*
+  /work — shipped projects.
+
+  Scaling rules (match /log for parity):
+    - 0 entries: empty state.
+    - 1–7:      flat list.
+    - 8+ OR    spans >= 2 years: group by year.
+
+  Sort order:
+    - Explicit `order` field wins (for pinning a hero project).
+    - Then: year desc (newest on top).
+
+  PARITY CONTRACT: this page mirrors /log. See the comment block in
+  src/pages/log.astro for the full rule set. Structural / visual drift
+  between these two must be prevented — the user traverses both.
+*/
+
+const entries = (await getCollection("work", ({ data }) => !data.draft)).sort(
+  (a, b) => {
+    if (a.data.order != null && b.data.order != null) return a.data.order - b.data.order;
+    if (a.data.order != null) return -1;
+    if (b.data.order != null) return 1;
+    return Number(b.data.year) - Number(a.data.year);
+  }
+);
+
+const yearsSpanned = new Set(entries.map((e) => e.data.year)).size;
+const shouldGroupByYear = entries.length >= 8 || yearsSpanned >= 2;
+
+// Group by year when in grouping mode. Entries with explicit `order` land
+// in their year bucket so the hero pin stays in its chronological home.
+const byYear = new Map<string, typeof entries>();
+for (const entry of entries) {
+  const year = String(entry.data.year);
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(entry);
+}
+const yearGroups = Array.from(byYear.entries()).sort(
+  (a, b) => Number(b[0]) - Number(a[0])
+);
+---
+
+<Base title="Work" description="Shipped projects. Research-backed design engineering.">
+  <MotionWrapper>
+    <h1 class="page-heading">Work</h1>
+  </MotionWrapper>
+
+  {entries.length === 0 ? (
+    <MotionWrapper delay={0.1}>
+      <div class="empty-state">
+        <p class="empty-state-label">No shipped work yet</p>
+        <p class="empty-state-message">
+          This shelf only fills with projects that have actually shipped.
+          In the meantime, the engineering log is where the thinking lives.
+        </p>
+        <a href="/log" class="cta-link">
+          read the log instead
+          <Arrow direction="right" />
+        </a>
+      </div>
+    </MotionWrapper>
+  ) : shouldGroupByYear ? (
+    yearGroups.map(([year, yearEntries], gi) => (
+      <MotionWrapper delay={0.08 + gi * 0.04}>
+        <section class="year-group" aria-label={`Work shipped in ${year}`}>
+          <h2 class="year-group-label">{year}</h2>
+          <div class="spotlight-list">
+            {yearEntries.map((entry) => {
+              const tags = (entry.data.tags || []).join(",");
+              const searchData =
+                `${entry.data.title} ${entry.data.description || ""} ${entry.data.type} ${tags}`.toLowerCase();
+              return (
+                <a
+                  href={`/work/${entry.id}`}
+                  class="spotlight-item work-item"
+                  data-search={searchData}
+                  aria-label={`${entry.data.title} — ${entry.data.type}`}
+                >
+                  <div class="work-item-meta">
+                    <span class="work-item-year" aria-label="Year">{entry.data.year}</span>
+                    {(entry.data.tags?.length ?? 0) > 0 && (
+                      <span class="meta-tags">
+                        {entry.data.tags!.map((tag: string) => (
+                          <span class="post-tag">{tag}</span>
+                        ))}
+                      </span>
+                    )}
+                  </div>
+                  <h3 class="work-item-title">
+                    <span>{entry.data.title}</span>
+                    <Arrow direction="right" class="work-item-arrow" />
+                  </h3>
+                  {entry.data.description && (
+                    <p class="desc-text work-item-desc">{entry.data.description}</p>
+                  )}
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      </MotionWrapper>
+    ))
+  ) : (
+    <div id="work-list" class="spotlight-list">
+      {entries.map((entry, i) => {
+        const tags = (entry.data.tags || []).join(",");
+        const searchData =
+          `${entry.data.title} ${entry.data.description || ""} ${entry.data.type} ${tags}`.toLowerCase();
+        return (
+          <MotionWrapper delay={0.08 * (i + 1)}>
+            <a
+              href={`/work/${entry.id}`}
+              class="spotlight-item work-item"
+              data-search={searchData}
+              aria-label={`${entry.data.title} — ${entry.data.type}`}
+            >
+              <div class="work-item-meta">
+                <span class="work-item-year" aria-label="Year">{entry.data.year}</span>
+                {(entry.data.tags?.length ?? 0) > 0 && (
+                  <span class="meta-tags">
+                    {entry.data.tags!.map((tag: string) => (
+                      <span class="post-tag">{tag}</span>
+                    ))}
+                  </span>
+                )}
+              </div>
+              <h2 class="work-item-title">
+                <span>{entry.data.title}</span>
+                <Arrow direction="right" class="work-item-arrow" />
+              </h2>
+              {entry.data.description && (
+                <p class="desc-text work-item-desc">{entry.data.description}</p>
+              )}
+            </a>
+          </MotionWrapper>
+        );
+      })}
+    </div>
+  )}
+</Base>
+
+<style>
+  .work-item {
+    display: block;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    text-decoration: none;
+    color: var(--color-text);
+    /* See /log parity note: hover is carried by the sliding arrow +
+       the sibling-dim. No row background tint. */
+    transition: opacity 300ms var(--ease-overdamp);
+  }
+
+  /* Meta row mirrors .log — date/tags pattern for consistency */
+  .work-item-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.25rem;
+  }
+  /* .meta-tags lives in global.css — one tag-spacing contract everywhere. */
+  .work-item-year {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Title row with arrow affordance — monochrome, restrained.
+     Arrow hover/reveal rules are in global.css (shared with /log) so
+     they reach the <Arrow> SVG through Astro's scoped-style boundary.
+     Keep the parity by editing global, not here. */
+  .work-item-title {
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    color: var(--color-text);
+  }
+
+  .work-item-desc {
+    margin-top: 0.25rem;
+  }
+</style>

@@ -1,0 +1,32 @@
+{
+  "name": "hjadmz-com",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Personal site and engineering log for hjadmz — research-backed interface systems.",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.2.6",
+    "@astrojs/react": "^4.2.1",
+    "@astrojs/sitemap": "^3.3.1",
+    "@astrojs/vercel": "^8.1.4",
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/mrs-saint-delafield": "^5.2.7",
+    "@tailwindcss/vite": "^4.2.2",
+    "astro": "^5.7.10",
+    "framer-motion": "^12.6.3",
+    "fuse.js": "^7.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sharp": "^0.33.5",
+    "tailwindcss": "^4.0.0"
+  }
+}

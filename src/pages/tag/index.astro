@@ -1,0 +1,270 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import MotionWrapper from "../../components/MotionWrapper.astro";
+import { tagSlug } from "../../lib/tag";
+
+/*
+  /tag — index of every tag in use.
+
+  The breadcrumb on /tag/[slug] pages shows `hjadmz / tag / <slug>`; that
+  middle `tag` segment MUST resolve to a real page, otherwise it's a dead
+  link. This file is that page.
+
+  Aggregates tags from both `blog` and `work` collections so it always
+  reflects the current content graph. Tags are sorted by frequency (most
+  entries first) with alphabetical tiebreak — the most-referenced tags
+  surface naturally.
+*/
+
+const [blog, work] = await Promise.all([
+  getCollection("blog", ({ data }) => !data.draft),
+  getCollection("work", ({ data }) => !data.draft),
+]);
+
+const counts = new Map<string, { label: string; count: number }>();
+
+for (const post of blog) {
+  for (const tag of post.data.tags ?? []) {
+    const slug = tagSlug(tag);
+    const bucket = counts.get(slug) ?? { label: tag, count: 0 };
+    bucket.count += 1;
+    counts.set(slug, bucket);
+  }
+}
+for (const entry of work) {
+  for (const tag of entry.data.tags ?? []) {
+    const slug = tagSlug(tag);
+    const bucket = counts.get(slug) ?? { label: tag, count: 0 };
+    bucket.count += 1;
+    counts.set(slug, bucket);
+  }
+}
+
+const tags = Array.from(counts.entries())
+  .map(([slug, { label, count }]) => ({ slug, label, count }))
+  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
+const totalEntries = blog.length + work.length;
+
+/*
+  Too-many-tags UX.
+
+  Below ~12 tags, a flat grid is the right answer: the eye can scan the
+  whole archive at a glance, and splitting it into tiers just adds visual
+  overhead. At 12+ tags the flat grid starts to feel undifferentiated
+  — every tag looks the same weight — so we split into three tiers so
+  the reader sees density at a glance:
+
+    primary    — count >= 4  (load-bearing themes)
+    secondary  — count 2-3   (recurring, not dominant)
+    occasional — count 1     (one-off mentions)
+
+  Single source of truth for the threshold: TIER_AT = 12. Change it here
+  to shift the flat→tiered transition sitewide.
+*/
+const TIER_AT = 12;
+const useTiers = tags.length >= TIER_AT;
+
+const tiers = useTiers
+  ? [
+      {
+        key: "primary",
+        label: "Primary",
+        meta: "Load-bearing themes",
+        items: tags.filter((t) => t.count >= 4),
+      },
+      {
+        key: "secondary",
+        label: "Secondary",
+        meta: "Recurring",
+        items: tags.filter((t) => t.count >= 2 && t.count < 4),
+      },
+      {
+        key: "occasional",
+        label: "Occasional",
+        meta: "Single mentions",
+        items: tags.filter((t) => t.count === 1),
+      },
+    ].filter((tier) => tier.items.length > 0)
+  : [];
+---
+
+<Base
+  title="Tags"
+  description="Browse every tag across the hjadmz log and work archive."
+>
+  <MotionWrapper>
+    <p class="tag-eyebrow">Index</p>
+    <h1 class="page-heading tag-index-heading">Tags</h1>
+  </MotionWrapper>
+
+  <MotionWrapper delay={0.1}>
+    <p class="tag-index-lede">
+      {tags.length} {tags.length === 1 ? "tag" : "tags"} across {totalEntries}{" "}
+      {totalEntries === 1 ? "entry" : "entries"}. Click one to see everything
+      filed under it.
+    </p>
+  </MotionWrapper>
+
+  {tags.length === 0 ? (
+    <MotionWrapper delay={0.18}>
+      <div class="empty-state">
+        <p class="empty-state-label">No tags yet</p>
+        <p class="empty-state-message">
+          Tags appear here as content gets filed. Nothing is tagged yet.
+        </p>
+      </div>
+    </MotionWrapper>
+  ) : useTiers ? (
+    // Tiered render — only when we've crossed TIER_AT threshold.
+    tiers.map((tier, ti) => (
+      <MotionWrapper delay={0.18 + ti * 0.06}>
+        <section class="tag-tier" aria-labelledby={`tag-tier-${tier.key}`}>
+          <header class="tag-tier-header">
+            <h2 id={`tag-tier-${tier.key}`} class="tag-tier-label">
+              {tier.label}
+            </h2>
+            <span class="tag-tier-meta">{tier.meta}</span>
+          </header>
+          <ul class="tag-index-list" aria-label={`${tier.label} tags`}>
+            {tier.items.map((t) => (
+              <li>
+                <a href={`/tag/${t.slug}`} class="tag-index-item">
+                  <span class="tag-index-label">#{t.label}</span>
+                  <span class="tag-index-count" aria-label={`${t.count} entries`}>
+                    {t.count}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </MotionWrapper>
+    ))
+  ) : (
+    // Flat render — small archives stay legible as one grid.
+    <MotionWrapper delay={0.18}>
+      <ul class="tag-index-list" aria-label="All tags">
+        {tags.map((t) => (
+          <li>
+            <a href={`/tag/${t.slug}`} class="tag-index-item">
+              <span class="tag-index-label">#{t.label}</span>
+              <span class="tag-index-count" aria-label={`${t.count} entries`}>
+                {t.count}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </MotionWrapper>
+  )}
+</Base>
+
+<style>
+  .tag-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+    margin: 0 0 var(--space-2);
+    opacity: 0.7;
+  }
+  .tag-index-heading {
+    margin-bottom: var(--space-2);
+  }
+  .tag-index-lede {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    max-width: 48ch;
+    margin: 0 0 var(--space-10);
+    line-height: 1.55;
+  }
+
+  .tag-index-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem 0.75rem;
+  }
+
+  /*
+    Each chip is a full-bleed target: label + count on the same line.
+    Monochrome, faint by default, earns contrast on hover/focus. Matches
+    the visual language of .skill-tag without the group-dim behavior
+    (tags here are navigable so dimming siblings would read as broken).
+  */
+  .tag-index-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.4375rem 0.75rem;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1;
+    transition:
+      color var(--duration-quick) var(--ease-default),
+      border-color var(--duration-quick) var(--ease-default),
+      background-color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .tag-index-item:hover {
+      color: var(--color-text);
+      border-color: var(--color-border);
+      background: var(--color-surface-raised);
+      text-decoration: none;
+    }
+  }
+  .tag-index-label {
+    font-variant-numeric: tabular-nums;
+  }
+  .tag-index-count {
+    font-size: 0.6875rem;
+    color: var(--color-text-faint);
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+    Tier sections — only render at tags.length >= TIER_AT. The header
+    mirrors the archive year-group pattern on /log + /work: small mono
+    uppercase label + a one-word meta on the same row. Keeps the
+    visual rhythm consistent with the rest of the archive.
+  */
+  .tag-tier {
+    margin-top: var(--space-8);
+  }
+  .tag-tier:first-of-type {
+    margin-top: 0;
+  }
+  .tag-tier-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0 0 var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .tag-tier-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-faint);
+    margin: 0;
+    font-weight: 500;
+  }
+  .tag-tier-meta {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-text-faint);
+    opacity: 0.6;
+  }
+</style>

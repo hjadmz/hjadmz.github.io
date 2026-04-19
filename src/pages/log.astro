@@ -1,0 +1,191 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import MotionWrapper from "../components/MotionWrapper.astro";
+import Arrow from "../components/Arrow.astro";
+import { formatDate } from "../lib/date";
+
+/*
+  /log — reverse-chronological writing feed.
+
+  Scaling rules (future-proof, no pagination ever required):
+    - 0 posts:  empty state (real, dignified, never "broken" looking).
+    - 1–7:     flat list, no year dividers (grouping would look silly).
+    - 8+ OR   spans >= 2 calendar years: group by year with subtle dividers.
+
+  That lets the same page render correctly whether there are 3 entries
+  or 300. No "load more" button, no infinite scroll — just a static
+  archive a human can read top-to-bottom.
+
+  Tags here are rendered as text, not anchors. The card itself is a
+  link; HTML forbids nesting <a> inside <a>. On the detail pages
+  (/log/[slug]) tags ARE anchors to /tag/[slug], because there's no
+  parent link.
+
+  PARITY CONTRACT (read before editing):
+    This page and /work are SIBLINGS. They must behave identically:
+      · same scaling thresholds (0 / 1–7 / 8+ or >=2 years)
+      · same empty-state shape (label + message + cross-CTA)
+      · same list item structure (.post-item ↔ .work-item):
+          meta row (date/year + tags) → title row (text + arrow) → desc
+      · same hover affordance (arrow reveals at opacity 0.45)
+      · same typography (meta text 0.75rem mono faint)
+    If you change one, change the other. The user navigates between
+    /log and /work expecting no visual whiplash.
+*/
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const yearsSpanned = new Set(
+  posts.map((p) => new Date(p.data.date).getFullYear())
+).size;
+const shouldGroupByYear = posts.length >= 8 || yearsSpanned >= 2;
+
+// Group into Map<year, posts[]> preserving sort order
+const byYear = new Map<string, typeof posts>();
+for (const post of posts) {
+  const year = new Date(post.data.date).getFullYear().toString();
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(post);
+}
+const yearGroups = Array.from(byYear.entries()).sort(
+  (a, b) => Number(b[0]) - Number(a[0])
+);
+---
+
+<Base
+  title="Log"
+  description="Design decisions, engineering rationale, and process notes. No filler."
+>
+  <MotionWrapper>
+    <h1 class="page-heading">Log</h1>
+  </MotionWrapper>
+
+  {posts.length === 0 ? (
+    <MotionWrapper delay={0.1}>
+      <div class="empty-state">
+        <p class="empty-state-label">No entries yet</p>
+        <p class="empty-state-message">
+          The log fills with process notes and engineering rationale as
+          work ships. Nothing is published here until it earns a place.
+        </p>
+        <a href="/work" class="cta-link">
+          see the work instead
+          <Arrow direction="right" />
+        </a>
+      </div>
+    </MotionWrapper>
+  ) : shouldGroupByYear ? (
+    yearGroups.map(([year, yearPosts], gi) => (
+      <MotionWrapper delay={0.08 + gi * 0.04}>
+        <section class="year-group" aria-label={`Entries from ${year}`}>
+          <h2 class="year-group-label">{year}</h2>
+          <div class="spotlight-list">
+            {yearPosts.map((post) => (
+              <a href={`/log/${post.id}`} class="spotlight-item post-item">
+                <div class="post-item-meta">
+                  <time class="meta-text" datetime={post.data.date}>
+                    {formatDate(post.data.date)}
+                  </time>
+                  {(post.data.tags?.length ?? 0) > 0 && (
+                    <span class="meta-tags">
+                      {post.data.tags!.map((tag: string) => (
+                        <span class="post-tag">{tag}</span>
+                      ))}
+                    </span>
+                  )}
+                </div>
+                <h3 class="post-item-title">
+                  <span>{post.data.title}</span>
+                  <Arrow direction="right" class="post-item-arrow" />
+                </h3>
+                {post.data.description && (
+                  <p class="desc-text post-item-desc">{post.data.description}</p>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      </MotionWrapper>
+    ))
+  ) : (
+    <div id="post-list" class="spotlight-list">
+      {posts.map((post, i) => (
+        <MotionWrapper delay={0.08 * (i + 1)}>
+          <a href={`/log/${post.id}`} class="spotlight-item post-item">
+            <div class="post-item-meta">
+              <time class="meta-text" datetime={post.data.date}>
+                {formatDate(post.data.date)}
+              </time>
+              {(post.data.tags?.length ?? 0) > 0 && (
+                <span class="meta-tags">
+                  {post.data.tags!.map((tag: string) => (
+                    <span class="post-tag">{tag}</span>
+                  ))}
+                </span>
+              )}
+            </div>
+            <h2 class="post-item-title">
+              <span>{post.data.title}</span>
+              <Arrow direction="right" class="post-item-arrow" />
+            </h2>
+            {post.data.description && (
+              <p class="desc-text post-item-desc">{post.data.description}</p>
+            )}
+          </a>
+        </MotionWrapper>
+      ))}
+    </div>
+  )}
+</Base>
+
+<style>
+  .post-item {
+    display: block;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    text-decoration: none;
+    color: var(--color-text);
+    /* The hover affordance is the Apple-style arrow slide (see
+       .post-item-arrow in global.css) plus a gentle sibling dim from
+       .spotlight-list. No background tint — it read as a button-chrome
+       artifact and fought the research aesthetic. The arrow alone is
+       the signal; the siblings dimming is the context. */
+    transition: opacity 300ms var(--ease-overdamp);
+  }
+
+  /* Meta row mirrors .work-item-meta — date/tags pattern for cross-section parity */
+  .post-item-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.25rem;
+  }
+
+  /* .meta-tags lives in global.css — one tag-spacing contract everywhere. */
+
+  /* Title row with the same arrow affordance as /work — consistency.
+     The arrow hover + reveal rules live in global.css under
+     `.post-item-arrow` / `.work-item-arrow` so they survive Astro's
+     scoped-style boundary (the <Arrow> SVG is emitted by a separate
+     component and never receives this page's data-astro-cid attribute).
+     Do not re-scope them here. */
+  .post-item-title {
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    color: var(--color-text);
+  }
+
+  .post-item-desc {
+    margin-top: 0.25rem;
+  }
+</style>

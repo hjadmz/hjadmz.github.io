@@ -1,0 +1,152 @@
+---
+import Base from "../layouts/Base.astro";
+import MotionWrapper from "../components/MotionWrapper.astro";
+
+/*
+  Source-of-truth mirror of src/styles/global.css. Any edit here must
+  match the corresponding token declaration or the spec page lies to
+  future-me. Contrast ratios are measured against the adjacent --color-bg
+  (not --color-surface) — body text sits on the page background, so that
+  is the ratio the WCAG auditor will check.
+
+  Extreme tokens (#000000 / #FFFFFF) are intentionally separated from the
+  standard text ramp. They are the "maximum authority" pair reserved for
+  the single highest-weight moment (the hero heading). Surfacing them
+  inline with the text ramp would frame them as interchangeable; they
+  are not.
+*/
+const tokens = {
+  palette: {
+    light: [
+      { name: "--color-bg", value: "#F9FAFB", contrast: "\u2014" },
+      { name: "--color-surface", value: "#FFFFFF", contrast: "\u2014" },
+      { name: "--color-text", value: "#020617", contrast: "19.30:1 AAA" },
+      { name: "--color-text-muted", value: "#475569", contrast: "7.25:1 AAA" },
+      { name: "--color-text-faint", value: "#64748B", contrast: "4.55:1 AA" },
+      { name: "--color-text-extreme", value: "#000000", contrast: "20.23:1 AAA\u00a0\u00b7\u00a0scarcity" },
+    ],
+    dark: [
+      { name: "--color-bg", value: "#020617", contrast: "\u2014" },
+      { name: "--color-surface", value: "#0F172A", contrast: "\u2014" },
+      { name: "--color-text", value: "#E2E8F0", contrast: "16.36:1 AAA" },
+      { name: "--color-text-muted", value: "#97A6BB", contrast: "8.15:1 AAA" },
+      { name: "--color-text-faint", value: "#8293A5", contrast: "6.40:1 AA" },
+      { name: "--color-text-extreme", value: "#FFFFFF", contrast: "20.88:1 AAA\u00a0\u00b7\u00a0scarcity" },
+    ],
+  },
+  typeScale: [
+    { step: "--text-step-0", range: "16\u201318px", use: "Body text" },
+    { step: "--text-step-1", range: "20\u201322.5px", use: "Subheadings, large UI" },
+    { step: "--text-step-2", range: "25\u201328px", use: "Section headings" },
+    { step: "--text-step-3", range: "31\u201335px", use: "Page headings" },
+    { step: "--text-step-4", range: "39\u201344px", use: "Hero / display" },
+    { step: "--text-step-5", range: "49\u201355px", use: "Display (rare)" },
+  ],
+  spring: { mass: 2, stiffness: 300, damping: 49 },
+};
+---
+
+<Base title="Spec" description="Programmatic display of hardcoded design tokens and architectural decisions.">
+  <MotionWrapper>
+    <h1 class="page-heading" style="margin-bottom: 0.5rem;">System specification</h1>
+    <p class="desc-text" style="font-size: var(--text-step-0); margin-bottom: var(--space-12);">
+      Programmatic display of hardcoded design tokens and architectural decisions.
+    </p>
+  </MotionWrapper>
+
+  <!-- Color · Light -->
+  <MotionWrapper delay={0.08}>
+    <section class="section-gap">
+      <h2 class="section-label">Palette &middot; Light</h2>
+      <div style="display: flex; flex-direction: column;">
+        {tokens.palette.light.map((t) => (
+          <div class="data-row">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style={`width: 1.5rem; height: 1.5rem; border-radius: var(--radius-sm); background: ${t.value}; border: 1px solid var(--color-border);`} />
+              <code style="font-family: var(--font-mono); font-size: 0.8125rem;">{t.name}</code>
+            </div>
+            <span class="meta-text">{t.contrast}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  </MotionWrapper>
+
+  <!-- Color · Dark -->
+  <MotionWrapper delay={0.12}>
+    <section class="section-gap">
+      <h2 class="section-label">Palette &middot; Dark</h2>
+      <div style="display: flex; flex-direction: column;">
+        {tokens.palette.dark.map((t) => (
+          <div class="data-row">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style={`width: 1.5rem; height: 1.5rem; border-radius: var(--radius-sm); background: ${t.value}; border: 1px solid var(--color-border);`} />
+              <code style="font-family: var(--font-mono); font-size: 0.8125rem;">{t.name}</code>
+            </div>
+            <span class="meta-text">{t.contrast}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  </MotionWrapper>
+
+  <!-- Type scale -->
+  <MotionWrapper delay={0.16}>
+    <section class="section-gap">
+      <h2 class="section-label">Type scale &middot; Major Third (1.25)</h2>
+      <div style="display: flex; flex-direction: column;">
+        {tokens.typeScale.map((t) => (
+          <div class="data-row" style="align-items: baseline;">
+            <code style="font-family: var(--font-mono); font-size: 0.8125rem;">{t.step}</code>
+            <span class="meta-text">{t.range}</span>
+            <span style="font-size: 0.75rem; color: var(--color-text-faint);">{t.use}</span>
+          </div>
+        ))}
+      </div>
+      <div class="callout" style="margin-top: var(--space-4);">
+        <p>Reading width: <strong>65ch</strong> &middot; Line-height: <strong>1.6</strong> body / <strong>1.2</strong> headings &middot; Left-aligned only</p>
+      </div>
+    </section>
+  </MotionWrapper>
+
+  <!-- Spring physics -->
+  <MotionWrapper delay={0.2}>
+    <section class="section-gap">
+      <h2 class="section-label">Motion &middot; Critically overdamped spring</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--color-border-subtle);">
+        <div style="background: var(--color-surface); padding: var(--space-6); text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: var(--text-step-2); font-weight: 700;">{tokens.spring.mass}</div>
+          <div class="meta-text" style="margin-top: 0.25rem;">mass</div>
+        </div>
+        <div style="background: var(--color-surface); padding: var(--space-6); text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: var(--text-step-2); font-weight: 700;">{tokens.spring.stiffness}</div>
+          <div class="meta-text" style="margin-top: 0.25rem;">stiffness</div>
+        </div>
+        <div style="background: var(--color-surface); padding: var(--space-6); text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: var(--text-step-2); font-weight: 700;">{tokens.spring.damping}</div>
+          <div class="meta-text" style="margin-top: 0.25rem;">damping</div>
+        </div>
+      </div>
+      <p style="font-size: 0.8125rem; color: var(--color-text-muted); margin-top: var(--space-4);">
+        Hardcoded. Zero bounce, zero overshoot. Elements settle like a hydraulic door closer.
+        These values are not tuned per-element.
+      </p>
+    </section>
+  </MotionWrapper>
+
+  <!-- Accessibility -->
+  <MotionWrapper delay={0.24}>
+    <section class="section-gap">
+      <h2 class="section-label">Accessibility constraints</h2>
+      <div class="callout" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <p>Body contrast &ge; 7:1 (AAA) both modes</p>
+        <p>Focus ring: 3px solid, :focus-visible only</p>
+        <p>prefers-reduced-motion fully honored</p>
+        <p>&le; 5 primary choices per screen section</p>
+        <p>65ch max line width, 1.6 line-height, left-aligned</p>
+        <p>Links: monochromatic in nav, underlined in prose</p>
+        <p>Bold for emphasis &mdash; never italics alone</p>
+      </div>
+    </section>
+  </MotionWrapper>
+</Base>

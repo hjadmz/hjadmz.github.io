@@ -1,0 +1,210 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import MotionWrapper from "../../components/MotionWrapper.astro";
+import Arrow from "../../components/Arrow.astro";
+import { formatDate } from "../../lib/date";
+import { tagSlug } from "../../lib/tag";
+
+/*
+  /tag/[slug] — dynamic tag archive.
+  Routes are pre-rendered at build time via getStaticPaths(), so every
+  tag becomes a real static HTML page (good for SEO + crawlers).
+
+  Slug policy: shared with `lib/tag.ts` — single source of truth so
+  anchor targets never drift from static paths.
+*/
+
+export async function getStaticPaths() {
+  const [blog, work] = await Promise.all([
+    getCollection("blog", ({ data }) => !data.draft),
+    getCollection("work", ({ data }) => !data.draft),
+  ]);
+
+  // Collect tags from both collections.
+  const tagMap = new Map<
+    string,
+    { label: string; posts: typeof blog; works: typeof work }
+  >();
+
+  for (const post of blog) {
+    for (const tag of post.data.tags ?? []) {
+      const slug = tagSlug(tag);
+      const bucket =
+        tagMap.get(slug) ?? { label: tag, posts: [], works: [] };
+      bucket.posts.push(post);
+      tagMap.set(slug, bucket);
+    }
+  }
+
+  for (const entry of work) {
+    for (const tag of entry.data.tags ?? []) {
+      const slug = tagSlug(tag);
+      const bucket =
+        tagMap.get(slug) ?? { label: tag, posts: [], works: [] };
+      bucket.works.push(entry);
+      tagMap.set(slug, bucket);
+    }
+  }
+
+  return Array.from(tagMap.entries()).map(([slug, bucket]) => ({
+    params: { slug },
+    props: {
+      label: bucket.label,
+      posts: bucket.posts.sort(
+        (a, b) =>
+          new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+      ),
+      works: bucket.works.sort(
+        (a, b) => Number(b.data.year) - Number(a.data.year)
+      ),
+    },
+  }));
+}
+
+interface Props {
+  label: string;
+  posts: Awaited<ReturnType<typeof getCollection<"blog">>>;
+  works: Awaited<ReturnType<typeof getCollection<"work">>>;
+}
+
+const { label, posts, works } = Astro.props as Props;
+const total = posts.length + works.length;
+---
+
+<Base
+  title={`#${label}`}
+  description={`All log entries and work tagged ${label}.`}
+>
+  <MotionWrapper>
+    <p class="tag-eyebrow">Tag</p>
+    <h1 class="page-heading tag-heading"># {label}</h1>
+  </MotionWrapper>
+
+  <MotionWrapper delay={0.1}>
+    <p class="tag-count" aria-live="polite">
+      {total} {total === 1 ? "entry" : "entries"}
+    </p>
+  </MotionWrapper>
+
+  {works.length > 0 && (
+    <MotionWrapper delay={0.18}>
+      <section class="tag-section">
+        <h2 class="section-label">Work</h2>
+        <ul class="tag-list">
+          {works.map((entry) => (
+            <li>
+              <a href={`/work/${entry.id}`} class="tag-item">
+                <span class="tag-item-title">{entry.data.title}</span>
+                <span class="tag-item-meta">{entry.data.year}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </MotionWrapper>
+  )}
+
+  {posts.length > 0 && (
+    <MotionWrapper delay={0.26}>
+      <section class="tag-section">
+        <h2 class="section-label">Log</h2>
+        <ul class="tag-list">
+          {posts.map((post) => (
+            <li>
+              <a href={`/log/${post.id}`} class="tag-item">
+                <span class="tag-item-title">{post.data.title}</span>
+                <span class="tag-item-meta">
+                  <time datetime={post.data.date}>{formatDate(post.data.date)}</time>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </MotionWrapper>
+  )}
+
+  <footer class="tag-footer">
+    <a href="/tag" class="cta-link">
+      <Arrow direction="left" />
+      all tags
+    </a>
+  </footer>
+</Base>
+
+<style>
+  .tag-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+    margin: 0 0 var(--space-2);
+    opacity: 0.7;
+  }
+  .tag-heading {
+    margin-bottom: var(--space-2);
+  }
+  .tag-count {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-8);
+  }
+  .tag-section {
+    margin-bottom: var(--space-10);
+  }
+  .tag-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tag-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    text-decoration: none;
+    color: var(--color-text);
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .tag-item:hover { color: var(--color-text-muted); }
+  }
+  .tag-item-title {
+    font-size: 1rem;
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tag-item-meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  /*
+    Back-out affordance — mirrors /log/[slug] and /work/[slug] in intent,
+    but with one structural difference: tag lists END with `.tag-item`'s
+    own `border-bottom`, so adding a `border-top` here would produce two
+    parallel lines (a sandwich stroke) with nothing between them. Under
+    FCA, every visible stroke must be load-bearing. The last tag-item's
+    bottom border IS the separator — no second line needed.
+
+    On /log/[slug] and /work/[slug] the footer's border-top IS load-bearing
+    because the preceding element (the prose) has no closing stroke. That
+    asymmetry is what the comment on line 195-ish is guarding against
+    future-you "harmonizing" back into a sandwich.
+  */
+  .tag-footer {
+    margin-top: var(--space-12);
+  }
+</style>

@@ -1,0 +1,203 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+import MotionWrapper from "../../components/MotionWrapper.astro";
+import Arrow from "../../components/Arrow.astro";
+import { tagSlug } from "../../lib/tag";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("work", ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const meta = [
+  { label: "Year", value: entry.data.year },
+  entry.data.role ? { label: "Role", value: entry.data.role } : null,
+  { label: "Status", value: entry.data.status },
+].filter(Boolean) as { label: string; value: string }[];
+---
+
+<Base title={entry.data.title} description={entry.data.description}>
+  <article>
+    <MotionWrapper>
+      <header style="margin-bottom: var(--space-12);">
+        <div class="work-detail-meta" style="margin-bottom: var(--space-6);">
+          <span class="work-detail-year">{entry.data.year}</span>
+          {(entry.data.tags?.length ?? 0) > 0 && (
+            <span class="meta-tags">
+              {entry.data.tags!.map((tag: string) => (
+                <a class="post-tag post-tag-link" href={`/tag/${tagSlug(tag)}`}>
+                  {tag}
+                </a>
+              ))}
+            </span>
+          )}
+        </div>
+
+        <h1 class="page-heading" style="margin-bottom: 0;">
+          {entry.data.title}
+        </h1>
+
+        {entry.data.description && (
+          <p style="font-size: var(--text-step-1); color: var(--color-text-muted); line-height: 1.6; margin-top: 0.75rem;">
+            {entry.data.description}
+          </p>
+        )}
+      </header>
+      {/*
+        NO explicit divider here.
+        The `.case-meta` section below owns `border-top` + `border-bottom`;
+        a divider at the end of the header would produce two parallel lines
+        with only whitespace between them — a sandwich stroke that carries
+        no information. Under FCA, every visible stroke must be load-bearing.
+        The case-meta's own top-border serves as the section separator.
+      */}
+    </MotionWrapper>
+
+    <MotionWrapper delay={0.1}>
+      <section class="case-meta" aria-label="Project meta">
+        {meta.map((row) => (
+          <div class="case-meta-row">
+            <dt class="case-meta-label">{row.label}</dt>
+            <dd class="case-meta-value">{row.value}</dd>
+          </div>
+        ))}
+      </section>
+    </MotionWrapper>
+
+    <MotionWrapper delay={0.18}>
+      <div
+        class="prose"
+        style="color: var(--color-text); line-height: 1.6; max-width: var(--max-width-prose); font-size: 1.0625rem;"
+      >
+        <Content />
+      </div>
+    </MotionWrapper>
+
+    {entry.data.stack && entry.data.stack.length > 0 && (
+      <MotionWrapper delay={0.26}>
+        <section class="case-section">
+          <h2 class="section-label">Stack</h2>
+          <div class="skill-cloud" style="display: flex; flex-wrap: wrap; gap: 0.625rem 1rem;">
+            {entry.data.stack.map((item: string) => (
+              <span class="skill-tag">{item}</span>
+            ))}
+          </div>
+        </section>
+      </MotionWrapper>
+    )}
+
+    {(entry.data.liveUrl || entry.data.sourceUrl) && (
+      <MotionWrapper delay={0.32}>
+        <section class="case-section case-links" aria-label="Project links">
+          {entry.data.liveUrl && (
+            <a href={entry.data.liveUrl} class="cta-link" target="_blank" rel="noopener noreferrer">
+              live site
+              <Arrow direction="up-right" />
+            </a>
+          )}
+          {entry.data.sourceUrl && (
+            <a href={entry.data.sourceUrl} class="cta-link" target="_blank" rel="noopener noreferrer">
+              source
+              <Arrow direction="up-right" />
+            </a>
+          )}
+        </section>
+      </MotionWrapper>
+    )}
+
+    {/*
+      Footer margin matches /log/[slug] at var(--space-12). Parity contract:
+      the "back to X" action sits at the same optical height on both detail
+      pages so users who traverse /log ↔ /work don't feel the footer shift.
+      Was var(--space-16); the extra 16px broke alignment without buying anything.
+    */}
+    <footer style="margin-top: var(--space-12); padding-top: var(--space-6); border-top: 1px solid var(--color-border-subtle);">
+      <a href="/work" class="cta-link">
+        <Arrow direction="left" />
+        back to work
+      </a>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  /* Meta row — matches /log header pattern */
+  .work-detail-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .work-detail-year {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+    Meta strip: Year / Role? / Status.
+
+    Earlier revision used `grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr))`
+    which orphaned the final field onto its own row in the 640–800px window
+    (2 columns fit, 3 don't) — "Shipped" kept landing alone below Year + Role.
+    An orphan field reads as a mistake, not a layout choice.
+
+    Fix: stack vertically on mobile, single inline row on tablet+ so the
+    three rows are either "all stacked" or "all inline," never a 2+1 split.
+    Using flex (not grid) here because the item count varies — 2 when
+    Role is null, 3 otherwise — and flex lets the present items share
+    the row evenly without leaving an empty cell.
+  */
+  .case-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: var(--space-8) 0 var(--space-12);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  @media (min-width: 640px) {
+    .case-meta {
+      flex-direction: row;
+      gap: var(--space-10);
+    }
+    .case-meta-row {
+      flex: 0 1 auto;
+    }
+  }
+  .case-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+  .case-meta-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-faint);
+  }
+  .case-meta-value {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+  .case-section {
+    margin-top: var(--space-10);
+  }
+  .case-links {
+    display: flex;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+  }
+</style>

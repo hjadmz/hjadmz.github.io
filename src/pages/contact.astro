@@ -1,0 +1,197 @@
+---
+import Base from "../layouts/Base.astro";
+import MotionWrapper from "../components/MotionWrapper.astro";
+
+/*
+  /contact — single load-bearing page. Monastic rule: one high-signal
+  channel + the professional artifacts. No form. Email is the contract.
+
+  ───────────────────────────────────────────────────────────────────────
+  ADDING OR REMOVING A CHANNEL
+
+    The `channels` array below is the SINGLE source of truth. Each
+    entry becomes one row on the page in the order listed. To add a
+    channel, append an object. To remove one, delete (or comment out)
+    the object. There is no other place to edit — no feature flag, no
+    config file, no hidden toggle.
+
+    Entry shape:
+      {
+        label: "Display name",      // rendered as the row label
+        href:  "mailto:... | https://...", // destination
+        value: "shown text",       // optional — defaults to smart handle
+        meta:  "short descriptor",  // the right-rail context phrase
+      }
+
+    Shortcuts:
+      · Email row — use `mailto:you@domain.com` as the href. `value`
+        can be omitted; it defaults to the email address.
+      · Social/profile rows — use the full https:// URL. `value` can
+        be omitted; it defaults to the URL's last path segment (e.g.
+        "hjadmz" from "https://github.com/hjadmz"). If you want a
+        different display name, set `value` explicitly.
+
+    Hiding a channel without deleting it:
+      Prefix with `// ` to comment out. Nothing else breaks — the row
+      disappears, order of surviving rows is preserved.
+
+  PRIVACY
+    - Domain-matched email (hj@hjadmz.com) is the brand move; an iCloud
+      or Gmail address signals less-professional regardless of quality.
+    - Location is coarse by design. "US Central time" is enough for
+      scheduling without disclosing a city. Matches the alias rule —
+      don't surface what doesn't need to be public.
+  ───────────────────────────────────────────────────────────────────────
+*/
+
+type Channel = { label: string; href: string; value?: string; meta: string };
+
+// Smart handle: pull the last meaningful path segment from a URL.
+// Falls back to the bare URL host if the path is empty.
+const autoValue = (href: string): string => {
+  if (href.startsWith("mailto:")) return href.slice(7);
+  try {
+    const url = new URL(href);
+    const tail = url.pathname.replace(/^\/+|\/+$/g, "").split("/").pop();
+    return tail || url.hostname;
+  } catch {
+    return href;
+  }
+};
+
+// ─── CHANNELS — edit this list to add/remove rows ──────────────────────
+const channels: Channel[] = [
+  {
+    label: "Email",
+    href: "mailto:hj@hjadmz.com",
+    meta: "Best for work inquiries",
+  },
+  {
+    label: "GitHub",
+    href: "https://github.com/hjadmz",
+    meta: "Code + shipped artifacts",
+  },
+  // Uncomment + paste a URL to surface. Delete the whole object to remove.
+  // { label: "LinkedIn",  href: "https://www.linkedin.com/in/<handle>", meta: "Professional signal" },
+  // { label: "Instagram", href: "https://www.instagram.com/<handle>",  meta: "Static portfolio" },
+  // { label: "Bluesky",   href: "https://bsky.app/profile/<handle>",   meta: "Short-form feed" },
+  // { label: "Read.cv",   href: "https://read.cv/<handle>",            meta: "Long-form CV" },
+];
+
+// Resolve each row's display value once at render time.
+const renderedChannels = channels.map((c) => ({
+  ...c,
+  value: c.value ?? autoValue(c.href),
+}));
+---
+
+<Base
+  title="Contact"
+  description="Reach hjadmz. Email is the contract. GitHub is the proof."
+>
+  <MotionWrapper>
+    <h1 class="page-heading">Contact</h1>
+  </MotionWrapper>
+
+  <MotionWrapper delay={0.1}>
+    <p class="contact-lede">
+      Short notes get short replies. If you're reaching out about work, lead
+      with the problem you're trying to solve.
+    </p>
+  </MotionWrapper>
+
+  <MotionWrapper delay={0.18}>
+    <ul class="channel-list" aria-label="Contact channels">
+      {renderedChannels.map((c) => (
+        <li class="channel-row">
+          <span class="channel-label">{c.label}</span>
+          <a
+            class="channel-value"
+            href={c.href}
+            rel={c.href.startsWith("http") ? "noopener noreferrer me" : undefined}
+          >
+            {c.value}
+          </a>
+          <span class="channel-meta">{c.meta}</span>
+        </li>
+      ))}
+    </ul>
+  </MotionWrapper>
+
+  <MotionWrapper delay={0.26}>
+    <p class="contact-footnote">
+      US Central time · Responses inside 48 hours on weekdays.
+    </p>
+  </MotionWrapper>
+</Base>
+
+<style>
+  .contact-lede {
+    max-width: var(--max-width-prose);
+    color: var(--color-text-muted);
+    font-size: var(--text-step-1);
+    line-height: 1.55;
+    margin: 0 0 var(--space-8);
+  }
+
+  .channel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-12);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+  .channel-row {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    column-gap: var(--space-6);
+    align-items: baseline;
+    padding: var(--space-5) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  @media (min-width: 640px) {
+    .channel-row {
+      grid-template-columns: 6rem 1fr auto;
+    }
+  }
+
+  .channel-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+    opacity: 0.7;
+  }
+  .channel-value {
+    font-size: 1rem;
+    color: var(--color-text);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    word-break: break-all;
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .channel-value:hover { color: var(--color-text-muted); }
+  }
+  .channel-meta {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    grid-column: 2 / -1;
+    margin-top: 0.25rem;
+  }
+  @media (min-width: 640px) {
+    .channel-meta {
+      grid-column: auto;
+      margin-top: 0;
+      text-align: right;
+    }
+  }
+
+  .contact-footnote {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    opacity: 0.7;
+    margin: 0;
+  }
+</style>

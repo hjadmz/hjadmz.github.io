@@ -1,0 +1,92 @@
+---
+/*
+  Arrow — modern stroke SVG.
+
+  Replaces the unicode `→` / `←` / `↗` glyphs that previously rendered
+  inside `<span class="arrow">`. JetBrains Mono's unicode arrow draws
+  as a chunky, full-width box-drawing glyph that reads as dated
+  against the rest of the interface language. Every other icon on the
+  site is a stroke SVG (search, scroll-to-top, X close) — arrows
+  should match.
+
+  Variants:
+    - "right" / "left"  — horizontal, for inline CTAs and back-links.
+    - "up-right"        — 45° outgoing, for external / off-site links.
+
+  Output shape:
+    <svg class="arrow arrow-{direction}" role="img" aria-hidden>
+      <line … />
+      <polyline … />   (chevron head)
+    </svg>
+
+  Accessibility:
+    Always `aria-hidden="true"` and `focusable="false"`. The enclosing
+    `<a>` always carries visible text ("read the log", "Back to log",
+    "Live site") that communicates meaning independently. The arrow is
+    decorative scaffolding — it exists to confirm direction of
+    movement, not to name it.
+
+  Styling contract:
+    Emits `class="arrow arrow-{direction}"`. The global stylesheet
+    already defines:
+      .cta-link .arrow             { transition: transform … }
+      .cta-link:hover .arrow-right { transform: translateX(4px); }
+      .cta-link:hover .arrow-left  { transform: translateX(-4px); }
+    — so replacing the old `<span class="arrow arrow-right">→</span>`
+    with `<Arrow direction="right" />` preserves every existing hover
+    and reduced-motion path without a single CSS change.
+
+  Dimensions:
+    12×12 viewBox with stroke-width 1.5 sits visually between 0.75rem
+    mono text and 0.875rem mono text — the two scales we pair arrows
+    with. Scales cleanly via the `size` prop when a consumer needs to
+    override (rare).
+
+  Paths are authored on a 12-unit grid with the horizontal baseline at
+  y=6 so the arrow aligns with the x-height of a 0.75rem mono caption.
+*/
+
+interface Props {
+  direction?: "right" | "left" | "up-right";
+  class?: string;
+  size?: number;
+}
+
+const { direction = "right", class: className = "", size = 12 } = Astro.props;
+
+const classList = `arrow arrow-${direction}${className ? " " + className : ""}`;
+---
+
+<svg
+  class={classList}
+  width={size}
+  height={size}
+  viewBox="0 0 12 12"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  role="img"
+  aria-hidden="true"
+  focusable="false"
+>
+  {direction === "right" && (
+    <>
+      <line x1="1" y1="6" x2="10.5" y2="6" />
+      <polyline points="7,2.5 10.5,6 7,9.5" />
+    </>
+  )}
+  {direction === "left" && (
+    <>
+      <line x1="11" y1="6" x2="1.5" y2="6" />
+      <polyline points="5,2.5 1.5,6 5,9.5" />
+    </>
+  )}
+  {direction === "up-right" && (
+    <>
+      <line x1="2" y1="10" x2="10" y2="2" />
+      <polyline points="4,2 10,2 10,8" />
+    </>
+  )}
+</svg>

@@ -1,0 +1,629 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+import { formatDateLong } from "../../lib/date";
+import { tagSlug } from "../../lib/tag";
+import MotionWrapper from "../../components/MotionWrapper.astro";
+import Arrow from "../../components/Arrow.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+/*
+  TOC headings — only h2/h3 are ever promoted to the rail.
+  h4+ is nesting that already lives inside a subsection; surfacing it
+  in the rail would fight prose's own hierarchy (and blow the rail's
+  vertical budget on long posts).
+
+  A post with fewer than two h2 entries doesn't benefit from a TOC —
+  a single-section article reads top-to-bottom just fine, and a rail
+  with one item is noise. Threshold: at least 2 h2 headings.
+*/
+const tocHeadings = (headings ?? []).filter((h) => h.depth === 2 || h.depth === 3);
+const showToc = tocHeadings.filter((h) => h.depth === 2).length >= 2;
+
+/*
+  BlogPosting JSON-LD — alias-first.
+  Publisher and author both resolve to the hjadmz Person entity declared
+  in Base.astro's WebSite JSON-LD. Google stitches these two blocks via
+  the shared URL + name pair; we never expose a real name in crawler
+  metadata. `dateModified` falls back to `datePublished` when an entry
+  hasn't been edited — schema.org permits equality, and lying about
+  recency to game freshness signals would be a Dignity-Protocol failure.
+*/
+const canonicalURL = new URL(`/log/${post.id}`, Astro.site).toString();
+const blogPostingLD = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": post.data.title,
+  "description": post.data.description ?? "",
+  "datePublished": post.data.date,
+  "dateModified": post.data.date,
+  "author": {
+    "@type": "Person",
+    "name": "hjadmz",
+    "url": "https://hjadmz.com",
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "hjadmz",
+    "url": "https://hjadmz.com",
+  },
+  "url": canonicalURL,
+  "mainEntityOfPage": canonicalURL,
+  "keywords": post.data.tags ?? [],
+};
+---
+
+<Base title={post.data.title} description={post.data.description}>
+  <script
+    slot="head-extras"
+    type="application/ld+json"
+    set:html={JSON.stringify(blogPostingLD)}
+  />
+  {/*
+    Reading-progress indicator.
+
+    FCA rationale — this is the ONE page surface where a progress bar
+    earns its pixels:
+      · Function: dyslexic / ADHD readers keep an internal pointer of
+        "how much is left" and lose it on long prose. The bar is an
+        externalized version of that pointer — a cheap orientation
+        anchor that removes an otherwise invisible cognitive tax.
+      · Convenience: confirms progress for any reader ("I'm halfway,
+        worth finishing") and compresses the abandonment decision.
+      · Aesthetics: 2px monochrome line hugging the viewport edge —
+        under the masthead, above content. Opacity 0.35 so it never
+        competes with text; never colored, never thicker than the
+        borders that already exist in the design.
+
+    Deliberately NOT on list pages (/log, /work): those are index
+    surfaces, not reading surfaces. Adding the bar there would be
+    ornament — the cut FCA enforces.
+    Also NOT on /work/[slug]: those pages are short case summaries,
+    not long-form reading. Progress bar would outweigh the content.
+
+    Accessibility:
+      · aria-hidden on the host — it's a cosmetic orientation aid, not
+        a measurement a screen reader should announce every frame.
+      · prefers-reduced-motion collapses the width-transition so the
+        bar still fills but without the interpolation step.
+      · Scrolls the viewport's proximity to article END (not article
+        start) so the 100% state lines up with "finished reading".
+  */}
+  <div id="reading-progress" class="reading-progress" aria-hidden="true">
+    <div id="reading-progress-fill" class="reading-progress-fill"></div>
+  </div>
+
+  <article>
+    <MotionWrapper>
+      <header class="post-header">
+        <div class="post-header-meta">
+          <time class="meta-text" datetime={post.data.date}>
+            {formatDateLong(post.data.date)}
+          </time>
+          {post.data.tags && post.data.tags.length > 0 && (
+            <span class="meta-tags">
+              {post.data.tags.map((tag: string) => (
+                <a class="post-tag post-tag-link" href={`/tag/${tagSlug(tag)}`}>
+                  {tag}
+                </a>
+              ))}
+            </span>
+          )}
+        </div>
+
+        <h1 class="page-heading" style="margin-bottom: 0;">
+          {post.data.title}
+        </h1>
+
+        {post.data.description && (
+          <p class="post-header-desc">{post.data.description}</p>
+        )}
+
+        <div class="divider" style="margin-top: var(--space-8);" aria-hidden="true"></div>
+      </header>
+    </MotionWrapper>
+
+    <MotionWrapper delay={0.1}>
+      <div class="prose post-body" id="post-body">
+        <Content />
+      </div>
+    </MotionWrapper>
+
+    {showToc && (
+      <aside
+        id="post-toc"
+        class="post-toc"
+        aria-label="Table of contents"
+        data-hidden="true"
+      >
+        {/*
+          Fixed-position TOC rail. Positioned via the right margin of
+          the reading column — not inside the article flow — so the
+          prose max-width (66ch) is preserved unchanged. The rail is
+          hidden by default (data-hidden="true") and toggled by the
+          IntersectionObserver in the inline script below: it appears
+          when the article body is in view and disappears when the
+          post-footer crosses into the viewport, so the rail never
+          floats over the footer or the next page's chrome.
+
+          Only h2 entries are "top-level" in the rail. h3 entries nest
+          one level, truncated and faded so the rail reads as an
+          outline, not a second article.
+        */}
+        <div class="post-toc-inner">
+          <div class="post-toc-label">Contents</div>
+          <ol class="post-toc-list">
+            {tocHeadings.map((h) => (
+              <li
+                class:list={[
+                  "post-toc-item",
+                  h.depth === 3 && "post-toc-item-nested",
+                ]}
+              >
+                <a
+                  href={`#${h.slug}`}
+                  class="post-toc-link"
+                  data-toc-slug={h.slug}
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </aside>
+    )}
+
+    <footer class="post-footer" id="post-footer">
+      <a href="/log" class="cta-link">
+        <Arrow direction="left" />
+        back to log
+      </a>
+    </footer>
+  </article>
+
+  <script>
+    /*
+      Progress math — the article fraction scrolled past the TOP of the
+      viewport, normalized so:
+        · 0% = article top just entered viewport (reader starts)
+        · 100% = article bottom just crossed viewport bottom (reader done)
+
+      We read against the `.post-body` element specifically (not
+      document.body) so the bar tracks the actual prose, not the
+      surrounding chrome (header + footer + masthead). Reaching the
+      back-to-log link doesn't count as "100% through the article".
+
+      rAF-gated scroll listener mirrors the Focus-Mode pattern in
+      Base.astro — one paint per frame, no thrash. Passive listener so
+      it never blocks scrolling on touch devices.
+    */
+    const fill = document.getElementById('reading-progress-fill');
+    const article = document.getElementById('post-body');
+    if (fill && article) {
+      let ticking = false;
+      const update = () => {
+        const rect = article.getBoundingClientRect();
+        const viewportH = window.innerHeight || document.documentElement.clientHeight;
+        // Total scroll distance the article occupies, from its top
+        // entering the viewport to its bottom leaving it.
+        const totalRange = rect.height + viewportH;
+        // How far we've traveled into that range: viewportH when the
+        // article's top is at y=0, counting up as we scroll past.
+        const traveled = Math.max(0, viewportH - rect.top);
+        const pct = Math.min(Math.max(traveled / totalRange, 0), 1);
+        fill.style.width = (pct * 100).toFixed(2) + '%';
+      };
+      const onScroll = () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            update();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      update();
+    }
+  </script>
+
+  <script>
+    /*
+      Floating TOC — scroll-spy + viewport-boundary visibility.
+
+      Visibility: the rail is shown while the post body is in view and
+      hidden the moment the post-footer crosses into the viewport. That
+      gives "floats with the reader, stops at content end" without any
+      position-sticky math that can fight the header's safe-area
+      padding. Using IntersectionObserver is cheaper than a scroll
+      handler — the browser batches the callbacks off the compositor.
+
+      Active section: another IntersectionObserver watches every h2/h3
+      inside .post-body. The most-recent one to enter the top 40% of
+      the viewport is "active"; highlighting is a data-active attr on
+      the matching rail link. Reading-order stability matters here —
+      the rail follows, not predicts.
+
+      All behavior is purely additive. If JS fails, the TOC is still a
+      list of in-page anchors; the hide/show fallback keeps it visible
+      in the no-JS state so it's not a dead element.
+    */
+    const toc = document.getElementById('post-toc');
+    const body = document.getElementById('post-body');
+    const footerEl = document.getElementById('post-footer');
+    if (toc && body && footerEl) {
+      // No-JS fallback: if this script runs, we take over visibility.
+      toc.removeAttribute('data-hidden');
+
+      // ── Visibility: hide when footer is visible, show otherwise ──
+      const footerObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            toc.dataset.footerVisible = entry.isIntersecting ? 'true' : 'false';
+          }
+        },
+        { rootMargin: '0px 0px 0px 0px', threshold: 0 }
+      );
+      footerObserver.observe(footerEl);
+
+      // ── Scroll-spy: highlight the most-recent heading in view ──
+      const links = Array.from(
+        toc.querySelectorAll('[data-toc-slug]')
+      ) as HTMLAnchorElement[];
+      const bySlug = new Map(links.map((a) => [a.dataset.tocSlug, a]));
+      const headingEls = Array.from(
+        body.querySelectorAll('h2[id], h3[id]')
+      ) as HTMLElement[];
+
+      const setActive = (slug: string | null) => {
+        for (const a of links) {
+          if (a.dataset.tocSlug === slug) a.dataset.active = 'true';
+          else delete a.dataset.active;
+        }
+      };
+
+      // Observe the top strip of the viewport. Any heading whose box
+      // top crosses into the 0–40% band is "current." Using rootMargin
+      // to stretch the active window upward means the highlighted
+      // section matches what the reader is ACTUALLY looking at — the
+      // heading they just scrolled past — not the one still below the
+      // fold.
+      const visible = new Set<string>();
+      const spy = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const id = (entry.target as HTMLElement).id;
+            if (entry.isIntersecting) visible.add(id);
+            else visible.delete(id);
+          }
+          if (visible.size > 0) {
+            // Pick the topmost visible heading (smallest index in reading order).
+            const firstVisible = headingEls.find((h) => visible.has(h.id));
+            if (firstVisible) setActive(firstVisible.id);
+          } else {
+            // Nothing currently in the band → fall back to the last
+            // heading whose top has already scrolled past the band's
+            // upper edge. Prevents the highlight from vanishing
+            // mid-paragraph.
+            let lastPast: HTMLElement | null = null;
+            for (const h of headingEls) {
+              const rect = h.getBoundingClientRect();
+              if (rect.top < (window.innerHeight || 800) * 0.4) lastPast = h;
+              else break;
+            }
+            setActive(lastPast?.id ?? headingEls[0]?.id ?? null);
+          }
+        },
+        {
+          // Active-band: top of viewport to 40% down. Heading "arrives"
+          // when it enters this band and "leaves" when it exits below.
+          rootMargin: '0px 0px -60% 0px',
+          threshold: 0,
+        }
+      );
+      headingEls.forEach((h) => spy.observe(h));
+
+      // Seed an initial active state so the rail isn't blank on load.
+      if (headingEls[0]) setActive(headingEls[0].id);
+
+      // Smooth-scroll on anchor click, with focus-management so screen
+      // readers announce the section they land in.
+      for (const link of links) {
+        link.addEventListener('click', (e) => {
+          const slug = link.dataset.tocSlug;
+          if (!slug) return;
+          const target = document.getElementById(slug);
+          if (!target) return;
+          e.preventDefault();
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          target.scrollIntoView({
+            behavior: reduced ? 'auto' : 'smooth',
+            block: 'start',
+          });
+          // Push the hash into history without the browser's instant jump.
+          history.replaceState(null, '', `#${slug}`);
+          target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: true });
+        });
+      }
+    }
+  </script>
+</Base>
+
+<style>
+  .post-header {
+    margin-bottom: var(--space-12);
+  }
+  .post-header-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-6);
+  }
+  /*
+    The tag wrapper now uses the global `.meta-tags` class — single spacing
+    contract across /log, /work, /log/[slug], /work/[slug]. Any scoped
+    duplicate here would be a drift hazard under the parity contract.
+    See global.css → `.meta-tags`.
+  */
+  .post-header-desc {
+    font-size: var(--text-step-1);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-top: 0.75rem;
+    max-width: var(--max-width-prose);
+  }
+  .post-body {
+    color: var(--color-text);
+    line-height: 1.6;
+    max-width: var(--max-width-prose);
+    font-size: 1.0625rem;
+  }
+  .post-footer {
+    margin-top: var(--space-12);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  /*
+    Reading-progress indicator.
+    Fixed 2px track hugging the viewport top edge. Sits on its own
+    stacking layer above content (z-sticky) but under the CommandPalette
+    overlay (z-modal) — so opening ⌘K always dominates.
+
+    The track itself is transparent; only the fill paints. That keeps
+    pages with 0 scroll range (short posts that fit in viewport) from
+    showing a visible empty line — the bar just doesn't render until
+    you've actually scrolled.
+
+    Fill color = --color-text at 0.35 opacity. Not a brand color,
+    nothing promotional — it's scaffolding.
+  */
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: transparent;
+    z-index: var(--z-sticky);
+    pointer-events: none;
+    /* Respect the viewport's safe-area on notched devices so the bar
+       doesn't hide behind a translucent status bar on iOS PWA modes. */
+    padding-top: env(safe-area-inset-top, 0);
+  }
+  .reading-progress-fill {
+    height: 100%;
+    width: 0;
+    background-color: var(--color-text);
+    opacity: 0.35;
+    transition: width 120ms linear;
+    will-change: width;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reading-progress-fill {
+      /*
+        The fill still updates on scroll, but without the 120ms width
+        interpolation the bar locks to the current scroll position each
+        frame. No decorative animation; the data is still there.
+      */
+      transition: none;
+    }
+  }
+  @media (prefers-contrast: more), (forced-colors: active) {
+    .reading-progress-fill {
+      /* Forced-colors mode uses system tokens; opacity filtering is
+         unreliable there. Fall back to full-weight text color so the
+         bar stays visible without depending on alpha blending. */
+      opacity: 1;
+      background-color: CanvasText;
+    }
+  }
+
+  /*
+    ─── Floating table of contents ─────────────────────────
+    Fixed-position rail on viewports wide enough to carry it without
+    crowding the prose column. The inner wrapper holds the list; the
+    outer aside only exists to scope the `data-hidden` / `data-footer-visible`
+    state attributes managed by the IntersectionObservers.
+
+    Breakpoint: 1200px. Below that, there's less than ~200px of free
+    rail between the prose column and the viewport edge once you
+    account for page-shell padding — drop the rail entirely rather
+    than compressing type into a frame the reader has to squint at.
+
+    Positioning math (≥1200px):
+      · `right: max(var(--space-10), calc((100vw - 66ch) / 2 - 11rem))`
+        Centers the rail inside the right margin of the reading column.
+        The `max()` keeps a hard minimum gap at narrower widths so the
+        rail never abuts the viewport edge.
+      · `top: 10rem` clears the header (5rem) plus breathing room.
+      · `max-height: calc(100vh - 14rem)` with `overflow-y: auto`
+        allows very long outlines to scroll internally without the
+        rail growing taller than the viewport.
+  */
+  .post-toc {
+    display: none;
+  }
+  @media (min-width: 1200px) {
+    .post-toc {
+      display: block;
+      position: fixed;
+      top: 10rem;
+      right: max(var(--space-10), calc((100vw - 66ch) / 2 - 11rem));
+      width: 10rem;
+      /* Overflow intentionally visible on the outer aside so the
+         active-marker ::before can paint slightly outside the list's
+         padding. The inner wrapper owns the scrollable area. */
+      pointer-events: auto;
+      z-index: var(--z-sticky, 10);
+      opacity: 1;
+      transform: translateX(0);
+      transition:
+        opacity 240ms var(--ease-overdamp),
+        transform 240ms var(--ease-overdamp);
+    }
+    .post-toc-inner {
+      max-height: calc(100vh - 14rem);
+      overflow-y: auto;
+      /* Scrollbar is invisible until hover; most outlines won't need
+         it, and an idle scrollbar in the right rail adds visual
+         static with zero signal. */
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    .post-toc-inner:hover {
+      scrollbar-color: var(--color-text-faint) transparent;
+    }
+    /* When the footer crosses in, fade + slide the rail off so it
+       never paints over "back to log". Small translate keeps the
+       transition legible without being showy. */
+    .post-toc[data-footer-visible="true"] {
+      opacity: 0;
+      transform: translateX(8px);
+      pointer-events: none;
+    }
+  }
+  .post-toc-label {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+  }
+  .post-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    /* Vertical rhythm: 0.3rem between entries. Tight enough that the
+       rail reads as a block; loose enough that the eye can pick out
+       individual section names on a glance. */
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    /* Left rule — the visible anchor that gives the rail an identity
+       at rest. Entries sit against it; the active entry paints a
+       thicker micro-segment over this base line. */
+    border-left: 1px solid var(--color-border-subtle);
+    padding-left: 0.75rem;
+  }
+  .post-toc-item {
+    margin: 0;
+  }
+  .post-toc-item-nested {
+    /* h3 nests one level; no arrow, no bullet — indentation + faded
+       color is the only hierarchy cue needed in a monochrome rail. */
+    padding-left: 0.75rem;
+  }
+  .post-toc-link {
+    display: block;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--color-text-faint);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    /* Two-line cap prevents a pathological heading from eating the
+       rail. Beyond two lines the reader can click and still land on
+       the section — the full heading is right there in the prose. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  .post-toc-item-nested .post-toc-link {
+    opacity: 0.75;
+  }
+  @media (hover: hover) {
+    .post-toc-link:hover {
+      color: var(--color-text);
+    }
+  }
+  /*
+    Active-state contrast. Three layered signals so the reader can
+    tell which section they're in even at low vision, or with a rail
+    that's glanced at peripherally:
+
+      1. Color delta: text jumps from faint → full text color
+         (~4.9:1 → 17:1 on the light scheme). Biggest single cue.
+      2. Marker bar: 3px wide × full link-height, painted flush
+         against the list's left border so the active entry looks
+         "seated" on the rail, not labelled next to it.
+      3. No font-weight change — that would reflow the row each
+         scroll tick and cause a jitter the eye reads as "bug."
+
+    Redundant coding (color + marker + position) is on purpose: any
+    one signal can fail for a given reader (color-blind, low-contrast
+    screen, peripheral glance) but losing all three at once is rare.
+  */
+  .post-toc-link[data-active="true"] {
+    color: var(--color-text);
+    position: relative;
+  }
+  .post-toc-link[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    left: -0.875rem;
+    top: 0.15rem;
+    width: 3px;
+    height: calc(100% - 0.3rem);
+    background-color: var(--color-text);
+    border-radius: 1.5px;
+  }
+  .post-toc-item-nested .post-toc-link[data-active="true"]::before {
+    left: calc(-0.875rem - 0.75rem);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post-toc {
+      transition: none;
+    }
+  }
+  @media (prefers-contrast: more), (forced-colors: active) {
+    .post-toc-link {
+      color: CanvasText;
+      opacity: 0.75;
+    }
+    .post-toc-link[data-active="true"] {
+      opacity: 1;
+    }
+    .post-toc-link[data-active="true"]::before {
+      background-color: CanvasText;
+    }
+  }
+</style>

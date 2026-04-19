@@ -1,0 +1,269 @@
+---
+import Base from "../layouts/Base.astro";
+import MotionWrapper from "../components/MotionWrapper.astro";
+
+/*
+  About — a short letter, not a résumé.
+
+  Layout:
+    1. Heading
+    2. Prose (first-person, load-bearing only — FCA audit each paragraph)
+    3. Signoff — a real handwritten signature (see /public/signature-henry-adams.svg)
+       at the close of the letter. The intro reveals the given name; the
+       signature closes with the same name in the person's own hand.
+       Bookends: spoken name up top, ink on paper at the close.
+
+  Editing policy (for future-me):
+    - The daily-tools section is intentionally a SENTENCE, not a grid.
+      A résumé-grid of logos with hover interactions fails FCA on two
+      fronts: (1) hover affordance on non-clickable chips is decoration,
+      (2) a grid of tool names frames this page as a CV — the opening
+      line literally says "short letter, not a résumé." Prose says the
+      same thing without the framing collision, and scales to any
+      length by just… writing more sentences.
+    - If you ever need to reinstate the grid, there was a `tools` array
+      in the git history before 2026-04-19 that drove a <dl> with a
+      .skill-cloud hover. The visual pattern still lives in global.css
+      as `.skill-tag` + `.skill-cloud` if you need it again.
+    - Never write "fluent in X" or "experienced with Y". The list is
+      names, not claims. A tool earns a place by being something you
+      reach for in a normal working week. That's the whole filter.
+*/
+---
+
+<Base
+  title="About"
+  description="hjadmz — Systems Architect and Design Engineer. Research-backed interfaces, built as systems, not templates."
+>
+  <MotionWrapper>
+    <h1 class="page-heading">About</h1>
+  </MotionWrapper>
+
+  <MotionWrapper delay={0.1}>
+    <div class="prose about-prose">
+      <p class="about-intro">
+        Hi, I'm Henry Adams. I go by <em class="alias">hjadmz</em> online.
+      </p>
+
+      <p>
+        I build interfaces where the research is the product. Not decoration
+        on top of a template — the structure underneath is the thing. If the
+        foundation can't hold weight, no amount of polish saves it.
+      </p>
+
+      <p>
+        Systems architect and design engineer, focused on human-centered
+        computing. I work on tools where correctness compounds: accessibility,
+        motion systems, content architecture. Interested in problems where
+        the fix has to work for the user who has the hardest time, because
+        that user is frequently me.
+      </p>
+
+      <p>
+        Governing rule is the <a href="/log/fca-protocol">FCA protocol</a> —
+        function over convenience over aesthetics. Every visible decision on
+        this site (and in my work) is load-bearing under it.
+      </p>
+
+      <p>
+        Based in the US — Central time.
+      </p>
+    </div>
+  </MotionWrapper>
+
+  <MotionWrapper delay={0.2}>
+    <section class="signoff" aria-label="Signed by Henry Adams">
+      {/*
+        Real handwritten signature — the authentic artifact, not a type-
+        font stand-in. Asset lives at /public/signature-henry-adams.svg
+        (preferred, inherits currentColor so it flips with light/dark)
+        or /public/signature-henry-adams.png (transparent-bg fallback,
+        relies on the CSS filter below for dark-mode inversion).
+
+        Why this beats the prior Mrs Saint Delafield render:
+        - A computer font imitating handwriting reads as "handwriting-
+          shaped" but never as someone's hand. A real scan/trace
+          carries the personality no dress-script can fake.
+        - Under FCA, the signature's function is identification.
+          Authenticity is function; a stand-in is convenience dressed
+          up as aesthetic. Load-bearing choice.
+
+        aria-hidden because the section's aria-label already names the
+        author; a screen reader announcing "Henry Adams" twice in one
+        moment is noise, not signal.
+      */}
+      <img
+        class="signoff-mark"
+        src="/signature-henry-adams.svg"
+        alt=""
+        aria-hidden="true"
+        width="400"
+        height="160"
+        onerror="this.onerror=null; this.src='/signature-henry-adams.png';"
+      />
+    </section>
+  </MotionWrapper>
+
+  <MotionWrapper delay={0.32}>
+    <section class="about-stack" aria-labelledby="tools-heading">
+      <h2 id="tools-heading" class="section-label">Daily tools</h2>
+      <p class="tools-prose">
+        Day to day I reach for <strong>TypeScript</strong>, <strong>React</strong>,
+        <strong>Astro</strong>, <strong>Tailwind</strong>, and <strong>MDX</strong>
+        for the build. <strong>Figma</strong> and <strong>Pixelmator Pro</strong>
+        for design, with design tokens as the contract between the two.
+        <strong>Zed</strong>, <strong>Warp</strong>, <strong>pnpm</strong>, and
+        <strong>Git</strong> at the desk; <strong>Vercel</strong> for ship.
+      </p>
+    </section>
+  </MotionWrapper>
+</Base>
+
+<style>
+  .about-prose {
+    color: var(--color-text-muted);
+  }
+  /*
+    Intro: first line of the letter. Slightly larger than body so the name
+    reads as a greeting, not buried in prose. Full color (not muted) so it
+    carries the same weight as the signature at the close — bookends.
+  */
+  .about-intro {
+    font-size: var(--text-step-1);
+    color: var(--color-text);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-5);
+  }
+  /*
+    The alias inside the opening line. Earlier revision set this in
+    Mrs Saint Delafield (the signature face) so "hjadmz" read as a
+    handwritten pen-name. User feedback 2026-04-19: the cursive didn't
+    fit — dress-script glyphs in the middle of a prose sentence read
+    as ornament, not identification. Reverted to a quiet italic in the
+    prose face, which is the standard typographic convention for a
+    handle or stage name inline ("I go by *hjadmz* online"). The
+    <em> tag already conveys the emphasis semantically; the CSS below
+    just stops browsers from adding anything decorative on top.
+  */
+  .alias {
+    font-style: italic;
+    color: var(--color-text);
+    font-weight: inherit;
+  }
+
+  /*
+    Signoff — real handwritten signature, ink on paper.
+    No decorative dash line before the mark; that always reads as
+    fake. A real signature closes a letter by itself. Fluid size via
+    clamp() so the mark reads as a confident artifact on every
+    viewport from 4K down to iPhone SE.
+
+    The block-level margins give the signature the breathing room a
+    closing mark needs; collapsing margins would let the tools-stack
+    border crowd the glyph.
+  */
+  .signoff {
+    margin-top: clamp(var(--space-6), 4vw, var(--space-10));
+    margin-bottom: clamp(var(--space-10), 8vw, var(--space-16));
+  }
+  /*
+    Image-based signature. Fluid height via clamp() — one typographic
+    control point, scales like every other element. Width auto so
+    the image's intrinsic aspect ratio is preserved at every size.
+
+    Color handling:
+      · SVG source: author exports strokes with fill="currentColor" and
+        it follows the page color automatically (navy in light, off-
+        white in dark). Nothing for us to invert.
+      · PNG fallback: source is expected to be dark strokes on a
+        transparent background. Dark mode inverts with CSS filter; the
+        `@media (prefers-color-scheme: dark)` block below handles it.
+        If the exported source is the opposite polarity (light strokes
+        on transparent), flip the filter — it's a single-line change.
+
+    Left margin nudges the optical edge of the signature back to the
+    prose column's left edge; hand-drawn signatures have irregular
+    side-bearings and the first stroke usually sits inboard of the
+    bounding box.
+  */
+  .signoff-mark {
+    display: block;
+    height: clamp(3rem, 7vw, 5.5rem);
+    width: auto;
+    max-width: 100%;
+    margin-left: -0.25rem;
+    /* Match the bottom baseline adjustment the type version needed;
+       PNG/SVG signatures often sit with leading whitespace at the
+       top of the bounding box. Em-based so the nudge scales with
+       the clamp() range. */
+    transform: translate3d(0, 0.04em, 0);
+    transform-origin: left bottom;
+    /* Rendering stabilization for the animation path. When
+       MotionWrapper fades the block in, sub-pixel rasterization of
+       the PNG/SVG strokes can flicker on WebKit. Promoting the
+       image to its own compositor layer isolates the opacity
+       transition from the image decode pass. */
+    will-change: opacity, transform;
+    /* If the exported PNG is dark strokes on transparent, no filter
+       is needed in light mode — it paints directly. */
+  }
+  @media (prefers-color-scheme: dark) {
+    /*
+      Dark mode: invert the signature so dark strokes on transparent
+      become light strokes on transparent. This only applies to the
+      PNG fallback; an SVG that already uses currentColor ignores the
+      filter (it has no intrinsic color to invert). The 1 value is a
+      full invert; 0.92 would soften the conversion if the strokes
+      ever read as "too hot" against the dark background.
+
+      Note: if the user saves the signature as light strokes on
+      transparent (e.g. from a white-ink scan), swap this to the
+      light-mode block — one rule, not two.
+    */
+    .signoff-mark {
+      filter: invert(1);
+    }
+  }
+  @media (prefers-contrast: more) {
+    /* prefers-contrast: the signature stays at full opacity; the
+       browser's own contrast tuning handles the rest. No filter
+       change here so the signature doesn't get "enhanced" into a
+       different shape. */
+    .signoff-mark {
+      opacity: 1;
+    }
+  }
+  @media (forced-colors: active) {
+    /* Forced-colors: the image's colors are replaced by the system
+       palette. Filters are ignored per spec; rely on the system. */
+    .signoff-mark {
+      filter: none;
+    }
+  }
+
+  /* ─── Daily tools ─────────────────────────────────── */
+  .about-stack {
+    margin-top: var(--space-6);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+  /*
+    Prose, not a grid. A sentence beats a chip cloud for honesty, and
+    <strong> is the single emphasis — the tool names pick themselves
+    out of the sentence visually without any hover machinery. Scales
+    to any length: add a tool, add a word. The prose column inherits
+    the 65ch reading width from .prose conventions.
+  */
+  .tools-prose {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    max-width: var(--max-width-prose);
+    margin: 0;
+  }
+  .tools-prose strong {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+</style>

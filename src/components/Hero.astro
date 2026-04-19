@@ -1,0 +1,309 @@
+---
+/*
+  Hero — above the fold on /.
+  Pure Astro + CSS keyframes; no framer-motion on the landing path.
+  Fade-and-rise uses `--ease-overdamp` to match the rest of the site.
+
+  Recent strip:
+    - ONE vertical list. The earlier two-column layout felt wrong on phones,
+      and in the taller viewport it competed with the lede for attention.
+      A single timeline reads as "here's what's new" without forcing the
+      reader to triangulate between columns.
+    - Work and log entries interleave by recency. Each carries a tiny type
+      chip (LOG / WORK) so scanning gives you identity without demanding
+      you read the title.
+    - Empty state is a real state — the site ships with zero
+      posts and zero works without looking broken.
+
+  FCA:
+    - Function: concrete lede + a scent trail to the latest writing and work.
+    - Convenience: no clicks to find recency.
+    - Style: monochrome, restrained, a single spring-like easing.
+*/
+import { getCollection } from "astro:content";
+import { formatDate } from "../lib/date";
+import Arrow from "./Arrow.astro";
+
+const [blog, work] = await Promise.all([
+  getCollection("blog", ({ data }) => !data.draft),
+  getCollection("work", ({ data }) => !data.draft),
+]);
+
+type RecentItem = {
+  type: "log" | "work";
+  typeLabel: string;
+  title: string;
+  url: string;
+  meta: string;
+  sortKey: number;
+};
+
+const logItems: RecentItem[] = blog.map((p) => ({
+  type: "log",
+  typeLabel: "LOG",
+  title: p.data.title,
+  url: `/log/${p.id}`,
+  meta: formatDate(p.data.date),
+  sortKey: new Date(p.data.date).getTime(),
+}));
+
+const workItems: RecentItem[] = work.map((w) => ({
+  type: "work",
+  typeLabel: "WORK",
+  title: w.data.title,
+  url: `/work/${w.id}`,
+  meta: String(w.data.year),
+  // Works don't have a day-level date; treat as Jan 1 of their year so
+  // the sort stays honest without pretending to know the exact ship date.
+  sortKey: new Date(`${w.data.year}-01-01`).getTime(),
+}));
+
+const recent: RecentItem[] = [...logItems, ...workItems]
+  .sort((a, b) => b.sortKey - a.sortKey)
+  .slice(0, 5);
+---
+
+<section class="hero" aria-labelledby="hero-heading">
+  <h1 id="hero-heading" class="display-heading hero-heading" style="--d: 0ms;">
+    precision is the product.
+  </h1>
+
+  <p class="hero-lede" style="--d: 80ms;">
+    Design engineering and human-centered computing. Research-backed interface
+    systems — not decoration on top of a template.
+  </p>
+
+  {/*
+    Single-primary CTA pattern. Earlier revision had "read the log" and
+    "see the work" side-by-side as equal-weight siblings; that's a
+    Hick's Law failure — two first-tier options force the visitor to
+    choose before they know enough to choose. For a portfolio the
+    shipped work is the higher-signal landing, so "see the work" is the
+    single primary. The log is kept as a tertiary prompt one line below
+    — smaller, faint, a recognizable "or …" affordance for the reader
+    who prefers writing over case studies. One focal point, one
+    fallback; no decision fatigue.
+  */}
+  <div class="hero-cta" style="--d: 160ms;">
+    <a href="/work" class="cta-link cta-link-primary">
+      see the work
+      <Arrow direction="right" />
+    </a>
+    <a href="/log" class="cta-link-tertiary">or read the log</a>
+  </div>
+</section>
+
+<section class="recent" aria-labelledby="recent-heading" style="--d: 240ms;">
+  <h2 id="recent-heading" class="section-label">Recent</h2>
+
+  {recent.length > 0 ? (
+    <ul class="recent-list">
+      {recent.map((item) => (
+        <li>
+          <a href={item.url} class="recent-item">
+            <span class="recent-item-type" aria-hidden="true">
+              {item.typeLabel}
+            </span>
+            <span class="recent-item-title">{item.title}</span>
+            <span class="recent-item-meta" aria-hidden="true">{item.meta}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <div class="empty-state recent-empty">
+      <p class="empty-state-label">Nothing shipped yet</p>
+      <p class="empty-state-message">
+        The log and the shelf are both empty. That's a true state, not a
+        bug — this space only fills with work that has actually shipped.
+      </p>
+      <a href="/about" class="cta-link">
+        read the about
+        <Arrow direction="right" />
+      </a>
+    </div>
+  )}
+</section>
+
+<style>
+  /*
+    Single keyframe set. --d carries the per-element delay so we avoid
+    writing one animation per block. Zero-JS replacement for framer-motion.
+  */
+  @keyframes hero-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .hero-heading,
+  .hero-lede,
+  .hero-cta,
+  .recent {
+    opacity: 0;
+    animation: hero-rise var(--duration-rise) var(--ease-overdamp) forwards;
+    animation-delay: var(--d, 0ms);
+  }
+
+  /*
+    Maximum-authority moment. The hero heading is the single element on
+    the site that uses --color-text-extreme (pure #000 / #FFF, 21:1).
+    Brand rule: "use sparingly — if everything is max contrast, nothing
+    is." Every other heading uses --color-text (navy/off-white). The
+    delta to the eye is subtle; the scarcity is what gives it weight.
+  */
+  .hero-heading {
+    max-width: 20ch;
+    color: var(--color-text-extreme);
+  }
+
+  .hero-lede {
+    font-size: var(--text-step-1);
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    max-width: var(--max-width-prose);
+    margin: 0;
+  }
+
+  /*
+    Stacked axis — the primary CTA claims the eye alone, the tertiary
+    sits beneath as a whispered alternative. Kept as column (not row)
+    even at wide viewports because side-by-side is exactly the
+    equal-weight layout we're trying to avoid.
+  */
+  .hero-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+  }
+  /*
+    Tertiary: same link mechanic (underline on focus/hover), stripped
+    of the arrow affordance. Smaller and faint so the primary wins the
+    first glance. No hover color shift to full — the link should read
+    as a quiet aside, not a competing CTA.
+  */
+  .cta-link-tertiary {
+    font-size: 0.875rem;
+    color: var(--color-text-faint);
+    text-decoration: none;
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .cta-link-tertiary:hover {
+      color: var(--color-text-muted);
+    }
+  }
+  .cta-link-tertiary:focus-visible {
+    color: var(--color-text);
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Recent — single vertical timeline */
+  .recent {
+    margin-top: var(--space-12);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+  .recent-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .recent-list li { margin: 0; }
+
+  /*
+    Three-column grid: [TYPE][TITLE…][META].
+    - TYPE is a tiny fixed-width mono chip (LOG / WORK) on desktop.
+    - TITLE grows.
+    - META (date or year) right-aligns with tabular figures.
+
+    On mobile, TYPE moves above the title in a stacked layout so the title
+    always gets the full width and never truncates awkwardly.
+  */
+  .recent-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    column-gap: var(--space-3);
+    row-gap: 0.125rem;
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    text-decoration: none;
+    color: var(--color-text);
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .recent-item:hover {
+      color: var(--color-text-muted);
+    }
+  }
+  @media (min-width: 540px) {
+    .recent-item {
+      grid-template-columns: 3rem 1fr auto;
+    }
+  }
+
+  .recent-item-type {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+    opacity: 0.7;
+    /* Phone: sits above the title as a discreet tag */
+    grid-column: 1 / -1;
+    order: -1;
+  }
+  @media (min-width: 540px) {
+    .recent-item-type {
+      grid-column: auto;
+      order: 0;
+    }
+  }
+
+  .recent-item-title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.4;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .recent-item-meta {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-text-faint);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  /* Empty state override — no double border when nested inside .recent */
+  .recent-empty {
+    margin-top: 0;
+    border-top: 0;
+  }
+
+  /* Honor reduced-motion: cut the keyframe, show the final state immediately */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-heading,
+    .hero-lede,
+    .hero-cta,
+    .recent {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>

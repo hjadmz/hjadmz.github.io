@@ -1,0 +1,58 @@
+---
+/*
+  MotionWrapper — pure CSS entry animation.
+
+  Previously this was a React + framer-motion island. That pulled the
+  entire framer-motion vendor chunk (~40KB gzipped) onto every page that
+  used it — log, work, about, tag, detail pages. All for an 8px fade-up.
+
+  The rewrite is an Astro component with a single CSS keyframe. Zero JS,
+  zero runtime. The feel is identical to framer because both use the same
+  overdamped spring easing (`--ease-overdamp`).
+
+  Usage:
+    <MotionWrapper delay={0.1}>…</MotionWrapper>
+    <MotionWrapper>…</MotionWrapper>
+
+  Unit on `delay` is seconds (to match the old framer API so no callsite
+  changes are needed). Internally converted to ms.
+
+  `prefers-reduced-motion: reduce` cuts the animation and shows the final
+  state instantly. Same contract as the React version.
+*/
+interface Props {
+  delay?: number;
+}
+const { delay = 0 } = Astro.props;
+const delayMs = Math.round(delay * 1000);
+---
+
+<div class="mw" style={`--mw-d: ${delayMs}ms;`}>
+  <slot />
+</div>
+
+<style>
+  @keyframes mw-rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mw {
+    opacity: 0;
+    animation: mw-rise var(--duration-rise) var(--ease-overdamp) forwards;
+    animation-delay: var(--mw-d, 0ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mw {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>

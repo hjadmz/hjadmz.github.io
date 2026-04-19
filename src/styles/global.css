@@ -1,0 +1,1231 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════
+   Fonts — self-hosted via Fontsource, NOT CDN.
+   Version-pinned in package.json, bundled at build time.
+   No third-party network request, no IP leak, no SRI needed.
+   Unicode-range splits in each file mean browsers only fetch
+   the subsets actually used on the rendered page.
+   ═══════════════════════════════════════════════════════ */
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/mrs-saint-delafield/latin.css";
+
+/* ═══════════════════════════════════════════════════════
+   hjadmz · Design System
+   Source: brand-kit/tokens/design-tokens.css
+   Font: Inter Variable (body) + JetBrains Mono (code)
+   Scale: Major Third (1.25) · fluid clamp
+   Palette: Tailwind Slate (pinned)
+   ═══════════════════════════════════════════════════════ */
+
+@theme {
+  /* ─── Light palette (Tailwind Slate, pinned) ──────── */
+  --color-bg:             #F9FAFB;
+  --color-surface:        #FFFFFF;
+  --color-surface-raised: #E2E8F0;
+
+  --color-text:           #020617;
+  --color-text-muted:     #475569;
+  --color-text-faint:     #64748B;
+
+  /*
+    Maximum-authority pair. Pure black / pure white — 21:1 contrast.
+    Reserved for the single highest-weight moment on the site: the hero
+    heading. Brand rule: "use sparingly — if everything is max contrast,
+    nothing is." Do not extend this token to additional headings without
+    a documented reason.
+  */
+  --color-text-extreme:   #000000;
+
+  --color-text-link:       var(--color-text);
+  --color-text-link-hover: var(--color-text-muted);
+
+  --color-border:         #CBD5E1;
+  --color-border-subtle:  #E2E8F0;
+
+  --color-ring:           #2563EB;
+  --color-mark:           #020617;
+
+
+  /* ─── Typography ───────────────────────────────────
+     Primary family is 'Inter Variable' — the Fontsource variable build
+     exposes a single file across the 100–900 weight axis. The fallbacks
+     form a progressive chain: ui-sans-serif (system UI font on macOS/iOS),
+     system-ui (generic system default), -apple-system (explicit Apple
+     fallback for older Safari), then generic sans-serif. This order keeps
+     first-paint fast on slow networks — the OS font renders immediately
+     while the web font swaps in per font-display: swap. */
+  --font-body: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+  /* Cursive accent — single token so the footer motto and the /about
+     signoff stay in lockstep. Used in exactly two places on purpose;
+     adding a third risks dilution of the "ink on paper" moment. */
+  --font-signature: 'Mrs Saint Delafield', ui-serif, Georgia, cursive;
+
+  /* Major Third (1.25) · fluid clamp */
+  --text-step-0: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+  --text-step-1: clamp(1.25rem,  1.19rem + 0.31vw, 1.406rem);
+  --text-step-2: clamp(1.563rem, 1.49rem + 0.39vw, 1.758rem);
+  --text-step-3: clamp(1.953rem, 1.86rem + 0.49vw, 2.197rem);
+  --text-step-4: clamp(2.441rem, 2.32rem + 0.61vw, 2.747rem);
+  --text-step-5: clamp(3.052rem, 2.90rem + 0.76vw, 3.433rem);
+
+  /* ─── Spacing (4px atomic / 8px practical) ───────── */
+  --space-1:   0.25rem;
+  --space-2:   0.5rem;
+  --space-3:   0.75rem;
+  --space-4:   1rem;
+  --space-5:   1.25rem;
+  --space-6:   1.5rem;
+  --space-8:   2rem;
+  --space-10:  2.5rem;
+  --space-12:  3rem;
+  --space-16:  4rem;
+  --space-20:  5rem;
+  --space-24:  6rem;
+
+  /* ─── Radius ─────────────────────────────────────── */
+  --radius-sm:   0.25rem;
+  --radius-md:   0.5rem;
+  --radius-lg:   1rem;
+  --radius-full: 9999px;
+
+  /* ─── Elevation ──────────────────────────────────── */
+  --shadow-sm: 0 1px 2px 0 rgb(2 6 23 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(2 6 23 / 0.08), 0 2px 4px -2px rgb(2 6 23 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(2 6 23 / 0.08), 0 4px 6px -4px rgb(2 6 23 / 0.03);
+
+  /* ─── Motion ─────────────────────────────────────── */
+  /*
+    The rise duration (520ms) is the site's signature entry beat — used
+    by the hero keyframe and every MotionWrapper block. It names the
+    shape of the overdamp spring: long enough for the curve to read as
+    deliberate, short enough that a reader isn't waiting.
+    --duration-glide (420ms) is the subordinate-motion beat used by row
+    arrows and hover slides — half a beat shorter so it feels like the
+    rise's faster cousin, not a competing rhythm.
+  */
+  --duration-quick:    150ms;
+  --duration-moderate: 300ms;
+  --duration-glide:    420ms;
+  --duration-slow:     500ms;
+  --duration-rise:     520ms;
+  --duration-enter:    250ms;
+  --duration-exit:     200ms;
+
+  --ease-default:  cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  --ease-in:       cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+  --ease-overdamp: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ─── Z-Index ────────────────────────────────────── */
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-overlay:  300;
+  --z-modal:    400;
+  --z-toast:    500;
+
+  /* ─── Layout ─────────────────────────────────────── */
+  --max-width-prose: 65ch;
+
+  /*
+    Command-palette backdrop blur. Token-driven so the
+    `prefers-reduced-transparency: reduce` media query below can override
+    it to 0 at the :root level without touching component code. Authors
+    who need to disable backdrop-filter entirely (old GPUs, vestibular
+    sensitivity, accessibility mandates) can flip one variable.
+  */
+  --palette-blur: 4px;
+}
+
+@layer base {
+  /* Font @font-face declarations live in the Fontsource imports at the
+     top of this file. No CDN hotlinking — every font asset ships from
+     our own origin and is fingerprinted + cached by Vercel's edge. */
+
+  /* ─── Global resets ────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: var(--text-step-0);
+    line-height: 1.6;
+    text-align: left;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    /* Smooth in-page anchor scrolling (rauno guideline), with offset for sticky header */
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    /*
+      max-width: 100% (not 100vw). On Windows + Linux Chrome/Firefox, vw
+      units INCLUDE the vertical scrollbar width (~15–17px), so `100vw`
+      on body produces a phantom horizontal scroll equal to the scrollbar
+      width. `100%` resolves against the html element's content box, which
+      excludes the scrollbar. Functionally identical on iOS/Android, bug
+      fix on desktop Windows/Linux.
+    */
+    max-width: 100%;
+    overflow-x: hidden;
+    /* Disable iOS tap highlight — we define our own focus/hover states (rauno guideline) */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  img, video, svg { max-width: 100%; display: block; }
+
+  /* ─── Dark mode ────────────────────────────────────── */
+  @media (prefers-color-scheme: dark) {
+    html {
+      --color-bg:             #020617;
+      --color-surface:        #0F172A;
+      --color-surface-raised: #1E293B;
+      --color-text:           #E2E8F0;
+      --color-text-muted:     #97A6BB;
+      --color-text-faint:     #8293A5;
+      --color-text-link:       var(--color-text);
+      --color-text-link-hover: var(--color-text-muted);
+      --color-border:         #334155;
+      --color-border-subtle:  #1E293B;
+      --color-ring:           #3B82F6;
+      --color-mark:           #E2E8F0;
+      /* Dark-mode counterpart — pure white. Same scarcity rule. */
+      --color-text-extreme:   #FFFFFF;
+    }
+  }
+
+  /* ─── Selection ────────────────────────────────────── */
+  ::selection {
+    color: var(--color-bg);
+    background-color: var(--color-text);
+  }
+
+  /* ─── Focus — 3px solid, :focus-visible only ──────────
+     Use outline by default (accessible, follows border-radius on modern browsers).
+     Elements with explicit radius that need reliable curved focus should use
+     box-shadow: 0 0 0 3px var(--color-ring) instead (rauno guideline, Safari <16.4). */
+  *:focus { outline: none; }
+  *:focus-visible {
+    outline: 3px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: inherit;
+  }
+
+  /* ─── Skip link ────────────────────────────────────── */
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: var(--space-4);
+    background: var(--color-text);
+    color: var(--color-bg);
+    padding: var(--space-2) var(--space-4);
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+    z-index: var(--z-toast);
+    text-decoration: none;
+  }
+  .skip-link:focus-visible {
+    top: var(--space-4);
+    outline: 3px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* ─── Links — monastic: hover-only underline, weight shift ─── */
+  a {
+    color: var(--color-text-link);
+    text-decoration: none;
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    a:hover {
+      color: var(--color-text-link-hover);
+    }
+  }
+
+  /* Prose links — underlined for accessibility in long-form */
+  .prose a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--color-border);
+    transition: color var(--duration-quick) var(--ease-default),
+                text-decoration-color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .prose a:hover {
+      color: var(--color-text);
+      text-decoration-color: var(--color-text);
+    }
+  }
+
+  /* Nav links — monochrome, no underline */
+  nav a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+  @media (hover: hover) {
+    nav a:hover { color: var(--color-text); }
+  }
+
+  /* ─── Prose container ──────────────────────────────── */
+  /*
+    Dyslexia-friendly prose defaults.
+
+    - `hyphens: auto` + `-webkit-hyphens: auto`: the browser inserts a
+      soft hyphen at syllable boundaries on long words, preventing the
+      ragged whitespace jumps that short-circuit the reader's eye at
+      line-breaks. Disabled in code blocks (.prose pre/code) below.
+    - `overflow-wrap: break-word`: URLs and long identifiers break
+      cleanly instead of forcing horizontal overflow on narrow
+      viewports — critical at 360px phones reading a case-study.
+    - `word-spacing: 0.02em`: minimal spacing increase. The British
+      Dyslexia Association recommends +25%, but that's for serif
+      long-form; in a sans + tokens design 2% is enough to separate
+      words without reading as "airy". Validated against Inter's
+      default tracking.
+
+    The `.prose a` underline rules above already satisfy WCAG 2.1 SC
+    1.4.1 (don't use color alone to indicate links). Body text lives
+    at AAA contrast (≥7:1). This triad — high contrast, underlined
+    links, dyslexia-friendly flow — is the accessibility floor for
+    long-form on hjadmz.com.
+  */
+  .prose {
+    max-width: var(--max-width-prose);
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    overflow-wrap: break-word;
+    word-spacing: 0.02em;
+  }
+  .prose p { margin: 0 0 1rem; }
+  .prose p + p { margin-top: 1.5em; }
+  /* Code should never hyphenate — identifiers are not English words. */
+  .prose code, .prose pre {
+    hyphens: manual;
+    -webkit-hyphens: manual;
+    word-spacing: normal;
+  }
+
+  /* ─── Reading column ───────────────────────────────── */
+  .reading-column {
+    max-width: 66ch;
+    margin-inline: auto;
+  }
+
+  /* ─── Page shell — grid pushes footer to bottom ────── */
+  .page-shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+  @media (min-width: 640px) {
+    .page-shell {
+      padding-left: var(--space-12);
+      padding-right: var(--space-12);
+    }
+  }
+  @media (min-width: 1024px) {
+    .page-shell {
+      padding-left: var(--space-24);
+      padding-right: var(--space-24);
+    }
+  }
+
+  /* ─── Header ───────────────────────────────────────── */
+  .header-bar {
+    height: 5rem;
+    display: flex;
+    align-items: center;
+  }
+  @media (min-width: 640px) {
+    .header-bar { height: 6rem; }
+  }
+  .header-inner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  /* Breadcrumb (left)
+     Structure (repeating):
+       [home-link][sep][segment][sep][segment]…
+     The active (current-page) segment is always the LAST .breadcrumb-segment.
+     The separator immediately before it is at :nth-last-child(2). */
+  .breadcrumb-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    flex: 1;
+    /* Keep the line-height tight so the logo + wordmark optically align
+       regardless of body line-height inheritance. */
+    line-height: 1;
+  }
+  .breadcrumb-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1;
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  .breadcrumb-segment {
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1;
+    transition: color var(--duration-quick) var(--ease-default);
+    /* Long tag slugs / post slugs must not explode the header. The cap
+       scales with the viewport so a 30-character slug can't collide with
+       the primary nav on a 360px phone. Hard floor at 8ch (always legible
+       even on iPhone SE portrait); hard ceiling at 18ch so a wide display
+       doesn't render a 300px breadcrumb that drifts off from the logo. */
+    max-width: clamp(8ch, 20vw, 18ch);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .breadcrumb-active {
+    color: var(--color-text) !important;
+  }
+  @media (hover: hover) {
+    .breadcrumb-home:hover, .breadcrumb-segment:hover { color: var(--color-text); text-decoration: none; }
+  }
+  .mark-icon {
+    /*
+      Size in em (not rem) so the mark tracks the wordmark's font-size.
+      `.breadcrumb-home` sets font-size: 0.8125rem → 1em here resolves to
+      ~13px. The "hjadmz" glyphs cap-height at this size is ~9.5px.
+      Target: the filled face should render at ~1.15em (≈15px) so it
+      reads as optically equal-weight to the capitals in the wordmark.
+      Pure-fill shapes need ~10–15% oversize vs cap-height to match
+      glyphs with internal counters and sidebearings.
+
+      <MonolithLogo /> uses the padded viewBox (0 0 16 16) with the
+      filled mass at x=4..12, y=4..12 — the face is 50% of the SVG
+      box's linear dimension. To land the rendered face at 1.15em, the
+      SVG container must be 2× that: 2.3em. The outer padding is
+      transparent and doesn't inflate visible weight, but it DOES give
+      the face breathing room that matches how the wordmark's glyphs
+      sit inside their own sidebearings.
+
+      An earlier revision tried cropping the viewBox tight (4 4 8 8)
+      so the face went edge-to-edge and we could size the container at
+      1.15em directly. That version rendered the face at the right size
+      but with zero negative space around it, which made the mark read
+      as a solid block pressed against the wordmark instead of a glyph
+      sharing the baseline. The padded box + 2.3em container restores
+      the optical breathing room.
+    */
+    width: 2.3em;
+    height: 2.3em;
+    flex-shrink: 0;
+    /*
+      Opacity removed (was 0.8). Combined with currentColor inherited
+      from --color-text-muted, the mark read as "0.8 × muted" while the
+      wordmark read as "1 × muted" — a weight asymmetry. Matching the
+      wordmark exactly means the pair reads as a single typographic unit
+      instead of "face + text".
+    */
+    /*
+      Tiny upward nudge. Pure-fill shapes sit slightly low next to
+      cap-height letterforms because their optical center IS their
+      geometric center, while the wordmark's optical center gets pulled
+      up by ascenders (h, d). 0.06em = ~0.8px at 0.8125rem; using em
+      keeps the nudge proportional across every zoom level instead of
+      drifting at 125%/150% browser zoom where fixed pixels fall off
+      the sub-pixel grid.
+    */
+    transform: translateY(-0.06em);
+  }
+  .breadcrumb-sep {
+    /* Bumped from 0.15 → it was whispering; now readable as a real separator
+       while staying clearly subordinate to segment text. */
+    opacity: 0.4;
+    font-size: 0.8125rem;
+    color: var(--color-text-faint);
+    user-select: none;
+    line-height: 1;
+  }
+
+  /* Mobile breadcrumb: only the home icon + current page.
+     Intermediate segments and their separators disappear, preventing the
+     header from wrapping or colliding with the right-side nav on small
+     viewports. The active page is still identified, and the section is
+     already highlighted in the primary nav on the right. */
+  @media (max-width: 540px) {
+    /* Hide the "hjadmz" word next to the logo on narrow widths —
+       the SVG alone carries the identity and the primary nav names the
+       site at `hjadmz.com`. */
+    .breadcrumb-home span { display: none; }
+    /* Hide every breadcrumb segment except the current one. */
+    .breadcrumb-segment:not(.breadcrumb-active) { display: none; }
+    /* Hide every separator except the one directly before the current segment.
+       Structure: …[sep][active-segment]. Last child is the segment;
+       nth-last-child(2) is its separator. Everything else is noise. */
+    .breadcrumb-sep:not(:nth-last-child(2)) { display: none; }
+    .breadcrumb-left { gap: 0.375rem; }
+  }
+
+  /* Nav (right) */
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-shrink: 0;
+  }
+  @media (max-width: 540px) {
+    /* Tighten the nav gap on phones so 4 links + search don't wrap. */
+    .nav-right { gap: 0.875rem; }
+  }
+  /* Extreme-small floor (iPhone SE portrait = 375px, Galaxy Fold = 320px).
+     Below 400px the default sizing risks a wrap between the breadcrumb and
+     the primary nav — compress link labels and shrink the search button to
+     a single icon. All four nav items stay visible. */
+  @media (max-width: 400px) {
+    .nav-right { gap: 0.625rem; }
+    .nav-link { font-size: 0.75rem; }
+    .breadcrumb-sep { font-size: 0.75rem; }
+  }
+  .nav-link {
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .nav-link:hover { color: var(--color-text); }
+  }
+  .nav-link-active { color: var(--color-text); }
+
+  /* ─── Nav search button ────────────────────────────── */
+  /* Visible affordance for ⌘K search — users shouldn't need to memorize shortcuts. */
+  .nav-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.625rem 0.3125rem 0.5rem;
+    margin-left: 0.25rem;
+    background: transparent;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-faint);
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition:
+      color var(--duration-quick) var(--ease-default),
+      border-color var(--duration-quick) var(--ease-default),
+      background-color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .nav-search:hover {
+      color: var(--color-text);
+      border-color: var(--color-border);
+      background: var(--color-surface-raised);
+    }
+  }
+  .nav-search-kbd {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
+    color: inherit;
+    opacity: 0.7;
+  }
+  .nav-search-mod {
+    font-family: var(--font-mono);
+  }
+  /* Touch devices never see a physical ⌘/Ctrl key — the hint is noise there.
+     `pointer: coarse` catches iOS/Android/tablets regardless of viewport width.
+     `max-width` covers desktop-class browsers shrunk below the breakpoint. */
+  @media (pointer: coarse), (max-width: 520px) {
+    .nav-search-kbd { display: none; }
+    .nav-search { padding: 0.3125rem; }
+  }
+
+  /* ─── Main ─────────────────────────────────────────── */
+  .main-content {
+    width: 100%;
+    padding-top: 0;
+    padding-bottom: var(--space-8);
+  }
+
+  /* ─── Footer ───────────────────────────────────────── */
+  .footer-bar {
+    /*
+      NO border-top. Every load-bearing page already ends with a closing
+      stroke BEFORE the footer:
+        · /log, /work: last list row's own `border-bottom`.
+        · /home: the `.recent` section's own `border-top` opens it, its
+          list's last `border-bottom` closes it.
+        · /about: the `.about-stack` section's `border-top`.
+        · /log/[slug], /work/[slug]: each page's footer owns its own
+          border-top (scoped to the article) — those act as the "close"
+          right before the site footer, so the site footer adding another
+          stroke would produce a sandwich.
+        · /tag/[slug]: .tag-item last border-bottom.
+      A footer border here would double-stroke on every page. Per FCA,
+      every visible stroke must be load-bearing — whitespace + the motto
+      IS the separator.
+
+      Bottom padding uses max(token, env(safe-area-inset-bottom)) so the
+      footer clears the iPhone home indicator (34px on modern iPhones)
+      without over-padding on devices without a safe area. `max()` ensures
+      we never use LESS than the token; on non-notched devices env() is 0
+      and the token wins. On iPhone 14/15/16 the home indicator is
+      respected automatically.
+    */
+    padding: var(--space-8) 0 max(var(--space-8), env(safe-area-inset-bottom));
+  }
+  .footer-inner {
+    width: 100%;
+  }
+  .footer-centered-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    text-align: center;
+  }
+  .footer-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    /* Tabular figures prevent clock jitter as digits change (rauno guideline) */
+    font-variant-numeric: tabular-nums;
+  }
+  .footer-motto {
+    font-family: var(--font-signature);
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    font-weight: 400;
+    color: var(--color-text);
+    opacity: 0.5;
+    transition: opacity var(--duration-moderate) var(--ease-default);
+    /*
+      Intentionally no `cursor: help`. The motto is a signature, not an
+      explainer — framing it as "click to learn more" contradicts the
+      Kintsugi rule where silence carries meaning. Removing the help
+      cursor also kills the native tooltip chrome that was painting a
+      stray "a"-glyph artifact next to the cursive capital on hover.
+    */
+    /*
+      Stabilize the glyph path across the opacity transition.
+      `text-rendering: geometricPrecision` locks the connecting strokes
+      so Mrs Saint Delafield's long cursive exits don't re-rasterize at
+      sub-opacity steps — without it, the "a" in "Gloria" kept flashing
+      a phantom stem-extension on hover as the browser resampled the
+      outline to an intermediate opacity.
+      `will-change: opacity` + `transform: translateZ(0)` promote the
+      element to its own compositor layer so opacity changes happen on
+      the GPU without touching the glyph's text-layout pass.
+      `-webkit-font-smoothing: antialiased` matches the footer's
+      surrounding mono text so the cursive doesn't read as heavier than
+      its neighbors on Safari/WebKit.
+    */
+    text-rendering: geometricPrecision;
+    will-change: opacity;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  @media (hover: hover) {
+    .footer-motto:hover { opacity: 1; }
+  }
+  .footer-pipe {
+    opacity: 0.2;
+    pointer-events: none;
+    user-select: none;
+  }
+  .footer-clock {
+    opacity: 0.5;
+    transition: opacity var(--duration-moderate) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .footer-clock:hover { opacity: 1; }
+  }
+  .footer-spec-link {
+    text-decoration: none;
+    color: var(--color-text-muted);
+    opacity: 0.4;
+    transition: opacity var(--duration-moderate) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .footer-spec-link:hover { opacity: 1; color: var(--color-text); }
+  }
+
+  /* ─── CTA links ────────────────────────────────────── */
+  .cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    transition: color var(--duration-quick) var(--ease-default);
+  }
+  /*
+    CTA arrow — "Apple" feel, not "boop".
+    Two behaviours layered so the arrow reads as emerging rather than
+    darting:
+
+      1. Baseline opacity 0.65, hover opacity 1. At rest the arrow is
+         clearly present but quietly subordinate to the label; on
+         hover it brightens into parity with the text. Brightness
+         changes read as "lighting up" — qualitatively different from
+         a pure translation, which reads as "moving".
+
+      2. 500ms / ease-out / 3px translate. The prior 300ms–420ms at
+         4px with an overdamp curve was physically snappy enough that
+         the eye logged it as one discrete jump. 500ms on a monotonic
+         ease-out curve — no overshoot, no spring — with a smaller
+         3px travel gives the motion time to be perceived as
+         continuous, which is what "smooth and eased-in" means in
+         body-level description. The site's --ease-out
+         (cubic-bezier(0,0,0.2,1)) is designed for exactly this:
+         fast out of the gate, graceful landing, no bounce.
+
+    Keyboard focus mirrors hover for parity. Reduced-motion users get
+    the opacity change only (see prefers-reduced-motion block below);
+    the site-wide reduced-motion rule zeroes transform transitions
+    automatically.
+  */
+  .cta-link .arrow {
+    display: inline-block;
+    opacity: 0.65;
+    transition:
+      transform var(--duration-slow) var(--ease-out),
+      opacity var(--duration-slow) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .cta-link:hover { color: var(--color-text-muted); text-decoration: none; }
+    .cta-link:hover .arrow { opacity: 1; }
+    .cta-link:hover .arrow-right { transform: translateX(3px); }
+    .cta-link:hover .arrow-left { transform: translateX(-3px); }
+  }
+  .cta-link:focus-visible .arrow { opacity: 1; }
+  .cta-link:focus-visible .arrow-right { transform: translateX(3px); }
+  .cta-link:focus-visible .arrow-left { transform: translateX(-3px); }
+
+  /* ─── List-item arrow affordance ───────────────────────
+     Shared by /log .post-item and /work .work-item.
+     Previously these rules lived inside each page's <style> block and
+     silently failed: Astro scopes page styles with a [data-astro-cid-*]
+     attribute that the <Arrow> component SVG never receives (it comes
+     from a separate file). Hoisting to global is the fix.
+
+     Pattern: Apple-style — arrow is always visible, muted, and slides
+     gently on hover. No pop-in, no "boop". The translate uses the same
+     --ease-overdamp the rest of the site settles on; --duration-glide
+     (420ms) gives the movement time to read as motion instead of a
+     twitch. */
+  .post-item-arrow,
+  .work-item-arrow {
+    display: inline-block;
+    opacity: 0.35;
+    color: var(--color-text-muted);
+    transition:
+      opacity var(--duration-moderate) var(--ease-overdamp),
+      transform var(--duration-glide) var(--ease-overdamp),
+      color var(--duration-moderate) var(--ease-overdamp);
+    will-change: transform;
+  }
+  @media (hover: hover) {
+    .post-item:hover .post-item-arrow,
+    .work-item:hover .work-item-arrow {
+      opacity: 0.9;
+      color: var(--color-text);
+      transform: translateX(4px);
+    }
+  }
+  .post-item:focus-visible .post-item-arrow,
+  .work-item:focus-visible .work-item-arrow {
+    opacity: 0.9;
+    color: var(--color-text);
+    transform: translateX(4px);
+  }
+
+  /* ─── Focus Mode (scroll-triggered) ────────────────── */
+  /*
+    Focus-mode fade is a hair longer than --duration-slow (500ms) by
+    design — the UI chrome is dimming as the reader commits to the
+    piece, and a slower curve reads as "the room quieting down" rather
+    than "UI element disappearing". --duration-slow is close enough in
+    feel that snapping to it is the honest choice.
+  */
+  .focus-hide {
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+  .focus-active .focus-hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ─── Tag pattern (used in /log + /work meta rows + detail headers) ─── */
+  /* Shared monochrome tag: small mono uppercase, low-contrast faint.
+     Not scoped per-page — it's a global content type.
+     On list pages (where the card is a link) tags are rendered as <span>
+     because HTML forbids nested anchors. On detail pages tags become
+     anchors to /tag/[slug] with .post-tag-link. */
+  .post-tag {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-faint);
+    opacity: 0.7;
+  }
+  .post-tag-link {
+    text-decoration: none;
+    transition:
+      opacity var(--duration-quick) var(--ease-default),
+      color var(--duration-quick) var(--ease-default);
+  }
+  @media (hover: hover) {
+    .post-tag-link:hover {
+      opacity: 1;
+      color: var(--color-text);
+    }
+  }
+
+  /*
+    Tag-group wrapper — the ONE spacing contract.
+    Every meta row that carries tags wraps them in .meta-tags. The outer
+    meta row gives the date/year a 0.75rem gap from this wrapper; inside
+    the wrapper, tags pack tighter at 0.5rem. That way the eye reads the
+    group as "date — [tag tag tag]" instead of five visually-equivalent
+    tokens. One rhythm across /log, /work, /log/[slug], /work/[slug].
+  */
+  .meta-tags {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* ─── Spotlight hover (research note, not Benji flourish) ────
+     Siblings dim to 0.7 (not 0.4) when one item is hovered. That's
+     enough to focus the eye without turning the list into a theatrical
+     set-piece. Dropping all the way to 0.4 (the Benji reference) read
+     as ornamental — fine on a playful portfolio, wrong on a research
+     site where the claim is "the structure is the product". 0.7 keeps
+     the hint of focus without the showmanship. */
+  .spotlight-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .spotlight-item {
+    transition: opacity var(--duration-moderate) var(--ease-overdamp);
+  }
+  @media (hover: hover) {
+    .spotlight-list:hover .spotlight-item {
+      opacity: 0.7;
+    }
+    .spotlight-list:hover .spotlight-item:hover {
+      opacity: 1;
+    }
+  }
+
+  /* ─── Palette keycap ─────────────────────────────────
+     Used only in the command-palette footer so `↑↓`, `↵`, and `esc`
+     all carry the same visual weight as a keyboard-input token. The
+     subtle surface-raised background + border + monospace is the
+     macOS/Raycast convention; it lets the eye parse "key + label"
+     pairs instead of three mismatched glyph types. */
+  .palette-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.125rem;
+    padding: 0 0.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+  }
+
+  /* ─── Skill tags (gray → active on hover) ──────────── */
+  .skill-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    opacity: 0.55;
+    transition: opacity var(--duration-moderate) var(--ease-overdamp),
+                color var(--duration-moderate) var(--ease-overdamp);
+    cursor: default;
+    user-select: none;
+  }
+  @media (hover: hover) {
+    .skill-tag:hover {
+      opacity: 1;
+      color: var(--color-text);
+    }
+    /* Group hover: when ANY skill is hovered, dim siblings */
+    .skill-cloud:hover .skill-tag {
+      opacity: 0.3;
+    }
+    .skill-cloud:hover .skill-tag:hover {
+      opacity: 1;
+      color: var(--color-text);
+    }
+  }
+
+  /* ─── Prose (blog content) ─────────────────────────── */
+  .prose h2, .prose h3, .prose h4 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose h2 { font-size: var(--text-step-2); line-height: 1.2; }
+  .prose h3 { font-size: var(--text-step-1); line-height: 1.3; }
+  .prose ul, .prose ol { margin: 0 0 1rem 1.25rem; }
+  .prose blockquote {
+    border-left: 3px solid var(--color-border);
+    margin: 0 0 1rem;
+    padding: 0.25rem 0 0.25rem 1rem;
+    color: var(--color-text-muted);
+  }
+  .prose code {
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    padding: 0.1rem 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+  }
+  .prose pre {
+    overflow-x: auto;
+    margin: 0 0 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-surface);
+    padding: 1rem;
+  }
+  .prose pre code { background: transparent; padding: 0; }
+  .prose strong { font-weight: 600; color: var(--color-text); }
+  .prose hr {
+    margin: 1.25rem 0;
+    border: 0;
+    border-top: 1px solid var(--color-border-subtle);
+  }
+  .prose table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 0 0 1rem;
+  }
+  .prose th, .prose td {
+    border: 1px solid var(--color-border-subtle);
+    padding: 0.5rem;
+    text-align: left;
+  }
+  .prose img, .prose video { max-width: 100%; height: auto; }
+  .prose figure { margin: 0 0 1rem; }
+  .prose figcaption { color: var(--color-text-muted); font-size: 0.875rem; }
+
+  /* ─── Page heading (h1 on every page) ───────────────── */
+  .page-heading {
+    font-size: var(--text-step-3);
+    font-weight: 700;
+    /* Inter's descenders (g, j, p, q, y) clip at line-height 1.2 on
+       headings — "Log" showed the "g" tail shaved off. 1.25 gives the
+       descender the single pixel it needs. Tested at every clamp step. */
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--space-8);
+    /* Extra safety: tiny padding-bottom catches any descender clipping
+       caused by parent containers that might apply overflow: hidden
+       (e.g. MotionWrapper during its fade-up animation). */
+    padding-bottom: 0.05em;
+  }
+
+  /* ─── Display heading (hero) ───────────────────────── */
+  .display-heading {
+    font-size: var(--text-step-4);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  /* ─── Subheading (h2 inside lists / cards) ─────────── */
+  .subheading {
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  /* ─── Meta text (dates, years, small labels) ───────── */
+  .meta-text {
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ─── Description text (post summaries, subtitles) ─── */
+  .desc-text {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+  }
+
+  /* ─── Callout box (spec annotations, notes) ────────── */
+  .callout {
+    padding: var(--space-4);
+    border-left: 2px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  /* ─── Data row (spec palette/scale rows) ───────────── */
+  .data-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  /* ─── Section heading (uppercase label) ───────────── */
+  .section-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-faint);
+    margin-bottom: var(--space-4);
+  }
+
+  /* ─── Section spacing ─────────────────────────────── */
+  .section-gap {
+    margin-bottom: var(--space-12);
+  }
+
+  /* ─── Divider ──────────────────────────────────────── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--color-border-subtle);
+    pointer-events: none;
+  }
+
+  /* ─── Scroll-to-top (appears past threshold) ──────── */
+  .scroll-to-top {
+    position: fixed;
+    /* Clear the iPhone home indicator on notched devices. Fallback to
+       the token on everything else (env() resolves to 0 when unsupported). */
+    bottom: max(var(--space-6), env(safe-area-inset-bottom));
+    right: max(var(--space-6), env(safe-area-inset-right));
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition:
+      opacity var(--duration-moderate) var(--ease-out),
+      transform var(--duration-moderate) var(--ease-out),
+      color var(--duration-quick) var(--ease-default),
+      border-color var(--duration-quick) var(--ease-default);
+    z-index: var(--z-sticky);
+    /* Fixed elements should never contribute to layout shift */
+    will-change: opacity, transform;
+  }
+  .scroll-to-top-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  @media (hover: hover) {
+    .scroll-to-top:hover {
+      color: var(--color-text);
+      border-color: var(--color-border);
+    }
+  }
+  .scroll-to-top:focus-visible {
+    color: var(--color-text);
+    outline: 3px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* ─── Empty state (no posts / no works / no tag matches) ─── */
+  /* Tasteful placeholder that doesn't scream "broken" — mirrors the
+     monastic tone of the site. Works identically for /log, /work, /tag. */
+  .empty-state {
+    margin: var(--space-8) 0 var(--space-12);
+    padding: var(--space-8) 0;
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+    text-align: left;
+  }
+  .empty-state-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+    opacity: 0.7;
+    margin: 0 0 var(--space-2);
+  }
+  .empty-state-message {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    max-width: 42ch;
+    margin: 0 0 var(--space-4);
+    line-height: 1.55;
+  }
+
+  /* ─── Year group (archive-style divider for /log + /work) ─── */
+  /* When a list has more than ~8 items, we group by year. This keeps
+     scanning tractable at 50 or 500 entries without paginating. */
+  .year-group {
+    margin-top: var(--space-10);
+  }
+  .year-group:first-of-type {
+    margin-top: var(--space-4);
+  }
+  .year-group-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    margin: 0 0 var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-subtle);
+    opacity: 0.8;
+  }
+
+  /* ─── Reduced motion ───────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     Accessibility overrides.
+     Three media queries, each surgical:
+       · prefers-contrast: more       — the reader wants higher contrast.
+       · forced-colors: active        — Windows High Contrast / OS override.
+       · prefers-reduced-transparency — kill backdrop-filter blur.
+     These are not cosmetic extras — they're the reason the site is usable
+     for readers with low vision, photosensitivity, or assistive tech like
+     Windows Contrast Themes. Do not strip during refactors.
+     ═══════════════════════════════════════════════════════ */
+
+  /*
+    `prefers-contrast: more` — promote every faint text token up one step
+    and kill the decorative opacity the site uses for visual hierarchy.
+    We do NOT change hues — the palette is already AAA-contrast on body;
+    this just pulls the supplementary text from AA into AAA territory.
+  */
+  @media (prefers-contrast: more) {
+    html {
+      --color-text-faint: var(--color-text-muted);
+      --color-border-subtle: var(--color-border);
+    }
+    .post-tag,
+    .tag-index-count,
+    .channel-label,
+    .empty-state-label,
+    .tools-lede + .stack-grid .stack-group-label,
+    .tag-tier-meta,
+    .stack-group-label,
+    .footer-motto,
+    .footer-spec-link,
+    .nav-search-kbd,
+    .skill-tag {
+      opacity: 1;
+    }
+  }
+
+  /*
+    `forced-colors: active` — Windows High Contrast Mode and equivalents.
+    Browsers replace author colors with system colors; we still need to
+    keep load-bearing strokes visible (focus rings, button borders, tag
+    chips) by tying them to system keywords. Without this, the search
+    button and tag chips vanish against the forced background.
+  */
+  @media (forced-colors: active) {
+    .nav-search,
+    .tag-index-item,
+    .channel-value,
+    .spotlight-item,
+    .post-item,
+    .work-item {
+      border-color: CanvasText;
+    }
+    *:focus-visible {
+      outline-color: Highlight;
+    }
+    /* Let the system decide active vs. current rather than our token. */
+    .nav-link-active,
+    .breadcrumb-active {
+      color: LinkText !important;
+    }
+    /* Focus/active row backgrounds should not fight forced colors. */
+    .post-item:hover,
+    .work-item:hover,
+    .nav-search:hover,
+    .tag-index-item:hover {
+      background: Canvas;
+      color: LinkText;
+    }
+  }
+
+  /*
+    `prefers-reduced-transparency: reduce` — flip --palette-blur off.
+    The command palette backdrop then drops to a pure translucent scrim,
+    saving GPU work and avoiding the shimmer some users report with
+    backdrop-filter on low-end displays.
+  */
+  @media (prefers-reduced-transparency: reduce) {
+    html {
+      --palette-blur: 0px;
+    }
+  }
+}

@@ -1,0 +1,19 @@
+---
+import Base from "../layouts/Base.astro";
+import Arrow from "../components/Arrow.astro";
+---
+
+<Base title="404">
+  <section style="padding-top: 4rem; padding-bottom: 4rem;">
+    <h1 style="font-size: var(--text-step-4); font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 1rem;">
+      404
+    </h1>
+    <p style="font-size: var(--text-step-0); color: var(--color-text-muted); margin-bottom: 2rem; max-width: var(--max-width-prose);">
+      Nothing here. The page you're looking for doesn't exist or was moved.
+    </p>
+    <a href="/" class="cta-link">
+      <Arrow direction="left" />
+      back to home
+    </a>
+  </section>
+</Base>
