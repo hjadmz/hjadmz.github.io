@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>hjadmz — Design Engineer</title>
+  <meta name="description" content="hjadmz. Design Engineer building restraint-first systems. Function precedes convenience precedes aesthetics; ornament is never load-bearing.">
+  <link rel="canonical" href="https://hjadmz.com/">
+
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F9FAFB">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#020617">
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hjadmz.com/">
+  <meta property="og:title" content="hjadmz — Design Engineer">
+  <meta property="og:description" content="Restraint-first systems. Function precedes convenience precedes aesthetics; ornament is never load-bearing.">
+  <meta property="og:image" content="https://hjadmz.com/og-image-1200x630.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Icons -->
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="icon" sizes="any" href="./favicon.ico">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
+  <!-- Fonts · subset · SIL OFL 1.1 -->
+  <link rel="preload" href="./fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/jetbrains-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "hjadmz",
+    "alternateName": "Henry Adams",
+    "jobTitle": "Design Engineer",
+    "url": "https://hjadmz.com",
+    "email": "mailto:henryjosephadams@icloud.com",
+    "sameAs": [
+      "https://github.com/hjadmz",
+      "https://www.linkedin.com/in/henryjosephadams"
+    ]
+  }
+  </script>
+
+  <style>
+    /* ── hjadmz design tokens · v1.2.0 (subset used on this page) ── */
+    :root {
+      --color-bg:             #F9FAFB;
+      --color-text:           #020617;  /* 19.30:1 — AAA */
+      --color-text-muted:     #475569;  /*  7.25:1 — AAA */
+      --color-text-faint:     #64748B;  /*  4.55:1 — AA, captions only */
+      --color-text-link:      #1E40AF;  /*  7.66:1 — AAA */
+      --color-text-link-hover:#1E3A8A;
+      --color-border:         #CBD5E1;
+      --color-border-subtle:  #E2E8F0;
+      --color-ring:           #1E40AF;
+      --color-mark:           #020617;
+
+      --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+
+      --step--1: clamp(0.8125rem, 0.78rem + 0.16vw, 0.875rem);
+      --step-0:  clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+      --step-1:  clamp(1.25rem,  1.19rem + 0.31vw, 1.406rem);
+      --step-4:  clamp(2.441rem, 2.32rem + 0.61vw, 2.747rem);
+
+      --space-2: 0.5rem;  --space-3: 0.75rem; --space-4: 1rem;
+      --space-6: 1.5rem;  --space-8: 2rem;    --space-12: 3rem;
+      --space-16: 4rem;   --space-24: 6rem;
+
+      --tracking-wide: 0.05em;
+      --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+      --quick: 150ms;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg:             #020617;
+        --color-text:           #E2E8F0;  /* 16.36:1 — AAA */
+        --color-text-muted:     #97A6BB;  /*  8.15:1 — AAA */
+        --color-text-faint:     #8293A5;
+        --color-text-link:      #60A5FA;  /*  7.93:1 — AAA */
+        --color-text-link-hover:#93C5FD;
+        --color-border:         #334155;
+        --color-border-subtle:  #1E293B;
+        --color-ring:           #60A5FA;
+        --color-mark:           #F9FAFB;
+      }
+    }
+
+    @font-face {
+      font-family: 'Inter'; font-style: normal; font-weight: 400;
+      font-display: swap; src: url('./fonts/inter-400.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Inter'; font-style: normal; font-weight: 600;
+      font-display: swap; src: url('./fonts/inter-600.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'JetBrains Mono'; font-style: normal; font-weight: 400;
+      font-display: swap; src: url('./fonts/jetbrains-mono-400.woff2') format('woff2');
+    }
+
+    /* ── base ── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { color-scheme: light dark; }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--step-0);
+      line-height: 1.6;
+      font-feature-settings: 'tnum' 1, 'lnum' 1;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: var(--color-text-link);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+      transition: color var(--quick) var(--ease-default);
+    }
+    a:hover { color: var(--color-text-link-hover); }
+    :focus-visible {
+      outline: 3px solid var(--color-ring);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0ms !important; }
+    }
+
+    .skip-link {
+      position: absolute; left: var(--space-6); top: -100%;
+      background: var(--color-bg); padding: var(--space-2) var(--space-3);
+      z-index: 10;
+    }
+    .skip-link:focus-visible { top: var(--space-2); }
+
+    /* ── layout ── */
+    .shell {
+      width: 100%;
+      max-width: 1280px;
+      margin-inline: auto;
+      padding-inline: var(--space-6);
+    }
+    @media (min-width: 641px)  { .shell { padding-inline: var(--space-12); } }
+    @media (min-width: 1025px) { .shell { padding-inline: var(--space-24); } }
+
+    /* ── header ── */
+    .site-header { padding-block: var(--space-6); }
+    .site-header .shell {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--space-6);
+    }
+    .mark { color: var(--color-mark); display: inline-flex; }
+    .mark svg { height: 26px; width: auto; display: block; }
+    .mark:hover { color: var(--color-mark); }
+    .site-nav { display: flex; gap: var(--space-6); font-size: var(--step--1); }
+
+    /* 44px minimum tap targets (product-principles) without shifting layout */
+    .site-nav a, .links a {
+      padding-block: 0.5625rem;
+      margin-block: -0.5625rem;
+      padding-inline: var(--space-1);
+      margin-inline: calc(var(--space-1) * -1);
+    }
+    a.mark {
+      padding-block: 0.5625rem;
+      margin-block: -0.5625rem;
+    }
+
+    /* ── main ── */
+    main { flex: 1; display: flex; align-items: center; }
+    .hero { padding-block: var(--space-24) var(--space-16); max-width: 65ch; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--step--1);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+    }
+    h1 {
+      /* personal-site kit hero scale — step-4 → step-5 fluid */
+      font-size: clamp(2.4rem, 1.6rem + 3vw, 3.4rem);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+      margin-top: var(--space-4);
+      text-wrap: balance;
+    }
+    h1 .muted { color: var(--color-text-muted); }
+    .lede {
+      font-size: var(--step-0);
+      line-height: 1.6;
+      margin-top: var(--space-6);
+      color: var(--color-text-muted);
+      max-width: 60ch;
+    }
+
+    .links {
+      list-style: none;
+      display: flex; flex-wrap: wrap; gap: var(--space-6);
+      margin-top: var(--space-8);
+    }
+
+    /* ── colophon ── */
+    .colophon {
+      border-top: 1px solid var(--color-border-subtle);
+      margin-top: var(--space-12);
+      padding-top: var(--space-6);
+      font-family: var(--font-mono);
+      font-size: var(--step--1);
+    }
+    .colophon dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: var(--space-2) var(--space-6);
+    }
+    .colophon dt { color: var(--color-text-faint); }
+    .colophon dd { color: var(--color-text-muted); }
+
+    /* ── footer ── */
+    .site-footer {
+      border-top: 1px solid var(--color-border-subtle);
+      padding-block: var(--space-8);
+      font-size: var(--step--1);
+      color: var(--color-text-muted);
+    }
+    .site-footer .shell {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--space-3) var(--space-6);
+    }
+    .site-footer .mark svg { height: 18px; }
+    .site-footer .right { text-align: right; }
+    .sdg { font-style: italic; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="shell">
+      <a class="mark" href="/" aria-label="hjadmz — home">
+        <!-- wordmark · frozen outlined paths · brand kit v1.2.0 -->
+        <svg viewBox="0 -730 3417 950" fill="currentColor" role="img" aria-labelledby="wm-t"><title id="wm-t">hjadmz</title><g transform="scale(1,-1)"><g><path d="M73 0V700H188V429H205Q213 446 231.0 463.0Q249 480 278.5 491.0Q308 502 353 502Q410 502 454.0 476.5Q498 451 522.5 405.0Q547 359 547 296V0H432V287Q432 347 402.5 376.5Q373 406 319 406Q258 406 223.0 365.5Q188 325 188 250V0Z"/></g><g transform="translate(615,0)"><path d="M-20 -200V-101H47Q75 -101 75 -71V494H190V-94Q190 -143 161.5 -171.5Q133 -200 85 -200ZM132 557Q101 557 78.5 577.5Q56 598 56 632Q56 666 78.5 686.5Q101 707 132 707Q165 707 186.5 686.5Q208 666 208 632Q208 598 186.5 577.5Q165 557 132 557Z"/></g><g transform="translate(878,0)"><path d="M226 -14Q174 -14 132.0 4.5Q90 23 65.5 58.0Q41 93 41 144Q41 194 65.5 228.0Q90 262 133.0 279.5Q176 297 231 297H374V327Q374 366 350.0 390.5Q326 415 275 415Q225 415 199.5 391.5Q174 368 166 331L60 366Q72 405 98.5 437.0Q125 469 169.0 488.5Q213 508 277 508Q374 508 429.5 459.5Q485 411 485 319V125Q485 95 513 95H555V0H474Q438 0 415.0 18.0Q392 36 392 67V69H375Q369 55 354.0 35.0Q339 15 308.5 0.5Q278 -14 226 -14ZM245 80Q302 80 338.0 112.5Q374 145 374 200V210H238Q201 210 178.0 194.0Q155 178 155 147Q155 117 179.0 98.5Q203 80 245 80Z"/></g><g transform="translate(1455,0)"><path d="M275 -14Q215 -14 163.0 15.5Q111 45 80.0 102.0Q49 159 49 239V255Q49 335 80.0 392.0Q111 449 162.5 478.5Q214 508 275 508Q321 508 353.0 497.0Q385 486 404.5 469.0Q424 452 435 432H452V700H566V0H454V65H437Q419 35 382.0 10.5Q345 -14 275 -14ZM309 86Q371 86 412.0 126.5Q453 167 453 242V252Q453 328 412.5 368.0Q372 408 309 408Q247 408 205.5 368.0Q164 328 164 252V242Q164 167 205.5 126.5Q247 86 309 86Z"/></g><g transform="translate(2094,0)"><path d="M73 0V494H186V439H203Q216 464 246.5 483.5Q277 503 328 503Q382 503 415.0 481.0Q448 459 465 425H481Q498 459 530.0 481.0Q562 503 621 503Q667 503 704.5 483.0Q742 463 764.5 424.0Q787 385 787 327V0H672V319Q672 362 649.0 384.5Q626 407 585 407Q540 407 513.5 377.5Q487 348 487 293V0H373V319Q373 362 350.0 384.5Q327 407 286 407Q240 407 214.0 377.5Q188 348 188 293V0Z"/></g><g transform="translate(2949,0)"><path d="M54 0V138L336 384V399H64V494H460V356L178 110V95H468V0Z"/></g></g></svg>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="https://github.com/hjadmz" rel="me noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/henryjosephadams" rel="me noopener">LinkedIn</a>
+        <a href="mailto:henryjosephadams@icloud.com">Email</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="shell">
+      <section class="hero">
+        <p class="eyebrow">Design Engineer</p>
+        <h1>Restraint-first systems. <span class="muted">Function precedes convenience precedes aesthetics. Ornament is never load-bearing.</span></h1>
+        <p class="lede">I build software, hardware, and writing under one operating philosophy. Components from primitives. Color from tokens. Brand identity that survives moves and pivots.</p>
+
+        <ul class="links">
+          <li><a href="https://github.com/hjadmz" rel="me noopener">github.com/hjadmz</a></li>
+          <li><a href="https://www.linkedin.com/in/henryjosephadams" rel="me noopener">linkedin.com/in/henryjosephadams</a></li>
+          <li><a href="mailto:henryjosephadams@icloud.com">henryjosephadams@icloud.com</a></li>
+        </ul>
+
+        <aside class="colophon" aria-label="Colophon">
+          <dl>
+            <dt>stack</dt><dd>static HTML and CSS · zero JavaScript · no framework · no tracking</dd>
+            <dt>type</dt><dd>Inter · JetBrains Mono · wordmark frozen as outlined paths</dd>
+            <dt>contrast</dt><dd>WCAG AAA body text, light and dark</dd>
+            <dt>weight</dt><dd>66 KB first visit, fonts included</dd>
+            <dt>source</dt><dd>hjadmz brand kit v1.2.0</dd>
+          </dl>
+        </aside>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 -730 3417 950" fill="currentColor"><g transform="scale(1,-1)"><g><path d="M73 0V700H188V429H205Q213 446 231.0 463.0Q249 480 278.5 491.0Q308 502 353 502Q410 502 454.0 476.5Q498 451 522.5 405.0Q547 359 547 296V0H432V287Q432 347 402.5 376.5Q373 406 319 406Q258 406 223.0 365.5Q188 325 188 250V0Z"/></g><g transform="translate(615,0)"><path d="M-20 -200V-101H47Q75 -101 75 -71V494H190V-94Q190 -143 161.5 -171.5Q133 -200 85 -200ZM132 557Q101 557 78.5 577.5Q56 598 56 632Q56 666 78.5 686.5Q101 707 132 707Q165 707 186.5 686.5Q208 666 208 632Q208 598 186.5 577.5Q165 557 132 557Z"/></g><g transform="translate(878,0)"><path d="M226 -14Q174 -14 132.0 4.5Q90 23 65.5 58.0Q41 93 41 144Q41 194 65.5 228.0Q90 262 133.0 279.5Q176 297 231 297H374V327Q374 366 350.0 390.5Q326 415 275 415Q225 415 199.5 391.5Q174 368 166 331L60 366Q72 405 98.5 437.0Q125 469 169.0 488.5Q213 508 277 508Q374 508 429.5 459.5Q485 411 485 319V125Q485 95 513 95H555V0H474Q438 0 415.0 18.0Q392 36 392 67V69H375Q369 55 354.0 35.0Q339 15 308.5 0.5Q278 -14 226 -14ZM245 80Q302 80 338.0 112.5Q374 145 374 200V210H238Q201 210 178.0 194.0Q155 178 155 147Q155 117 179.0 98.5Q203 80 245 80Z"/></g><g transform="translate(1455,0)"><path d="M275 -14Q215 -14 163.0 15.5Q111 45 80.0 102.0Q49 159 49 239V255Q49 335 80.0 392.0Q111 449 162.5 478.5Q214 508 275 508Q321 508 353.0 497.0Q385 486 404.5 469.0Q424 452 435 432H452V700H566V0H454V65H437Q419 35 382.0 10.5Q345 -14 275 -14ZM309 86Q371 86 412.0 126.5Q453 167 453 242V252Q453 328 412.5 368.0Q372 408 309 408Q247 408 205.5 368.0Q164 328 164 252V242Q164 167 205.5 126.5Q247 86 309 86Z"/></g><g transform="translate(2094,0)"><path d="M73 0V494H186V439H203Q216 464 246.5 483.5Q277 503 328 503Q382 503 415.0 481.0Q448 459 465 425H481Q498 459 530.0 481.0Q562 503 621 503Q667 503 704.5 483.0Q742 463 764.5 424.0Q787 385 787 327V0H672V319Q672 362 649.0 384.5Q626 407 585 407Q540 407 513.5 377.5Q487 348 487 293V0H373V319Q373 362 350.0 384.5Q327 407 286 407Q240 407 214.0 377.5Q188 348 188 293V0Z"/></g><g transform="translate(2949,0)"><path d="M54 0V138L336 384V399H64V494H460V356L178 110V95H468V0Z"/></g></g></svg>
+      </span>
+      <span class="right">Design Engineer · restraint-first systems</span>
+      <span class="sdg">Soli Deo Gloria</span>
+      <span class="right">© 2026 hjadmz</span>
+    </div>
+  </footer>
+</body>
+</html>
