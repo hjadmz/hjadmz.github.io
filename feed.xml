@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>hjadmz — Writing</title>
+  <subtitle>Design Engineer. Restraint-first systems.</subtitle>
+  <link href="https://hjadmz.com/feed.xml" rel="self"/>
+  <link href="https://hjadmz.com/"/>
+  <id>https://hjadmz.com/</id>
+  <updated>2026-06-11T00:00:00Z</updated>
+  <author><name>hjadmz</name></author>
+
+  <entry>
+    <title>Knowledge vs. Intelligence</title>
+    <link href="https://hjadmz.com/writing/knowledge-vs-intelligence/"/>
+    <id>https://hjadmz.com/writing/knowledge-vs-intelligence/</id>
+    <published>2026-06-11T00:00:00Z</published>
+    <updated>2026-06-11T00:00:00Z</updated>
+    <summary>Formal education is a controlled environment that rewards information storage; the real world is a chaotic environment that rewards information processing.</summary>
+  </entry>
+
+  <entry>
+    <title>Tools vs. Results: The Sovereignty of Intent</title>
+    <link href="https://hjadmz.com/writing/tools-vs-results/"/>
+    <id>https://hjadmz.com/writing/tools-vs-results/</id>
+    <published>2026-06-11T00:00:00Z</published>
+    <updated>2026-06-11T00:00:00Z</updated>
+    <summary>The tools one uses to articulate his thoughts are insignificant; the result is what matters. On AI, craft, and adaptation.</summary>
+  </entry>
+</feed>
