@@ -76,7 +76,12 @@ body {
   display: flex;
   flex-direction: column;
   -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+/* document selection — token inversion, AAA in both modes */
+::selection { background: var(--color-text); color: var(--color-bg); }
 
 a {
   color: var(--color-text-link);
@@ -167,7 +172,7 @@ h1 .muted { color: var(--color-text-muted); }
 }
 
 /* ── sections (work / writing) ── */
-.section { padding-block: var(--space-8) var(--space-12); }
+.section { padding-block: var(--space-8) var(--space-12); scroll-margin-top: 4.5rem; }
 .section-head {
   display: flex; align-items: baseline; justify-content: space-between;
   gap: var(--space-6);
@@ -207,8 +212,11 @@ a.row {
   color: inherit;
   transition: padding-left 200ms var(--ease-default);
 }
-a.row:hover { padding-left: var(--space-2); }
-a.row:hover .title { color: var(--color-text-link); text-decoration: underline; text-underline-offset: 0.2em; }
+/* hover affordances only on devices that hover (Rauno: touch should not flash) */
+@media (hover: hover) {
+  a.row:hover { padding-left: var(--space-2); }
+  a.row:hover .title { color: var(--color-text-link); text-decoration: underline; text-underline-offset: 0.2em; }
+}
 a.row:focus-visible { outline-offset: -3px; }
 @media (max-width: 640px) {
   .row { grid-template-columns: max-content 1fr auto; }
